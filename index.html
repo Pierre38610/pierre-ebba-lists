@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
@@ -7,8 +7,8 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Pierre & Ebba" />
-  <meta name="description" content="Listes partagées, idées et petits mots du quotidien entre Pierre et Ebba." />
-  <title>Pierre &amp; Ebba — Listes &amp; Notes Partagées</title>
+  <meta name="description" content="Shared lists, ideas, and daily notes for Pierre and Ebba." />
+  <title>Pierre &amp; Ebba — Shared Lists &amp; Notes</title>
   <link rel="manifest" href="./manifest.json" />
   <link rel="icon" type="image/svg+xml" href="./icon.svg" />
   <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png" />
@@ -1237,6 +1237,812 @@
     }
 
     .hidden-input { display: none; }
+
+    /* Main Two-Tab Navigation */
+    .main-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 5px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .main-tab-btn {
+      border: none;
+      background: transparent;
+      border-radius: 13px;
+      padding: 10px 14px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.12s ease;
+    }
+
+    .main-tab-btn:active { transform: scale(0.98); }
+
+    .main-tab-btn.active {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tab-count-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: var(--radius-pill);
+      background: var(--bg-elevated);
+      color: var(--text-muted);
+    }
+
+    .main-tab-btn.active .tab-count-badge {
+      background: var(--gold-soft);
+      color: var(--gold);
+    }
+
+    /* Recipe Dex Hero & Mode Switch */
+    .dex-hero-card {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 18px 20px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .dex-hero-card::before {
+      content: "";
+      position: absolute;
+      inset: 6px;
+      border: 1px solid var(--gold-soft);
+      border-radius: 16px;
+      pointer-events: none;
+    }
+
+    .dex-hero-top {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .dex-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 4px;
+    }
+
+    .dex-hero-title {
+      font-family: var(--font-serif);
+      font-size: 25px;
+      font-weight: 600;
+      line-height: 1.15;
+      margin: 0;
+    }
+
+    .dex-hero-sub {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      margin: 4px 0 0;
+    }
+
+    .dex-stats-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .dex-stat-pill {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 68px;
+      padding: 7px 11px;
+      border-radius: 14px;
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+    }
+
+    .dex-stat-val {
+      font-family: var(--font-serif);
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.05;
+      color: var(--text);
+    }
+
+    .dex-stat-lbl {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-soft);
+      margin-top: 2px;
+    }
+
+    .dex-mode-switch {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      background: var(--bg-elevated);
+      padding: 4px;
+      border-radius: 14px;
+    }
+
+    .dex-mode-btn {
+      border: none;
+      background: transparent;
+      padding: 9px 12px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .dex-mode-btn.active {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* Recipe Cards */
+    .recipe-card {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .recipe-card:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .recipe-cover-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      background: var(--bg-elevated);
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .recipe-cover-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.35s ease;
+    }
+
+    .recipe-card:hover .recipe-cover-img {
+      transform: scale(1.03);
+    }
+
+    .recipe-cover-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      background: radial-gradient(circle at 30% 25%, var(--gold-soft), transparent 60%),
+                  linear-gradient(135deg, var(--bg-elevated), var(--surface-soft));
+      color: var(--text-muted);
+    }
+
+    .recipe-cover-placeholder-icon {
+      font-size: 38px;
+      line-height: 1;
+    }
+
+    .recipe-cover-placeholder-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-soft);
+    }
+
+    .dex-num-badge {
+      display: inline-flex;
+      align-items: center;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      padding: 3px 8px;
+      border-radius: var(--radius-pill);
+      background: rgba(20, 18, 16, 0.78);
+      color: #FAF7F2;
+      backdrop-filter: blur(4px);
+    }
+
+    .dex-num-badge.inline {
+      background: var(--gold-soft);
+      color: var(--gold);
+      backdrop-filter: none;
+    }
+
+    .recipe-cover-top-badges {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      right: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      pointer-events: none;
+    }
+
+    .recipe-cover-top-badges > * {
+      pointer-events: auto;
+    }
+
+    .photo-count-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: var(--radius-pill);
+      background: rgba(20, 18, 16, 0.74);
+      color: #FAF7F2;
+      backdrop-filter: blur(4px);
+    }
+
+    .recipe-card-pin-btn {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background: rgba(20, 18, 16, 0.65);
+      color: #FAF7F2;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+    }
+
+    .recipe-card-pin-btn.pinned {
+      color: #F4C55E;
+      border-color: rgba(244, 197, 94, 0.55);
+    }
+
+    .recipe-card-body {
+      padding: 15px 18px 16px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+
+    .recipe-meta-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 7px;
+      flex-wrap: wrap;
+    }
+
+    .recipe-stars {
+      color: var(--gold);
+      font-size: 13px;
+      letter-spacing: 1px;
+    }
+
+    .recipe-desc-preview {
+      font-size: 13px;
+      line-height: 1.5;
+      color: var(--text-muted);
+      margin: 6px 0 10px;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .recipe-ing-preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 10px;
+    }
+
+    .ing-mini-pill {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 3px 8px;
+      border-radius: var(--radius-pill);
+      background: var(--bg-elevated);
+      color: var(--text-muted);
+      max-width: 150px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .cooked-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ebba);
+    }
+
+    /* Photo Uploader & Thumbnails */
+    .photo-upload-zone {
+      border: 1.5px dashed var(--border-strong);
+      border-radius: 16px;
+      background: var(--surface-soft);
+      padding: 14px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .photo-upload-zone:hover {
+      border-color: var(--gold);
+      background: var(--bg-elevated);
+    }
+
+    .photo-upload-title {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0 0 3px;
+    }
+
+    .photo-upload-sub {
+      font-size: 11.5px;
+      color: var(--text-soft);
+      margin: 0;
+    }
+
+    .photo-thumbs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .photo-thumb-item {
+      position: relative;
+      aspect-ratio: 1 / 1;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+    }
+
+    .photo-thumb-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .photo-thumb-del {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(20, 18, 16, 0.78);
+      color: #fff;
+      font-size: 13px;
+      line-height: 1;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .photo-thumb-cover {
+      position: absolute;
+      left: 4px;
+      bottom: 4px;
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: var(--radius-pill);
+      border: none;
+      background: rgba(20, 18, 16, 0.78);
+      color: #FAF7F2;
+      cursor: pointer;
+    }
+
+    .photo-thumb-cover.is-cover {
+      background: var(--gold);
+      color: #141210;
+    }
+
+    /* Multi-photo Carousel in Detail Modal */
+    .photo-carousel {
+      position: relative;
+      border-radius: 18px;
+      overflow: hidden;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      margin-bottom: 14px;
+      aspect-ratio: 16 / 10;
+    }
+
+    .photo-carousel img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .carousel-nav-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      background: rgba(20, 18, 16, 0.68);
+      color: #fff;
+      font-size: 16px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+
+    .carousel-nav-btn.prev { left: 10px; }
+    .carousel-nav-btn.next { right: 10px; }
+
+    .carousel-dots {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      padding: 4px 9px;
+      border-radius: var(--radius-pill);
+      background: rgba(20, 18, 16, 0.55);
+      backdrop-filter: blur(4px);
+    }
+
+    .carousel-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      border: none;
+      padding: 0;
+      background: rgba(255, 255, 255, 0.45);
+      cursor: pointer;
+    }
+
+    .carousel-dot.active {
+      background: #FAF7F2;
+      transform: scale(1.2);
+    }
+
+    .carousel-counter {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 9px;
+      border-radius: var(--radius-pill);
+      background: rgba(20, 18, 16, 0.72);
+      color: #FAF7F2;
+    }
+
+    /* Star Rating Input */
+    .star-rating-input {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 6px 10px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface-soft);
+    }
+
+    .star-btn {
+      border: none;
+      background: transparent;
+      font-size: 20px;
+      line-height: 1;
+      padding: 2px 3px;
+      cursor: pointer;
+      color: var(--border-strong);
+      transition: transform 0.12s ease, color 0.15s ease;
+    }
+
+    .star-btn.active {
+      color: var(--gold);
+    }
+
+    .star-btn:active { transform: scale(1.18); }
+
+    .star-clear-btn {
+      border: none;
+      background: transparent;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-soft);
+      cursor: pointer;
+      margin-left: 4px;
+    }
+
+    /* Detail Modal Sections */
+    .dex-entry-quote {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      font-style: italic;
+      line-height: 1.45;
+      color: var(--text);
+      padding: 12px 14px;
+      border-left: 3px solid var(--gold);
+      background: var(--surface-soft);
+      border-radius: 0 12px 12px 0;
+      margin: 0 0 14px;
+      white-space: pre-wrap;
+    }
+
+    .recipe-detail-section {
+      margin-bottom: 16px;
+    }
+
+    .recipe-detail-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .recipe-detail-heading h3 {
+      font-size: 11.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      margin: 0;
+    }
+
+    .recipe-instructions-box {
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 13px 15px;
+      font-size: 14px;
+      line-height: 1.62;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* Ingredient Matcher Panel */
+    .matcher-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 18px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .matcher-form {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .matcher-form input {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .matcher-chips-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-soft);
+      margin: 10px 0 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .chips-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .pantry-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 11px;
+      border-radius: var(--radius-pill);
+      background: var(--accent);
+      color: var(--accent-text);
+      font-size: 12.5px;
+      font-weight: 600;
+      border: none;
+      cursor: pointer;
+    }
+
+    .quick-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 5px 11px;
+      border-radius: var(--radius-pill);
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .quick-chip:hover {
+      border-color: var(--gold);
+      color: var(--text);
+    }
+
+    .quick-chip.selected {
+      background: var(--pierre-soft);
+      border-color: var(--pierre);
+      color: var(--pierre);
+    }
+
+    .match-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 16px 18px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .match-card-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      cursor: pointer;
+    }
+
+    .match-thumb {
+      width: 64px;
+      height: 64px;
+      border-radius: 14px;
+      object-fit: cover;
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+    }
+
+    .match-score-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: var(--radius-pill);
+    }
+
+    .match-score-pill.perfect {
+      background: var(--pierre-soft);
+      color: var(--pierre);
+    }
+
+    .match-score-pill.partial {
+      background: var(--gold-soft);
+      color: var(--gold);
+    }
+
+    .match-ing-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .ing-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11.5px;
+      font-weight: 600;
+      padding: 4px 9px;
+      border-radius: var(--radius-pill);
+    }
+
+    .ing-badge.matched {
+      background: var(--pierre-soft);
+      color: var(--pierre);
+    }
+
+    .ing-badge.missing {
+      background: var(--ebba-soft);
+      color: var(--ebba);
+    }
+
+    .ing-badge.staple {
+      background: var(--bg-elevated);
+      color: var(--text-soft);
+    }
+
+    .form-row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    @media (max-width: 480px) {
+      .form-row-2 {
+        grid-template-columns: 1fr;
+      }
+      .dex-stats-row {
+        width: 100%;
+        justify-content: space-between;
+      }
+      .dex-stat-pill {
+        flex: 1;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1247,24 +2053,24 @@
         <div class="brand-monogram" aria-hidden="true">P<span>&amp;</span>E</div>
         <div class="brand-text">
           <h1 class="brand-title">Pierre <em>&amp;</em> Ebba</h1>
-          <div class="sync-pill" id="syncPill" title="Toucher pour forcer la synchronisation">
+          <div class="sync-pill" id="syncPill" title="Tap to force sync">
             <span class="sync-dot" id="syncDot"></span>
-            <span id="syncText">Synchronisation...</span>
+            <span id="syncText">Syncing...</span>
           </div>
         </div>
       </div>
 
       <div class="topbar-actions">
-        <button class="identity-toggle" id="identityBtn" title="Changer de profil (Pierre / Ebba)">
+        <button class="identity-toggle" id="identityBtn" title="Switch profile (Pierre / Ebba)">
           <span class="avatar-dot avatar-pierre" id="identityAvatar">P</span>
           <span id="identityName">Pierre</span>
         </button>
-        <button class="icon-btn" id="themeBtn" title="Changer de thème (Clair / Sombre)" aria-label="Thème">
+        <button class="icon-btn" id="themeBtn" title="Switch theme (Light / Dark)" aria-label="Theme">
           <svg id="themeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
           </svg>
         </button>
-        <button class="icon-btn" id="shareInstallBtn" title="Installer sur Android &amp; partager à Ebba" aria-label="Installer et partager">
+        <button class="icon-btn" id="shareInstallBtn" title="Install on Android &amp; share with Ebba" aria-label="Install and share">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 3v12"/>
             <path d="m7 10 5 5 5-5"/>
@@ -1279,58 +2085,164 @@
       <div class="install-banner-copy">
         <div class="brand-monogram" style="width:36px;height:36px;font-size:14px;">P<span>&amp;</span>E</div>
         <div>
-          <p class="install-banner-title">Installer l'app sur votre téléphone</p>
-          <p class="install-banner-sub">Accès direct sur l'écran d'accueil, plein écran &amp; hors-ligne</p>
+          <p class="install-banner-title">Install the app on your phone</p>
+          <p class="install-banner-sub">Home screen access, fullscreen &amp; offline</p>
         </div>
       </div>
       <div class="install-banner-actions">
-        <button class="btn-gold" id="installBannerBtn">Installer</button>
-        <button class="btn-ghost-light" id="dismissBannerBtn" aria-label="Fermer">&times;</button>
+        <button class="btn-gold" id="installBannerBtn">Install</button>
+        <button class="btn-ghost-light" id="dismissBannerBtn" aria-label="Close">&times;</button>
       </div>
     </div>
 
-    <!-- Petit Mot Doux Card -->
-    <section class="love-note-card" aria-label="Petit mot partagé">
-      <div class="love-note-header">
-        <div class="love-note-label">
-          <span>✦</span> Petit Mot du Jour
-        </div>
-        <div class="love-note-actions">
-          <button class="edit-mot-btn" id="editMotBtn">Écrire un mot</button>
-        </div>
-      </div>
-      <p class="love-note-text" id="motText">Chargement...</p>
-      <div class="love-note-footer">
-        <div class="love-note-meta" id="motMeta">Partagé entre Pierre &amp; Ebba</div>
-        <button class="heart-react-btn" id="heartReactBtn" title="Envoyer un cœur">
-          <span id="heartEmoji">♡</span>
-          <span id="heartCount">0</span>
-        </button>
-      </div>
-    </section>
+    <!-- Main Two-Tab Navigation -->
+    <nav class="main-tabs" aria-label="Main sections">
+      <button type="button" class="main-tab-btn active" id="tabBtnLists" data-tab="lists">
+        <span>☑ Lists &amp; Notes</span>
+        <span class="tab-count-badge" id="tabCountLists">0</span>
+      </button>
+      <button type="button" class="main-tab-btn" id="tabBtnRecipes" data-tab="recipes">
+        <span>📖 Recipe Dex</span>
+        <span class="tab-count-badge" id="tabCountRecipes">0</span>
+      </button>
+    </nav>
 
-    <!-- Search & Categories -->
-    <section class="controls-wrap">
-      <div class="search-row">
-        <div class="search-box">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-soft);flex-shrink:0;">
-            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
-          </svg>
-          <input type="search" id="searchInput" placeholder="Rechercher une liste, une envie, une note..." autocomplete="off" />
-          <button class="clear-search-btn" id="clearSearchBtn" aria-label="Effacer">&times;</button>
+    <!-- Tab 1: Lists & Notes -->
+    <div id="listsTabView">
+      <!-- Note of the Day Card -->
+      <section class="love-note-card" aria-label="Shared daily note">
+        <div class="love-note-header">
+          <div class="love-note-label">
+            <span>✦</span> Note of the Day
+          </div>
+          <div class="love-note-actions">
+            <button class="edit-mot-btn" id="editMotBtn">Write a note</button>
+          </div>
         </div>
+        <p class="love-note-text" id="motText">Loading...</p>
+        <div class="love-note-footer">
+          <div class="love-note-meta" id="motMeta">Shared between Pierre &amp; Ebba</div>
+          <button class="heart-react-btn" id="heartReactBtn" title="Send a heart">
+            <span id="heartEmoji">♡</span>
+            <span id="heartCount">0</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Search -->
+      <section class="controls-wrap">
+        <div class="search-row">
+          <div class="search-box">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-soft);flex-shrink:0;">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+            </svg>
+            <input type="search" id="searchInput" placeholder="Search a list or note..." autocomplete="off" />
+            <button class="clear-search-btn" id="clearSearchBtn" aria-label="Clear search">&times;</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="section-summary">
+        <span id="summaryText">0 lists</span>
+        <span id="lastSyncInfo">Live sync active</span>
       </div>
 
-      <div class="filter-scroll" id="categoryPills"></div>
-    </section>
-
-    <div class="section-summary">
-      <span id="summaryText">0 liste</span>
-      <span id="lastSyncInfo">Temps réel actif</span>
+      <!-- Main Cards Grid -->
+      <main class="cards-grid" id="cardsGrid"></main>
     </div>
 
-    <!-- Main Cards Grid -->
-    <main class="cards-grid" id="cardsGrid"></main>
+    <!-- Tab 2: Recipe Dex -->
+    <div id="recipesTabView" style="display:none;">
+      <!-- Dex Hero & Mode Switch -->
+      <section class="dex-hero-card" aria-label="Recipe Dex overview">
+        <div class="dex-hero-top">
+          <div>
+            <div class="dex-kicker"><span>✦</span> Culinary Pokédex</div>
+            <h2 class="dex-hero-title">Our Cooked Recipe Dex</h2>
+            <p class="dex-hero-sub">Every dish we cook together, logged &amp; searchable</p>
+          </div>
+          <div class="dex-stats-row">
+            <div class="dex-stat-pill">
+              <span class="dex-stat-val" id="dexDiscoveredCount">0</span>
+              <span class="dex-stat-lbl">Discovered</span>
+            </div>
+            <div class="dex-stat-pill">
+              <span class="dex-stat-val" id="dexCookedTotal">0</span>
+              <span class="dex-stat-lbl">Cooked</span>
+            </div>
+            <div class="dex-stat-pill">
+              <span class="dex-stat-val" id="dexFavCount">0</span>
+              <span class="dex-stat-lbl">Top Rated</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="dex-mode-switch" role="tablist" aria-label="Recipe Dex mode">
+          <button type="button" class="dex-mode-btn active" id="dexModeCollectionBtn">📚 Dex Collection</button>
+          <button type="button" class="dex-mode-btn" id="dexModeMatcherBtn">🧺 What Can We Cook?</button>
+        </div>
+      </section>
+
+      <!-- Sub-view 1: Dex Collection -->
+      <div id="dexCollectionView">
+        <section class="controls-wrap">
+          <div class="search-row">
+            <div class="search-box">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-soft);flex-shrink:0;">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+              </svg>
+              <input type="search" id="recipeSearchInput" placeholder="Search recipes, ingredients, memories..." autocomplete="off" />
+              <button class="clear-search-btn" id="clearRecipeSearchBtn" aria-label="Clear recipe search">&times;</button>
+            </div>
+          </div>
+          <div class="filter-scroll" id="recipeCategoryPills"></div>
+        </section>
+
+        <div class="section-summary">
+          <span id="recipeSummaryText">0 recipes</span>
+          <span>Tap a dish to open its Dex card</span>
+        </div>
+
+        <main class="cards-grid" id="recipesGrid"></main>
+      </div>
+
+      <!-- Sub-view 2: What Can We Cook? Ingredient Matcher -->
+      <div id="dexMatcherView" style="display:none;">
+        <section class="matcher-panel">
+          <div style="margin-bottom:10px;">
+            <h3 style="font-family:var(--font-serif);font-size:22px;font-weight:600;margin:0 0 4px;">What’s in the fridge &amp; pantry?</h3>
+            <p style="font-size:13px;color:var(--text-muted);margin:0;">Enter ingredients you have on hand (comma-separated or one by one) to see which saved recipes you can cook right now.</p>
+          </div>
+
+          <form class="matcher-form" id="matcherAddForm">
+            <input type="text" class="input-ctrl" id="matcherInput" placeholder="E.g., eggs, pasta, parmesan, garlic..." autocomplete="off" />
+            <button type="submit" class="btn-primary" style="width:auto;padding:0 18px;flex-shrink:0;">Add</button>
+          </form>
+
+          <div id="matcherActiveSection" style="display:none;">
+            <div class="matcher-chips-label">
+              <span>Ingredients on hand (<span id="matcherActiveCount">0</span>)</span>
+              <button type="button" id="matcherClearBtn" style="border:none;background:transparent;color:var(--danger);font-size:11.5px;font-weight:600;cursor:pointer;">Clear all</button>
+            </div>
+            <div class="chips-wrap" id="matcherActiveChips"></div>
+          </div>
+
+          <div>
+            <div class="matcher-chips-label">
+              <span>Quick-pick from your recipes &amp; staples</span>
+            </div>
+            <div class="chips-wrap" id="matcherQuickChips"></div>
+          </div>
+        </section>
+
+        <div class="section-summary">
+          <span id="matcherSummaryText">Add ingredients above to match recipes</span>
+          <span>Staples like salt, pepper, water &amp; oil are assumed</span>
+        </div>
+
+        <div class="cards-grid" id="matcherResultsGrid"></div>
+      </div>
+    </div>
   </div>
 
   <!-- Floating Create Button -->
@@ -1338,29 +2250,29 @@
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
       <path d="M12 5v14M5 12h14"/>
     </svg>
-    Nouveau
+    <span id="fabLabel">New</span>
   </button>
 
   <!-- Modal 1: Identity Picker -->
   <div class="modal-backdrop" id="identityModal">
     <div class="modal-sheet">
       <div class="modal-header">
-        <h2 class="modal-title">Qui utilise ce téléphone ?</h2>
+        <h2 class="modal-title">Who is using this phone?</h2>
         <button class="close-btn" data-close="identityModal">&times;</button>
       </div>
       <p style="margin:0;font-size:13.5px;color:var(--text-muted);line-height:1.5;">
-        Choisissez votre prénom pour personnaliser vos ajouts, vos coches et vos petits mots en direct.
+        Choose your name to personalize your items, checkmarks, and notes in real time.
       </p>
       <div class="identity-cards">
         <button class="identity-choice" id="choosePierreBtn">
           <div class="identity-choice-avatar avatar-pierre">P</div>
           <p class="identity-choice-name">Pierre</p>
-          <p class="identity-choice-sub">Badge sauge</p>
+          <p class="identity-choice-sub">Sage badge</p>
         </button>
         <button class="identity-choice" id="chooseEbbaBtn">
           <div class="identity-choice-avatar avatar-ebba">E</div>
           <p class="identity-choice-name">Ebba</p>
-          <p class="identity-choice-sub">Badge terracotta</p>
+          <p class="identity-choice-sub">Terracotta badge</p>
         </button>
       </div>
     </div>
@@ -1370,50 +2282,45 @@
   <div class="modal-backdrop" id="createModal">
     <div class="modal-sheet">
       <div class="modal-header">
-        <h2 class="modal-title" id="createModalTitle">Nouvelle liste ou note</h2>
+        <h2 class="modal-title" id="createModalTitle">New list or note</h2>
         <button class="close-btn" data-close="createModal">&times;</button>
       </div>
 
       <div class="field-group">
         <div class="segmented" id="typeSelector">
-          <button type="button" class="seg-btn active" data-type="list">☑ Liste à cocher</button>
-          <button type="button" class="seg-btn" data-type="note">✎ Note libre</button>
+          <button type="button" class="seg-btn active" data-type="list">☑ Checklist</button>
+          <button type="button" class="seg-btn" data-type="note">✎ Free note</button>
         </div>
       </div>
 
       <div class="field-group">
-        <label class="field-label" for="formTitle">Titre</label>
-        <input type="text" class="input-ctrl" id="formTitle" placeholder="Ex: Courses du week-end, Restos à tester..." maxlength="90" />
+        <label class="field-label" for="formTitle">Title</label>
+        <input type="text" class="input-ctrl" id="formTitle" placeholder="E.g., Groceries, Weekend ideas..." maxlength="90" />
       </div>
 
       <div class="field-group">
-        <label class="field-label" for="formCategory">Catégorie</label>
-        <select class="input-ctrl" id="formCategory"></select>
-      </div>
-
-      <div class="field-group">
-        <label class="field-label">Nuance d'accent</label>
+        <label class="field-label">Accent color</label>
         <div class="tone-picker" id="tonePicker"></div>
       </div>
 
       <div class="field-group" id="formInitialItemsGroup">
-        <label class="field-label" for="formInitialItems">Éléments initiaux (un par ligne, optionnel)</label>
-        <textarea class="textarea-ctrl" id="formInitialItems" style="min-height:110px;" placeholder="Avocats&#10;Pain au levain&#10;Bougies parfumées"></textarea>
+        <label class="field-label" for="formInitialItems">Initial items (one per line, optional)</label>
+        <textarea class="textarea-ctrl" id="formInitialItems" style="min-height:110px;" placeholder="One item per line..."></textarea>
       </div>
 
       <div class="field-group" id="formNoteContentGroup" style="display:none;">
-        <label class="field-label" for="formNoteContent">Contenu de la note</label>
-        <textarea class="textarea-ctrl" id="formNoteContent" placeholder="Écrivez vos idées, adresses, recettes ou souvenirs..."></textarea>
+        <label class="field-label" for="formNoteContent">Note content</label>
+        <textarea class="textarea-ctrl" id="formNoteContent" placeholder="Write your ideas, notes, or reminders..."></textarea>
       </div>
 
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
         <label style="display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:500;cursor:pointer;">
           <input type="checkbox" id="formPinned" style="width:17px;height:17px;accent-color:var(--gold);" />
-          Épingler tout en haut
+          Pin to top
         </label>
       </div>
 
-      <button class="btn-primary" id="saveCreateBtn">Enregistrer et partager</button>
+      <button class="btn-primary" id="saveCreateBtn">Save &amp; share</button>
     </div>
   </div>
 
@@ -1423,7 +2330,7 @@
       <div class="modal-header">
         <div style="min-width:0;">
           <div class="card-badges" id="detailBadges" style="margin-bottom:6px;"></div>
-          <h2 class="modal-title" id="detailTitle">Détail</h2>
+          <h2 class="modal-title" id="detailTitle">Details</h2>
         </div>
         <button class="close-btn" data-close="detailModal">&times;</button>
       </div>
@@ -1435,48 +2342,48 @@
         </div>
 
         <form class="inline-add-form" id="detailAddForm" style="margin-bottom:12px;">
-          <input type="text" id="detailAddInput" placeholder="Ajouter un élément à la liste..." autocomplete="off" />
-          <button type="submit" class="inline-add-btn" aria-label="Ajouter">+</button>
+          <input type="text" id="detailAddInput" placeholder="Add an item to the list..." autocomplete="off" />
+          <button type="submit" class="inline-add-btn" aria-label="Add">+</button>
         </form>
 
         <div class="detail-items-wrap" id="detailItemsWrap"></div>
 
         <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:14px;flex-wrap:wrap;">
-          <button type="button" class="btn-secondary" id="clearDoneBtn" style="font-size:12.5px;padding:8px 13px;">Effacer les cochés</button>
+          <button type="button" class="btn-secondary" id="clearDoneBtn" style="font-size:12.5px;padding:8px 13px;">Clear checked</button>
           <div style="display:flex;gap:8px;">
-            <button type="button" class="btn-secondary" id="editCardMetaBtn" style="font-size:12.5px;padding:8px 13px;">Modifier</button>
-            <button type="button" class="btn-danger-soft" id="deleteCardBtn">Supprimer</button>
+            <button type="button" class="btn-secondary" id="editCardMetaBtn" style="font-size:12.5px;padding:8px 13px;">Edit</button>
+            <button type="button" class="btn-danger-soft" id="deleteCardBtn">Delete</button>
           </div>
         </div>
       </div>
 
       <div id="detailNoteView" style="display:none;">
         <div class="field-group">
-          <textarea class="textarea-ctrl" id="detailNoteTextarea" style="min-height:240px;" placeholder="Écrivez votre note ici..."></textarea>
+          <textarea class="textarea-ctrl" id="detailNoteTextarea" style="min-height:240px;" placeholder="Write your note here..."></textarea>
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">
           <div style="display:flex;gap:8px;">
-            <button type="button" class="btn-secondary" id="editNoteMetaBtn" style="font-size:12.5px;padding:8px 13px;">Options</button>
-            <button type="button" class="btn-danger-soft" id="deleteNoteBtn">Supprimer</button>
+            <button type="button" class="btn-secondary" id="editNoteMetaBtn" style="font-size:12.5px;padding:8px 13px;">Edit</button>
+            <button type="button" class="btn-danger-soft" id="deleteNoteBtn">Delete</button>
           </div>
-          <button type="button" class="btn-primary" id="saveDetailNoteBtn" style="width:auto;padding:10px 20px;">Enregistrer</button>
+          <button type="button" class="btn-primary" id="saveDetailNoteBtn" style="width:auto;padding:10px 20px;">Save</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Modal 4: Petit Mot Doux Editor -->
+  <!-- Modal 4: Note of the Day Editor -->
   <div class="modal-backdrop" id="motModal">
     <div class="modal-sheet">
       <div class="modal-header">
-        <h2 class="modal-title">Petit Mot du Jour</h2>
+        <h2 class="modal-title">Note of the Day</h2>
         <button class="close-btn" data-close="motModal">&times;</button>
       </div>
       <div class="field-group">
-        <label class="field-label" for="motInput">Votre message épinglé en haut de l'app</label>
-        <textarea class="textarea-ctrl" id="motInput" style="min-height:110px;" maxlength="240" placeholder="Passe une merveilleuse journée ❤️ On dîne où ce soir ?"></textarea>
+        <label class="field-label" for="motInput">Your message pinned at the top of the app</label>
+        <textarea class="textarea-ctrl" id="motInput" style="min-height:110px;" maxlength="240" placeholder="Have a wonderful day ❤️"></textarea>
       </div>
-      <button class="btn-primary" id="saveMotBtn">Publier pour nous deux</button>
+      <button class="btn-primary" id="saveMotBtn">Post for the two of us</button>
     </div>
   </div>
 
@@ -1484,31 +2391,184 @@
   <div class="modal-backdrop" id="shareModal">
     <div class="modal-sheet">
       <div class="modal-header">
-        <h2 class="modal-title">Installer &amp; Partager</h2>
+        <h2 class="modal-title">Install &amp; Share</h2>
         <button class="close-btn" data-close="shareModal">&times;</button>
       </div>
       <p style="margin:0 0 12px;font-size:13.5px;color:var(--text-muted);line-height:1.5;">
-        Installez l'application sur votre téléphone et envoyez ce même lien à <strong>Ebba</strong> : vos listes se synchronisent automatiquement en temps réel.
+        Install the app on your phone and send this same link to <strong>Ebba</strong>: your lists sync automatically in real time.
       </p>
 
       <button class="btn-primary" id="modalInstallBtn" style="margin-bottom:10px;">
-        📲 Installer l'application sur Android
+        📲 Install the app on Android
       </button>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-        <button class="btn-secondary" id="nativeShareBtn">💌 Envoyer à Ebba</button>
-        <button class="btn-secondary" id="copyLinkBtn">🔗 Copier le lien</button>
+        <button class="btn-secondary" id="nativeShareBtn">💌 Send to Ebba</button>
+        <button class="btn-secondary" id="copyLinkBtn">🔗 Copy link</button>
       </div>
 
       <div class="qr-box">
-        <img id="qrCodeImg" alt="QR Code pour installer sur le téléphone d'Ebba" />
-        <span style="font-size:11.5px;color:#766D63;margin-top:8px;">Scannez depuis le téléphone d'Ebba</span>
+        <img id="qrCodeImg" alt="QR Code to install on Ebba's phone" />
+        <span style="font-size:11.5px;color:#766D63;margin-top:8px;">Scan from Ebba's phone</span>
       </div>
 
       <div class="steps-box">
-        <strong>Installation rapide sur Android (Chrome) :</strong><br />
-        1. Ouvrez le lien dans Google Chrome.<br />
-        2. Appuyez sur <strong>Installer</strong> (ou sur le menu <strong>&#8942;</strong> en haut à droite &rarr; <strong>Ajouter à l'écran d'accueil / Installer l'application</strong>).
+        <strong>Quick install on Android (Chrome):</strong><br />
+        1. Open the link in Google Chrome.<br />
+        2. Tap <strong>Install</strong> (or tap the <strong>&#8942;</strong> menu at the top right &rarr; <strong>Add to Home screen / Install app</strong>).
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 6: Create / Edit Recipe (All Fields Optional) -->
+  <div class="modal-backdrop" id="recipeFormModal" style="z-index:110;">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title" id="recipeFormModalTitle">Log a cooked recipe</h2>
+          <p style="margin:2px 0 0;font-size:12px;color:var(--text-muted);">Every field is optional — fill in whatever you’d like</p>
+        </div>
+        <button class="close-btn" data-close="recipeFormModal">&times;</button>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Photos (optional, one or more)</label>
+        <input type="file" id="recipePhotoInput" class="hidden-input" accept="image/*" multiple />
+        <div class="photo-upload-zone" id="recipePhotoDropzone" role="button" tabindex="0">
+          <p class="photo-upload-title">📷 Add dish photos</p>
+          <p class="photo-upload-sub">Select one or multiple photos — automatically compressed for fast sync</p>
+        </div>
+        <div class="photo-thumbs-grid" id="recipePhotoThumbs"></div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="recipeTitleInput">Dish Title (optional)</label>
+        <input type="text" class="input-ctrl" id="recipeTitleInput" placeholder="E.g., Creamy Truffle Pasta, Sunday Pancakes..." maxlength="100" />
+      </div>
+
+      <div class="form-row-2">
+        <div class="field-group">
+          <label class="field-label" for="recipeCategorySelect">Category (optional)</label>
+          <select class="input-ctrl" id="recipeCategorySelect">
+            <option value="">None / Any</option>
+            <option value="pasta">🍝 Pasta &amp; Rice</option>
+            <option value="meat">🥩 Meat &amp; Poultry</option>
+            <option value="seafood">🐟 Seafood</option>
+            <option value="veggie">🥗 Veggie &amp; Salad</option>
+            <option value="soup">🍲 Soup &amp; Stew</option>
+            <option value="dessert">🍰 Dessert &amp; Sweet</option>
+            <option value="breakfast">🥞 Breakfast &amp; Brunch</option>
+            <option value="other">🍽 Other</option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Rating (optional)</label>
+          <div class="star-rating-input" id="recipeRatingPicker"></div>
+        </div>
+      </div>
+
+      <div class="form-row-2">
+        <div class="field-group">
+          <label class="field-label" for="recipeTimeInput">Time (optional)</label>
+          <input type="text" class="input-ctrl" id="recipeTimeInput" placeholder="E.g., 30 min" maxlength="40" />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="recipeServingsInput">Servings (optional)</label>
+          <input type="text" class="input-ctrl" id="recipeServingsInput" placeholder="E.g., 2" maxlength="30" />
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="recipeDescInput">Description / Cooking Memory (optional)</label>
+        <textarea class="textarea-ctrl" id="recipeDescInput" style="min-height:85px;" placeholder="How did it turn out? Any tweaks for next time?"></textarea>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="recipeIngredientsInput">Ingredients (optional — one per line or comma-separated)</label>
+        <textarea class="textarea-ctrl" id="recipeIngredientsInput" style="min-height:105px;" placeholder="200g spaghetti&#10;2 eggs&#10;100g pancetta&#10;Parmesan, black pepper"></textarea>
+        <div class="chips-wrap" id="recipeIngPreviewChips" style="margin-top:8px;"></div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="recipeInstructionsInput">Recipe &amp; Steps (optional)</label>
+        <textarea class="textarea-ctrl" id="recipeInstructionsInput" style="min-height:130px;" placeholder="1. Boil pasta in salted water...&#10;2. Crisp pancetta in a pan..."></textarea>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Card accent color</label>
+        <div class="tone-picker" id="recipeTonePicker"></div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+        <label style="display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:500;cursor:pointer;">
+          <input type="checkbox" id="recipePinnedInput" style="width:17px;height:17px;accent-color:var(--gold);" />
+          Pin as favorite
+        </label>
+      </div>
+
+      <button class="btn-primary" id="saveRecipeBtn">Save to Recipe Dex</button>
+    </div>
+  </div>
+
+  <!-- Modal 7: Recipe Detail Pokédex View -->
+  <div class="modal-backdrop" id="recipeDetailModal">
+    <div class="modal-sheet" style="max-width:600px;">
+      <div class="modal-header">
+        <div style="min-width:0;">
+          <div class="card-badges" id="recipeDetailBadges" style="margin-bottom:6px;"></div>
+          <h2 class="modal-title" id="recipeDetailTitle">Untitled Dish</h2>
+          <div id="recipeDetailSubMeta" style="font-size:12.5px;color:var(--text-muted);margin-top:5px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;"></div>
+        </div>
+        <button class="close-btn" data-close="recipeDetailModal">&times;</button>
+      </div>
+
+      <!-- Multi-photo Carousel -->
+      <div class="photo-carousel" id="recipeDetailCarousel" style="display:none;">
+        <img id="carouselImg" alt="Dish photo" />
+        <span class="carousel-counter" id="carouselCounter">1 / 1</span>
+        <button type="button" class="carousel-nav-btn prev" id="carouselPrevBtn" aria-label="Previous photo">&lsaquo;</button>
+        <button type="button" class="carousel-nav-btn next" id="carouselNextBtn" aria-label="Next photo">&rsaquo;</button>
+        <div class="carousel-dots" id="carouselDots"></div>
+      </div>
+
+      <div id="recipePhotoStrippedNotice" style="display:none;font-size:12px;color:var(--text-muted);background:var(--bg-elevated);padding:9px 12px;border-radius:12px;margin-bottom:12px;">
+        📷 Photos for this recipe were stored on the device where they were added (cloud snapshot skipped heavy images).
+      </div>
+
+      <!-- Cooked Again Action Bar -->
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px;">
+        <button type="button" class="btn-secondary" id="recipeCookedAgainBtn" style="padding:8px 14px;font-size:13px;">
+          🔥 Cooked again (<span id="recipeDetailCookedCount">1</span>)
+        </button>
+        <div style="display:flex;gap:8px;">
+          <button type="button" class="btn-secondary" id="editRecipeBtn" style="font-size:12.5px;padding:8px 13px;">Edit</button>
+          <button type="button" class="btn-danger-soft" id="deleteRecipeBtn">Delete</button>
+        </div>
+      </div>
+
+      <!-- Description / Pokédex Entry -->
+      <blockquote class="dex-entry-quote" id="recipeDetailDesc" style="display:none;"></blockquote>
+
+      <!-- Ingredients Section -->
+      <div class="recipe-detail-section" id="recipeDetailIngSection" style="display:none;">
+        <div class="recipe-detail-heading">
+          <h3>Ingredients</h3>
+          <button type="button" class="open-card-link" id="addRecipeIngToGroceryBtn">🛒 Add to Grocery List</button>
+        </div>
+        <div class="detail-items-wrap" id="recipeDetailIngList"></div>
+      </div>
+
+      <!-- Instructions Section -->
+      <div class="recipe-detail-section" id="recipeDetailInstSection" style="display:none;">
+        <div class="recipe-detail-heading">
+          <h3>Recipe &amp; Instructions</h3>
+        </div>
+        <div class="recipe-instructions-box" id="recipeDetailInstructions"></div>
+      </div>
+
+      <div id="recipeDetailEmptyMsg" style="display:none;text-align:center;padding:18px 10px;color:var(--text-soft);font-size:13px;">
+        No description, ingredients, or steps logged yet — tap <strong>Edit</strong> anytime to add more!
       </div>
     </div>
   </div>
@@ -1520,45 +2580,64 @@
       'use strict';
 
       // Cloud Sync Configuration (Pre-configured, zero setup required)
-      const NTFY_TOPIC = 'pierre_ebba_shared_v1_907521e5';
+      const NTFY_TOPIC = 'pierre_ebba_shared_v2_907521e5';
       const NTFY_BASE = 'https://ntfy.sh/' + NTFY_TOPIC;
       const KV_APP_KEY = 'x0c969je';
       const KV_BASE = 'https://keyvalue.immanuel.co/api/KeyVal';
 
       const STORAGE_KEYS = {
-        STATE: 'pe_shared_state_v1',
+        STATE: 'pe_shared_state_v2',
         USER: 'pe_current_user_v1',
         THEME: 'pe_theme_v1',
-        BANNER_DISMISSED: 'pe_install_dismissed_v1'
+        BANNER_DISMISSED: 'pe_install_dismissed_v1',
+        PANTRY: 'pe_pantry_ingredients_v1'
       };
-
-      const CATEGORIES = [
-        { id: 'all', label: 'Tout', icon: '✦' },
-        { id: 'courses', label: 'Courses & Marché', icon: '🛒' },
-        { id: 'sorties', label: 'Restos & Sorties', icon: '🍷' },
-        { id: 'voyages', label: 'Voyages & Week-ends', icon: '✈️' },
-        { id: 'films', label: 'Films & Séries', icon: '🎬' },
-        { id: 'maison', label: 'Maison & Déco', icon: '🏡' },
-        { id: 'notes', label: 'Notes & Idées', icon: '💌' }
-      ];
 
       const TONES = [
         { id: 'champagne', label: 'Champagne', hex: '#C29B6B' },
         { id: 'terracotta', label: 'Terracotta', hex: '#C87D65' },
-        { id: 'sauge', label: 'Sauge', hex: '#4A6B5D' },
-        { id: 'nuit', label: 'Ardoise', hex: '#495A75' },
-        { id: 'prune', label: 'Prune', hex: '#8A5A70' }
+        { id: 'sauge', label: 'Sage', hex: '#4A6B5D' },
+        { id: 'nuit', label: 'Slate', hex: '#495A75' },
+        { id: 'prune', label: 'Plum', hex: '#8A5A70' }
       ];
+
+      const RECIPE_CATEGORIES = [
+        { id: 'all', label: 'All', icon: '✦' },
+        { id: 'pasta', label: 'Pasta & Rice', icon: '🍝' },
+        { id: 'meat', label: 'Meat', icon: '🥩' },
+        { id: 'seafood', label: 'Seafood', icon: '🐟' },
+        { id: 'veggie', label: 'Veggie', icon: '🥗' },
+        { id: 'soup', label: 'Soup', icon: '🍲' },
+        { id: 'dessert', label: 'Dessert', icon: '🍰' },
+        { id: 'breakfast', label: 'Breakfast', icon: '🥞' },
+        { id: 'other', label: 'Other', icon: '🍽' }
+      ];
+
+      const PANTRY_STAPLES = new Set([
+        'salt', 'sea salt', 'kosher salt', 'pepper', 'black pepper',
+        'water', 'oil', 'olive oil', 'extra virgin olive oil'
+      ]);
 
       const CLIENT_ID = 'cli_' + Math.random().toString(36).slice(2, 10);
 
       let currentUser = localStorage.getItem(STORAGE_KEYS.USER) || '';
-      let activeCategory = 'all';
+      let activeTab = 'lists'; // 'lists' | 'recipes'
+      let dexSubMode = 'collection'; // 'collection' | 'matcher'
       let searchQuery = '';
+      let recipeSearchQuery = '';
+      let recipeCategoryFilter = 'all';
+      let matcherIngredients = loadPantryList();
       let state = loadLocalState();
       let deferredPrompt = null;
       let editingCardId = null;
       let detailCardId = null;
+      let editingRecipeId = null;
+      let detailRecipeId = null;
+      let recipeFormPhotos = [];
+      let recipeFormRating = 0;
+      let recipeFormTone = 'terracotta';
+      let detailPhotoIdx = 0;
+      let detailCheckedIngredients = new Set();
       let formType = 'list';
       let formTone = 'champagne';
       let eventSource = null;
@@ -1568,6 +2647,22 @@
       let syncState = 'connecting'; // connecting | ok | syncing | offline
 
       const $ = (id) => document.getElementById(id);
+
+      function loadPantryList() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEYS.PANTRY);
+          const parsed = raw ? JSON.parse(raw) : [];
+          return Array.isArray(parsed) ? parsed.filter((x) => typeof x === 'string' && x.trim()) : [];
+        } catch (_) {
+          return [];
+        }
+      }
+
+      function savePantryList() {
+        try {
+          localStorage.setItem(STORAGE_KEYS.PANTRY, JSON.stringify(matcherIngredients));
+        } catch (_) {}
+      }
 
       function uid(prefix = 'id') {
         return prefix + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7);
@@ -1594,90 +2689,25 @@
       function formatRelTime(ts) {
         if (!ts) return '';
         const diff = Math.max(0, Math.floor((Date.now() - ts) / 1000));
-        if (diff < 45) return "à l'instant";
-        if (diff < 3600) return `il y a ${Math.floor(diff / 60)} min`;
-        if (diff < 86400) return `il y a ${Math.floor(diff / 3600)} h`;
+        if (diff < 45) return 'just now';
+        if (diff < 3600) return `${Math.floor(diff / 60)} min ago`;
+        if (diff < 86400) return `${Math.floor(diff / 3600)} h ago`;
         const d = new Date(ts);
-        return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+        return d.toLocaleDateString('en-US', { day: 'numeric', month: 'short' });
       }
 
       function createDefaultState() {
-        const base = 1700000000000;
         return {
-          schema: 1,
+          schema: 3,
           petitMot: {
-            text: "Bienvenue dans notre carnet partagé, Ebba ✨ Tout ce qu'on note ici se synchronise instantanément entre nos deux téléphones.",
-            author: 'Pierre',
-            hearts: 1,
-            heartedBy: ['Pierre'],
-            updatedAt: base
+            text: '',
+            author: '',
+            hearts: 0,
+            heartedBy: [],
+            updatedAt: 0
           },
-          cards: [
-            {
-              id: 'welcome_courses',
-              type: 'list',
-              title: 'Courses de la semaine',
-              category: 'courses',
-              tone: 'sauge',
-              pinned: true,
-              author: 'Pierre',
-              updatedAt: base + 100,
-              deleted: false,
-              content: '',
-              items: [
-                { id: 'wc_1', text: 'Pain au levain & croissants', done: false, priority: true, author: 'Ebba', checkedBy: '', updatedAt: base + 110, deleted: false },
-                { id: 'wc_2', text: 'Avocats mûrs & tomates cerises', done: false, priority: false, author: 'Pierre', checkedBy: '', updatedAt: base + 120, deleted: false },
-                { id: 'wc_3', text: 'Café en grains & lait d’avoine', done: false, priority: false, author: 'Ebba', checkedBy: '', updatedAt: base + 130, deleted: false },
-                { id: 'wc_4', text: 'Bougie parfumée figue', done: true, priority: false, author: 'Ebba', checkedBy: 'Pierre', updatedAt: base + 140, deleted: false }
-              ]
-            },
-            {
-              id: 'welcome_sorties',
-              type: 'list',
-              title: 'Nos envies sorties & restos',
-              category: 'sorties',
-              tone: 'terracotta',
-              pinned: true,
-              author: 'Ebba',
-              updatedAt: base + 200,
-              deleted: false,
-              content: '',
-              items: [
-                { id: 'ws_1', text: 'Dîner aux chandelles italien', done: false, priority: true, author: 'Ebba', checkedBy: '', updatedAt: base + 210, deleted: false },
-                { id: 'ws_2', text: 'Brunch dimanche matin', done: false, priority: false, author: 'Pierre', checkedBy: '', updatedAt: base + 220, deleted: false },
-                { id: 'ws_3', text: 'Balade au coucher du soleil', done: false, priority: false, author: 'Ebba', checkedBy: '', updatedAt: base + 230, deleted: false }
-              ]
-            },
-            {
-              id: 'welcome_films',
-              type: 'list',
-              title: 'Films & séries à voir ensemble',
-              category: 'films',
-              tone: 'nuit',
-              pinned: false,
-              author: 'Pierre',
-              updatedAt: base + 300,
-              deleted: false,
-              content: '',
-              items: [
-                { id: 'wf_1', text: 'Past Lives', done: false, priority: true, author: 'Ebba', checkedBy: '', updatedAt: base + 310, deleted: false },
-                { id: 'wf_2', text: 'Anatomie d’une chute', done: false, priority: false, author: 'Pierre', checkedBy: '', updatedAt: base + 320, deleted: false }
-              ]
-            },
-            {
-              id: 'welcome_voyages',
-              type: 'note',
-              title: 'Idées week-end & voyages',
-              category: 'voyages',
-              tone: 'champagne',
-              pinned: false,
-              author: 'Ebba',
-              updatedAt: base + 400,
-              deleted: false,
-              items: [],
-              content: "• Escapade sur la côte ou dans un chalet au calme\n• Petit hôtel boutique avec spa & petit-déjeuner au lit\n• Pense-bête : noter ici nos envies d'adresses pour le prochain séjour !"
-            }
-          ]
+          cards: [],
+          recipes: []
         };
       }
 
@@ -1687,6 +2717,8 @@
           if (raw) {
             const parsed = JSON.parse(raw);
             if (parsed && Array.isArray(parsed.cards)) {
+              parsed.cards = parsed.cards.filter((c) => c && c.id && !String(c.id).startsWith('welcome_'));
+              parsed.recipes = Array.isArray(parsed.recipes) ? parsed.recipes.filter((r) => r && r.id) : [];
               return parsed;
             }
           }
@@ -1705,7 +2737,7 @@
         if (!incoming || typeof incoming !== 'object') return false;
         let changed = false;
 
-        // 1. Merge Petit Mot
+        // 1. Merge Note of the Day
         if (incoming.petitMot && incoming.petitMot.updatedAt) {
           if (!local.petitMot || incoming.petitMot.updatedAt > (local.petitMot.updatedAt || 0)) {
             local.petitMot = { ...incoming.petitMot };
@@ -1715,9 +2747,13 @@
 
         // 2. Merge Cards
         if (Array.isArray(incoming.cards)) {
-          const map = new Map(local.cards.map((c) => [c.id, c]));
+          const map = new Map(
+            local.cards
+              .filter((c) => c && c.id && !String(c.id).startsWith('welcome_'))
+              .map((c) => [c.id, c])
+          );
           for (const rem of incoming.cards) {
-            if (!rem || !rem.id) continue;
+            if (!rem || !rem.id || String(rem.id).startsWith('welcome_')) continue;
             const cur = map.get(rem.id);
             if (!cur) {
               map.set(rem.id, JSON.parse(JSON.stringify(rem)));
@@ -1728,7 +2764,6 @@
             // Merge card-level metadata if remote card timestamp is newer
             if ((rem.updatedAt || 0) > (cur.updatedAt || 0)) {
               cur.title = rem.title;
-              cur.category = rem.category;
               cur.tone = rem.tone;
               cur.pinned = !!rem.pinned;
               cur.type = rem.type;
@@ -1758,6 +2793,61 @@
             }
           }
           local.cards = Array.from(map.values());
+        }
+
+        // 3. Merge Recipes (Recipe Dex)
+        if (!Array.isArray(local.recipes)) local.recipes = [];
+        if (Array.isArray(incoming.recipes)) {
+          const rMap = new Map(local.recipes.filter((r) => r && r.id).map((r) => [r.id, r]));
+          for (const rem of incoming.recipes) {
+            if (!rem || !rem.id) continue;
+            const cur = rMap.get(rem.id);
+            if (!cur) {
+              rMap.set(rem.id, JSON.parse(JSON.stringify(rem)));
+              changed = true;
+              continue;
+            }
+
+            const remTs = rem.updatedAt || 0;
+            const curTs = cur.updatedAt || 0;
+            if (remTs > curTs) {
+              const keepLocalPhotos = !!(rem.photosStripped && Array.isArray(cur.photos) && cur.photos.length > 0);
+              const mergedPhotos = keepLocalPhotos
+                ? cur.photos
+                : (Array.isArray(rem.photos) ? [...rem.photos] : []);
+              Object.assign(cur, {
+                title: rem.title || '',
+                category: rem.category || '',
+                description: rem.description || '',
+                ingredients: Array.isArray(rem.ingredients) ? [...rem.ingredients] : [],
+                instructions: rem.instructions || '',
+                rating: Number(rem.rating) || 0,
+                prepTime: rem.prepTime || '',
+                servings: rem.servings || '',
+                tone: rem.tone || 'terracotta',
+                pinned: !!rem.pinned,
+                cookedCount: Number(rem.cookedCount) || 1,
+                author: rem.author || cur.author || 'Pierre',
+                createdAt: rem.createdAt || cur.createdAt || remTs,
+                updatedAt: remTs,
+                deleted: !!rem.deleted,
+                photos: mergedPhotos,
+                photosStripped: keepLocalPhotos ? false : !!rem.photosStripped
+              });
+              changed = true;
+            } else if (
+              remTs === curTs &&
+              cur.photosStripped &&
+              !rem.photosStripped &&
+              Array.isArray(rem.photos) &&
+              rem.photos.length > 0
+            ) {
+              cur.photos = [...rem.photos];
+              cur.photosStripped = false;
+              changed = true;
+            }
+          }
+          local.recipes = Array.from(rMap.values());
         }
 
         return changed;
@@ -1831,7 +2921,7 @@
       // Publish update to ntfy (real-time) and schedule KV snapshot (permanent)
       async function broadcastState(actorName = '') {
         saveLocalState();
-        setSyncStatus('syncing', 'Synchronisation...');
+        setSyncStatus('syncing', 'Syncing...');
         const envelope = {
           v: 1,
           sender: CLIENT_ID,
@@ -1851,13 +2941,13 @@
             body: bodyStr
           });
           if (res.ok) {
-            setSyncStatus('ok', 'Synchronisé • en direct');
-            $('lastSyncInfo').textContent = 'Sauvegardé à ' + new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            setSyncStatus('ok', 'Synced • live');
+            $('lastSyncInfo').textContent = 'Saved at ' + new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
           } else {
-            setSyncStatus('offline', 'Sauvegardé en local');
+            setSyncStatus('offline', 'Saved locally');
           }
         } catch (_) {
-          setSyncStatus('offline', 'Hors-ligne • local');
+          setSyncStatus('offline', 'Offline • local');
         }
 
         scheduleKvSave();
@@ -1888,7 +2978,18 @@
         kvSaving = true;
         kvDirty = false;
         try {
-          const encoded = await encodePayload(state);
+          let encoded = await encodePayload(state);
+          if (encoded.length > 32000) {
+            const strippedState = {
+              ...state,
+              recipes: (state.recipes || []).map((r) =>
+                r && Array.isArray(r.photos) && r.photos.length > 0
+                  ? { ...r, photos: [], photosStripped: true }
+                  : r
+              )
+            };
+            encoded = await encodePayload(strippedState);
+          }
           const CHUNK_SIZE = 175;
           const chunks = [];
           for (let i = 0; i < encoded.length; i += CHUNK_SIZE) {
@@ -1896,10 +2997,10 @@
           }
           const gen = Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6);
           for (let idx = 0; idx < chunks.length; idx++) {
-            const ok = await kvPostWithRetry(`ebba_${gen}_${idx}`, chunks[idx]);
+            const ok = await kvPostWithRetry(`ebba_v2_${gen}_${idx}`, chunks[idx]);
             if (!ok) throw new Error('KV chunk failed');
           }
-          await kvPostWithRetry('ebba_meta', `${gen}-${chunks.length}`);
+          await kvPostWithRetry('ebba_v2_meta', `${gen}-${chunks.length}`);
         } catch (_) {
           // Non-fatal: ntfy & localStorage already hold latest state
         } finally {
@@ -1910,7 +3011,7 @@
 
       async function loadFromKv() {
         try {
-          const metaRes = await fetch(`${KV_BASE}/GetValue/${KV_APP_KEY}/ebba_meta`, { cache: 'no-store' });
+          const metaRes = await fetch(`${KV_BASE}/GetValue/${KV_APP_KEY}/ebba_v2_meta`, { cache: 'no-store' });
           if (!metaRes.ok) return null;
           const rawMeta = await metaRes.json();
           if (!rawMeta || typeof rawMeta !== 'string' || !rawMeta.includes('-')) return null;
@@ -1921,7 +3022,7 @@
 
           const parts = await Promise.all(
             Array.from({ length: count }, (_, i) =>
-              fetch(`${KV_BASE}/GetValue/${KV_APP_KEY}/ebba_${gen}_${i}`, { cache: 'no-store' }).then((r) => (r.ok ? r.json() : ''))
+              fetch(`${KV_BASE}/GetValue/${KV_APP_KEY}/ebba_v2_${gen}_${i}`, { cache: 'no-store' }).then((r) => (r.ok ? r.json() : ''))
             )
           );
           if (parts.some((p) => !p)) return null;
@@ -1944,7 +3045,7 @@
 
           if (payload.sender === CLIENT_ID) return;
 
-          const remoteState = payload.state || (Array.isArray(payload.cards) ? payload : null);
+          const remoteState = payload.state || (Array.isArray(payload.cards) || Array.isArray(payload.recipes) ? payload : null);
           if (!remoteState) return;
 
           const changed = mergeStates(state, remoteState);
@@ -1952,15 +3053,16 @@
             saveLocalState();
             renderAll();
             if (detailCardId) renderDetailModal();
+            if (detailRecipeId) renderRecipeDetailModal();
             if (payload.actor && payload.actor !== currentUser) {
-              showToast(`${payload.actor} a mis à jour vos listes ✦`);
+              showToast(`${payload.actor} updated your shared space ✦`);
             }
           }
         } catch (_) {}
       }
 
       async function syncFromCloud(silent = false) {
-        if (!silent) setSyncStatus('syncing', 'Actualisation...');
+        if (!silent) setSyncStatus('syncing', 'Refreshing...');
         let anyOk = false;
 
         // 1. Load permanent snapshot from KV
@@ -1992,12 +3094,13 @@
 
         renderAll();
         if (detailCardId) renderDetailModal();
+        if (detailRecipeId) renderRecipeDetailModal();
 
         if (anyOk) {
-          setSyncStatus('ok', 'Synchronisé • en direct');
-          $('lastSyncInfo').textContent = 'Synchro à ' + new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+          setSyncStatus('ok', 'Synced • live');
+          $('lastSyncInfo').textContent = 'Synced at ' + new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
         } else {
-          setSyncStatus(navigator.onLine ? 'ok' : 'offline', navigator.onLine ? 'Prêt' : 'Hors-ligne • local');
+          setSyncStatus(navigator.onLine ? 'ok' : 'offline', navigator.onLine ? 'Ready' : 'Offline • local');
         }
       }
 
@@ -2008,7 +3111,7 @@
         try {
           eventSource = new EventSource(`${NTFY_BASE}/sse`);
           eventSource.onopen = () => {
-            setSyncStatus('ok', 'Synchronisé • en direct');
+            setSyncStatus('ok', 'Synced • live');
           };
           eventSource.onmessage = (e) => {
             try {
@@ -2019,7 +3122,7 @@
             } catch (_) {}
           };
           eventSource.onerror = () => {
-            setSyncStatus(navigator.onLine ? 'syncing' : 'offline', navigator.onLine ? 'Reconnexion...' : 'Hors-ligne • local');
+            setSyncStatus(navigator.onLine ? 'syncing' : 'offline', navigator.onLine ? 'Reconnecting...' : 'Offline • local');
           };
         } catch (_) {}
       }
@@ -2061,39 +3164,23 @@
       }
 
       // Rendering
-      function renderCategories() {
-        const container = $('categoryPills');
-        container.innerHTML = '';
-        for (const cat of CATEGORIES) {
-          const btn = document.createElement('button');
-          btn.className = 'cat-pill' + (activeCategory === cat.id ? ' active' : '');
-          btn.innerHTML = `<span>${cat.icon}</span><span>${cat.label}</span>`;
-          btn.onclick = () => {
-            activeCategory = cat.id;
-            renderCategories();
-            renderCards();
-          };
-          container.appendChild(btn);
-        }
-      }
-
       function renderPetitMot() {
-        const mot = state.petitMot || { text: '', author: 'Pierre', hearts: 0, heartedBy: [], updatedAt: Date.now() };
-        $('motText').textContent = mot.text || 'Écrire un petit mot pour commencer...';
+        const mot = state.petitMot || { text: '', author: '', hearts: 0, heartedBy: [], updatedAt: 0 };
+        $('motText').textContent = mot.text || 'Write a little note for the two of us...';
         const timeStr = formatRelTime(mot.updatedAt);
-        $('motMeta').innerHTML = `
-          <span class="card-author-mini ${mot.author === 'Ebba' ? 'avatar-ebba' : 'avatar-pierre'}" style="width:18px;height:18px;font-size:10px;">${escapeHtml((mot.author || 'P')[0])}</span>
-          <span>Écrit par <strong>${escapeHtml(mot.author || 'Pierre')}</strong>${timeStr ? ' • ' + timeStr : ''}</span>
-        `;
+        if (mot.author) {
+          $('motMeta').innerHTML = `
+            <span class="card-author-mini ${mot.author === 'Ebba' ? 'avatar-ebba' : 'avatar-pierre'}" style="width:18px;height:18px;font-size:10px;">${escapeHtml(mot.author[0])}</span>
+            <span>Written by <strong>${escapeHtml(mot.author)}</strong>${timeStr ? ' • ' + timeStr : ''}</span>
+          `;
+        } else {
+          $('motMeta').textContent = 'Shared between Pierre & Ebba';
+        }
         const heartedBy = Array.isArray(mot.heartedBy) ? mot.heartedBy : [];
         const hasHeart = currentUser && heartedBy.includes(currentUser);
         $('heartEmoji').textContent = hasHeart ? '♥' : '♡';
         $('heartCount').textContent = mot.hearts || 0;
         $('heartReactBtn').classList.toggle('active', !!hasHeart);
-      }
-
-      function getCategoryInfo(id) {
-        return CATEGORIES.find((c) => c.id === id) || CATEGORIES[CATEGORIES.length - 1];
       }
 
       function sortItems(items) {
@@ -2112,7 +3199,6 @@
 
         const visible = state.cards
           .filter((c) => !c.deleted)
-          .filter((c) => activeCategory === 'all' || c.category === activeCategory)
           .filter((c) => {
             if (!q) return true;
             if ((c.title || '').toLowerCase().includes(q)) return true;
@@ -2134,16 +3220,17 @@
           return acc;
         }, 0);
 
-        $('summaryText').textContent = `${visible.length} ${visible.length > 1 ? 'carnets' : 'carnet'} • ${totalRemaining} à faire`;
+        $('summaryText').textContent = `${visible.length} ${visible.length === 1 ? 'list' : 'lists'} • ${totalRemaining} to do`;
+        updateTabCounts();
 
         grid.innerHTML = '';
         if (!visible.length) {
           const empty = document.createElement('div');
           empty.className = 'empty-state';
           empty.innerHTML = `
-            <h3>Rien ici pour l'instant</h3>
-            <p>${q ? 'Aucun résultat ne correspond à votre recherche.' : 'Créez votre première liste ou note partagée avec le bouton + Nouveau.'}</p>
-            <button class="btn-secondary" id="emptyNewBtn">+ Créer une liste ou note</button>
+            <h3>Nothing here yet</h3>
+            <p>${q ? 'No results match your search.' : 'Create your first shared list or note with the + New button.'}</p>
+            <button class="btn-secondary" id="emptyNewBtn">+ Create a list or note</button>
           `;
           grid.appendChild(empty);
           $('emptyNewBtn').onclick = () => openCreateModal();
@@ -2159,7 +3246,7 @@
         const el = document.createElement('article');
         el.className = 'card';
 
-        const cat = getCategoryInfo(card.category);
+        const typeBadge = card.type === 'list' ? '☑ Checklist' : '✎ Note';
         const toneClass = 'tone-' + (card.tone || 'champagne');
         const activeItems = card.type === 'list' ? sortItems(card.items || []) : [];
         const doneCount = activeItems.filter((i) => i.done).length;
@@ -2174,11 +3261,11 @@
         top.className = 'card-top';
         top.innerHTML = `
           <div class="card-badges">
-            <span class="card-cat-tag">${cat.icon} ${cat.label}</span>
-            <span class="card-author-mini ${card.author === 'Ebba' ? 'avatar-ebba' : 'avatar-pierre'}" title="Créé par ${card.author || 'Pierre'}">${(card.author || 'P')[0]}</span>
+            <span class="card-cat-tag">${typeBadge}</span>
+            <span class="card-author-mini ${card.author === 'Ebba' ? 'avatar-ebba' : 'avatar-pierre'}" title="Created by ${escapeHtml(card.author || 'Pierre')}">${(card.author || 'P')[0]}</span>
           </div>
           <div class="card-tools">
-            <button class="card-mini-btn ${card.pinned ? 'pinned' : ''}" data-action="pin" title="${card.pinned ? 'Désépingler' : 'Épingler'}">
+            <button class="card-mini-btn ${card.pinned ? 'pinned' : ''}" data-action="pin" title="${card.pinned ? 'Unpin' : 'Pin'}">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="${card.pinned ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
                 <path d="M12 17v5M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/>
               </svg>
@@ -2197,7 +3284,7 @@
 
         const titleRow = document.createElement('div');
         titleRow.className = 'card-title-row';
-        titleRow.innerHTML = `<h2 class="card-title">${escapeHtml(card.title || 'Sans titre')}</h2>`;
+        titleRow.innerHTML = `<h2 class="card-title">${escapeHtml(card.title || 'Untitled')}</h2>`;
         titleRow.onclick = () => openDetailModal(card.id);
         el.appendChild(titleRow);
 
@@ -2217,10 +3304,10 @@
             const row = document.createElement('div');
             row.className = 'item-row' + (item.done ? ' done' : '');
             const subInfo = item.done && item.checkedBy
-              ? `Coché par ${item.checkedBy}`
-              : (item.author ? `Ajouté par ${item.author}` : '');
+              ? `Checked by ${item.checkedBy}`
+              : (item.author ? `Added by ${item.author}` : '');
             row.innerHTML = `
-              <button class="check-btn ${item.done ? 'checked' : ''}" aria-label="Cocher">
+              <button class="check-btn ${item.done ? 'checked' : ''}" aria-label="Check">
                 ${item.done ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
               </button>
               <div class="item-body">
@@ -2241,7 +3328,7 @@
             more.className = 'open-card-link';
             more.style.textAlign = 'left';
             more.style.padding = '4px 8px';
-            more.textContent = `+ Voir les ${activeItems.length - 7} autres éléments...`;
+            more.textContent = `+ View ${activeItems.length - 7} more item${activeItems.length - 7 > 1 ? 's' : ''}...`;
             more.onclick = () => openDetailModal(card.id);
             itemsWrap.appendChild(more);
           }
@@ -2252,8 +3339,8 @@
           const addForm = document.createElement('form');
           addForm.className = 'inline-add-form';
           addForm.innerHTML = `
-            <input type="text" placeholder="Ajouter rapidement..." autocomplete="off" />
-            <button type="submit" class="inline-add-btn" aria-label="Ajouter">+</button>
+            <input type="text" placeholder="Quick add..." autocomplete="off" />
+            <button type="submit" class="inline-add-btn" aria-label="Add">+</button>
           `;
           addForm.onsubmit = (e) => {
             e.preventDefault();
@@ -2267,7 +3354,7 @@
         } else {
           const noteDiv = document.createElement('div');
           noteDiv.className = 'note-preview';
-          noteDiv.textContent = card.content || 'Note vide — toucher pour écrire...';
+          noteDiv.textContent = card.content || 'Empty note — tap to write...';
           noteDiv.onclick = () => openDetailModal(card.id);
           el.appendChild(noteDiv);
         }
@@ -2275,8 +3362,8 @@
         const foot = document.createElement('div');
         foot.className = 'card-footer';
         foot.innerHTML = `
-          <span>Modifié ${formatRelTime(card.updatedAt)}</span>
-          <button class="open-card-link">Ouvrir &rarr;</button>
+          <span>Updated ${formatRelTime(card.updatedAt)}</span>
+          <button class="open-card-link">Open &rarr;</button>
         `;
         foot.querySelector('.open-card-link').onclick = () => openDetailModal(card.id);
         el.appendChild(foot);
@@ -2326,15 +3413,6 @@
 
       // Create / Edit Card Modal
       function populateCreateFormControls() {
-        const sel = $('formCategory');
-        sel.innerHTML = '';
-        for (const c of CATEGORIES.filter((x) => x.id !== 'all')) {
-          const opt = document.createElement('option');
-          opt.value = c.id;
-          opt.textContent = `${c.icon} ${c.label}`;
-          sel.appendChild(opt);
-        }
-
         const picker = $('tonePicker');
         picker.innerHTML = '';
         for (const t of TONES) {
@@ -2363,11 +3441,10 @@
 
       function openCreateModal(cardToEdit = null) {
         editingCardId = cardToEdit ? cardToEdit.id : null;
-        $('createModalTitle').textContent = cardToEdit ? 'Modifier le carnet' : 'Nouvelle liste ou note';
+        $('createModalTitle').textContent = cardToEdit ? 'Edit list or note' : 'New list or note';
         $('formTitle').value = cardToEdit ? cardToEdit.title : '';
         formTone = cardToEdit ? (cardToEdit.tone || 'champagne') : 'champagne';
         populateCreateFormControls();
-        $('formCategory').value = cardToEdit ? (cardToEdit.category || 'courses') : (activeCategory !== 'all' ? activeCategory : 'courses');
         $('formPinned').checked = cardToEdit ? !!cardToEdit.pinned : false;
         $('formInitialItems').value = '';
         $('formNoteContent').value = '';
@@ -2380,10 +3457,9 @@
       function saveCreateOrEdit() {
         const title = $('formTitle').value.trim();
         if (!title) {
-          showToast('Ajoutez un titre');
+          showToast('Please add a title');
           return;
         }
-        const category = $('formCategory').value;
         const pinned = $('formPinned').checked;
         const ts = nowMs();
 
@@ -2391,7 +3467,6 @@
           const card = state.cards.find((c) => c.id === editingCardId);
           if (card) {
             card.title = title;
-            card.category = category;
             card.tone = formTone;
             card.pinned = pinned;
             card.updatedAt = ts;
@@ -2400,7 +3475,7 @@
           renderCards();
           if (detailCardId === editingCardId) renderDetailModal();
           broadcastState();
-          showToast('Carnet mis à jour');
+          showToast('Updated');
           return;
         }
 
@@ -2408,7 +3483,6 @@
           id: uid('card'),
           type: formType,
           title,
-          category,
           tone: formTone,
           pinned,
           author: currentUser || 'Pierre',
@@ -2439,7 +3513,7 @@
         closeModal('createModal');
         renderCards();
         broadcastState();
-        showToast(formType === 'list' ? 'Liste créée et partagée' : 'Note enregistrée');
+        showToast(formType === 'list' ? 'List created & shared' : 'Note saved');
       }
 
       // Detail Modal
@@ -2457,12 +3531,12 @@
           return;
         }
 
-        const cat = getCategoryInfo(card.category);
+        const typeBadge = card.type === 'list' ? '☑ Checklist' : '✎ Note';
         $('detailBadges').innerHTML = `
-          <span class="card-cat-tag">${cat.icon} ${cat.label}</span>
-          <span class="card-cat-tag">Par ${escapeHtml(card.author || 'Pierre')}</span>
+          <span class="card-cat-tag">${typeBadge}</span>
+          <span class="card-cat-tag">By ${escapeHtml(card.author || 'Pierre')}</span>
         `;
-        $('detailTitle').textContent = card.title || 'Sans titre';
+        $('detailTitle').textContent = card.title || 'Untitled';
 
         if (card.type === 'list') {
           $('detailChecklistView').style.display = 'block';
@@ -2479,17 +3553,17 @@
           const wrap = $('detailItemsWrap');
           wrap.innerHTML = '';
           if (!items.length) {
-            wrap.innerHTML = `<p style="text-align:center;color:var(--text-soft);font-size:13px;padding:18px 0;">Aucun élément pour l'instant.</p>`;
+            wrap.innerHTML = `<p style="text-align:center;color:var(--text-soft);font-size:13px;padding:18px 0;">No items yet.</p>`;
           } else {
             for (const item of items) {
               const row = document.createElement('div');
               row.className = 'detail-item-row' + (item.done ? ' done' : '');
               const meta = item.done && item.checkedBy
-                ? `Coché par ${item.checkedBy} • ${formatRelTime(item.updatedAt)}`
-                : `Par ${item.author || 'Pierre'} • ${formatRelTime(item.updatedAt)}`;
+                ? `Checked by ${item.checkedBy} • ${formatRelTime(item.updatedAt)}`
+                : `By ${item.author || 'Pierre'} • ${formatRelTime(item.updatedAt)}`;
 
               row.innerHTML = `
-                <button class="check-btn ${item.done ? 'checked' : ''}" aria-label="Cocher">
+                <button class="check-btn ${item.done ? 'checked' : ''}" aria-label="Check">
                   ${item.done ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
                 </button>
                 <div class="item-body">
@@ -2497,10 +3571,10 @@
                   <div class="item-sub">${escapeHtml(meta)}</div>
                 </div>
                 <div class="detail-item-actions">
-                  <button class="card-mini-btn" data-act="star" title="Priorité" style="color:${item.priority ? 'var(--gold)' : 'var(--text-soft)'};">
+                  <button class="card-mini-btn" data-act="star" title="Priority" style="color:${item.priority ? 'var(--gold)' : 'var(--text-soft)'};">
                     ${item.priority ? '★' : '☆'}
                   </button>
-                  <button class="card-mini-btn" data-act="del" title="Supprimer">&times;</button>
+                  <button class="card-mini-btn" data-act="del" title="Delete">&times;</button>
                 </div>
               `;
 
@@ -2534,10 +3608,19 @@
         }
       }
 
+      function updateTabCounts() {
+        const activeCards = (state.cards || []).filter((c) => c && !c.deleted).length;
+        const activeRecipes = (state.recipes || []).filter((r) => r && !r.deleted).length;
+        if ($('tabCountLists')) $('tabCountLists').textContent = activeCards;
+        if ($('tabCountRecipes')) $('tabCountRecipes').textContent = activeRecipes;
+      }
+
       function renderAll() {
         renderPetitMot();
-        renderCategories();
         renderCards();
+        renderRecipes();
+        renderMatcher();
+        updateTabCounts();
       }
 
       // PWA Install & Share
@@ -2564,11 +3647,11 @@
           if (choice && choice.outcome === 'accepted') {
             $('installBanner').classList.remove('visible');
             closeModal('shareModal');
-            showToast('Installation lancée sur votre téléphone ✨');
+            showToast('Installing on your phone ✨');
           }
         } else {
           openShareModal();
-          showToast('Utilisez le menu ⋮ de Chrome → Installer l’application');
+          showToast('Use Chrome’s ⋮ menu → Install app');
         }
       }
 
@@ -2581,8 +3664,8 @@
 
       // Wire events
       $('identityBtn').onclick = () => openModal('identityModal');
-      $('choosePierreBtn').onclick = () => { setIdentity('Pierre'); showToast('Profil actif : Pierre'); };
-      $('chooseEbbaBtn').onclick = () => { setIdentity('Ebba'); showToast('Profil actif : Ebba'); };
+      $('choosePierreBtn').onclick = () => { setIdentity('Pierre'); showToast('Active profile: Pierre'); };
+      $('chooseEbbaBtn').onclick = () => { setIdentity('Ebba'); showToast('Active profile: Ebba'); };
 
       $('themeBtn').onclick = () => {
         const cur = localStorage.getItem(STORAGE_KEYS.THEME) || 'light';
@@ -2603,22 +3686,22 @@
         if (navigator.share) {
           try {
             await navigator.share({
-              title: 'Pierre & Ebba — Nos Listes & Notes',
-              text: 'Installe notre app partagée de listes et petits mots ♥',
+              title: 'Pierre & Ebba — Shared Lists & Notes',
+              text: 'Install our shared lists and notes app ♥',
               url: appUrl
             });
             return;
           } catch (_) {}
         }
         await navigator.clipboard.writeText(appUrl);
-        showToast('Lien copié pour Ebba !');
+        showToast('Link copied for Ebba!');
       };
 
       $('copyLinkBtn').onclick = async () => {
         const appUrl = window.location.href.split('#')[0];
         try {
           await navigator.clipboard.writeText(appUrl);
-          showToast('Lien copié dans le presse-papier');
+          showToast('Link copied to clipboard');
         } catch (_) {
           showToast(appUrl);
         }
@@ -2643,7 +3726,7 @@
         closeModal('motModal');
         renderPetitMot();
         broadcastState();
-        showToast('Petit mot publié ♥');
+        showToast('Note posted ♥');
       };
 
       $('heartReactBtn').onclick = () => {
@@ -2678,7 +3761,13 @@
         renderCards();
       };
 
-      $('createFabBtn').onclick = () => openCreateModal();
+      $('createFabBtn').onclick = () => {
+        if (activeTab === 'recipes') {
+          openRecipeFormModal();
+        } else {
+          openCreateModal();
+        }
+      };
       $('saveCreateBtn').onclick = saveCreateOrEdit;
 
       document.querySelectorAll('#typeSelector .seg-btn').forEach((btn) => {
@@ -2712,7 +3801,7 @@
         renderCards();
         renderDetailModal();
         broadcastState();
-        showToast(`${removed} élément${removed > 1 ? 's' : ''} archivé${removed > 1 ? 's' : ''}`);
+        showToast(`${removed} checked item${removed > 1 ? 's' : ''} cleared`);
       };
 
       $('saveDetailNoteBtn').onclick = () => {
@@ -2723,7 +3812,7 @@
         closeModal('detailModal');
         renderCards();
         broadcastState();
-        showToast('Note enregistrée');
+        showToast('Note saved');
       };
 
       $('editCardMetaBtn').onclick = () => {
@@ -2739,14 +3828,14 @@
       function handleDeleteCurrentCard() {
         const card = state.cards.find((c) => c.id === detailCardId);
         if (!card) return;
-        if (!confirm(`Supprimer « ${card.title} » pour Pierre et Ebba ?`)) return;
+        if (!confirm(`Delete "${card.title}" for Pierre and Ebba?`)) return;
         card.deleted = true;
         card.updatedAt = nowMs();
         detailCardId = null;
         closeModal('detailModal');
         renderCards();
         broadcastState();
-        showToast('Carnet supprimé');
+        showToast('Deleted');
       }
 
       $('deleteCardBtn').onclick = handleDeleteCurrentCard;
@@ -2772,7 +3861,7 @@
         deferredPrompt = null;
         $('installBanner').classList.remove('visible');
         closeModal('shareModal');
-        showToast('Application installée !');
+        showToast('App installed!');
       });
 
       document.addEventListener('visibilitychange', () => {
@@ -2788,7 +3877,7 @@
       });
 
       window.addEventListener('offline', () => {
-        setSyncStatus('offline', 'Hors-ligne • local');
+        setSyncStatus('offline', 'Offline • local');
       });
 
       // Service Worker Registration
@@ -2797,6 +3886,1239 @@
           navigator.serviceWorker.register('./sw.js').catch(() => {});
         });
       }
+
+      // ==========================================
+      // TAB SWITCHING & RECIPE DEX / MATCHER
+      // ==========================================
+
+      function switchMainTab(tab) {
+        activeTab = tab === 'recipes' ? 'recipes' : 'lists';
+        const isRecipes = activeTab === 'recipes';
+        $('tabBtnLists').classList.toggle('active', !isRecipes);
+        $('tabBtnRecipes').classList.toggle('active', isRecipes);
+        $('listsTabView').style.display = isRecipes ? 'none' : 'block';
+        $('recipesTabView').style.display = isRecipes ? 'block' : 'none';
+        $('fabLabel').textContent = isRecipes ? 'Log Recipe' : 'New';
+        if (isRecipes) {
+          renderRecipes();
+          renderMatcher();
+        } else {
+          renderCards();
+        }
+      }
+
+      function setDexSubMode(mode) {
+        dexSubMode = mode === 'matcher' ? 'matcher' : 'collection';
+        const isMatcher = dexSubMode === 'matcher';
+        $('dexModeCollectionBtn').classList.toggle('active', !isMatcher);
+        $('dexModeMatcherBtn').classList.toggle('active', isMatcher);
+        $('dexCollectionView').style.display = isMatcher ? 'none' : 'block';
+        $('dexMatcherView').style.display = isMatcher ? 'block' : 'none';
+        if (isMatcher) {
+          renderMatcher();
+        } else {
+          renderRecipes();
+        }
+      }
+
+      function getCategoryInfo(catId) {
+        return RECIPE_CATEGORIES.find((c) => c.id === catId) || null;
+      }
+
+      function getActiveRecipes() {
+        return (state.recipes || []).filter((r) => r && !r.deleted);
+      }
+
+      function getRecipeDexMap() {
+        const ordered = [...getActiveRecipes()].sort((a, b) => {
+          const dt = (a.createdAt || a.updatedAt || 0) - (b.createdAt || b.updatedAt || 0);
+          return dt !== 0 ? dt : String(a.id).localeCompare(String(b.id));
+        });
+        const map = new Map();
+        ordered.forEach((r, idx) => {
+          map.set(r.id, '#' + String(idx + 1).padStart(3, '0'));
+        });
+        return map;
+      }
+
+      function parseIngredientsInput(raw) {
+        if (!raw) return [];
+        const parts = String(raw)
+          .split(/[\n,]+/)
+          .map((s) => s.replace(/^[\s\-*•]+/, '').trim())
+          .filter(Boolean);
+        const seen = new Set();
+        const out = [];
+        for (const p of parts) {
+          const key = p.toLowerCase();
+          if (!seen.has(key)) {
+            seen.add(key);
+            out.push(p);
+          }
+        }
+        return out;
+      }
+
+      // Client-side image resize & JPEG compression
+      function compressImageFile(file, maxDim = 680, quality = 0.72) {
+        return new Promise((resolve, reject) => {
+          if (!file || !file.type || !file.type.startsWith('image/')) {
+            reject(new Error('Not an image file'));
+            return;
+          }
+          const url = URL.createObjectURL(file);
+          const img = new Image();
+          img.onload = () => {
+            try {
+              let w = img.naturalWidth || img.width;
+              let h = img.naturalHeight || img.height;
+              if (w > maxDim || h > maxDim) {
+                if (w >= h) {
+                  h = Math.round((h * maxDim) / w);
+                  w = maxDim;
+                } else {
+                  w = Math.round((w * maxDim) / h);
+                  h = maxDim;
+                }
+              }
+              const canvas = document.createElement('canvas');
+              canvas.width = Math.max(1, w);
+              canvas.height = Math.max(1, h);
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+              const dataUrl = canvas.toDataURL('image/jpeg', quality);
+              URL.revokeObjectURL(url);
+              resolve(dataUrl);
+            } catch (err) {
+              URL.revokeObjectURL(url);
+              reject(err);
+            }
+          };
+          img.onerror = () => {
+            URL.revokeObjectURL(url);
+            reject(new Error('Image load failed'));
+          };
+          img.src = url;
+        });
+      }
+
+      function renderRecipeCategoryPills() {
+        const container = $('recipeCategoryPills');
+        if (!container) return;
+        const activeRecipes = getActiveRecipes();
+        container.innerHTML = '';
+        for (const cat of RECIPE_CATEGORIES) {
+          const count = cat.id === 'all'
+            ? activeRecipes.length
+            : activeRecipes.filter((r) => r.category === cat.id).length;
+          if (cat.id !== 'all' && count === 0 && recipeCategoryFilter !== cat.id) continue;
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'cat-pill' + (recipeCategoryFilter === cat.id ? ' active' : '');
+          btn.textContent = `${cat.icon} ${cat.label}` + (count ? ` (${count})` : '');
+          btn.onclick = () => {
+            recipeCategoryFilter = cat.id;
+            renderRecipes();
+          };
+          container.appendChild(btn);
+        }
+      }
+
+      function renderDexStats() {
+        const recipes = getActiveRecipes();
+        const totalCooked = recipes.reduce((sum, r) => sum + Math.max(1, Number(r.cookedCount) || 1), 0);
+        const topRated = recipes.filter((r) => (Number(r.rating) || 0) >= 4).length;
+        $('dexDiscoveredCount').textContent = recipes.length;
+        $('dexCookedTotal').textContent = totalCooked;
+        $('dexFavCount').textContent = topRated;
+      }
+
+      function renderRecipes() {
+        renderDexStats();
+        renderRecipeCategoryPills();
+        updateTabCounts();
+
+        const grid = $('recipesGrid');
+        if (!grid) return;
+
+        const dexMap = getRecipeDexMap();
+        const q = recipeSearchQuery.trim().toLowerCase();
+        const visible = getActiveRecipes()
+          .filter((r) => {
+            if (recipeCategoryFilter !== 'all' && r.category !== recipeCategoryFilter) return false;
+            if (!q) return true;
+            if ((r.title || '').toLowerCase().includes(q)) return true;
+            if ((r.description || '').toLowerCase().includes(q)) return true;
+            if ((r.instructions || '').toLowerCase().includes(q)) return true;
+            if (Array.isArray(r.ingredients) && r.ingredients.some((i) => i.toLowerCase().includes(q))) return true;
+            const dexNum = (dexMap.get(r.id) || '').toLowerCase();
+            return dexNum.includes(q);
+          })
+          .sort((a, b) => {
+            if (!!a.pinned !== !!b.pinned) return a.pinned ? -1 : 1;
+            return (b.updatedAt || 0) - (a.updatedAt || 0);
+          });
+
+        $('recipeSummaryText').textContent = `${visible.length} ${visible.length === 1 ? 'recipe' : 'recipes'} in Dex`;
+
+        grid.innerHTML = '';
+        if (!visible.length) {
+          const empty = document.createElement('div');
+          empty.className = 'empty-state';
+          empty.innerHTML = `
+            <h3>${q || recipeCategoryFilter !== 'all' ? 'No matching recipes' : 'Your Recipe Dex is empty'}</h3>
+            <p>${q || recipeCategoryFilter !== 'all' ? 'Try another search term or clear your category filter.' : 'Log your first cooked dish with photos, ingredients, or notes — every field is optional!'}</p>
+            <button class="btn-secondary" id="emptyRecipeNewBtn">+ Log a cooked recipe</button>
+          `;
+          grid.appendChild(empty);
+          $('emptyRecipeNewBtn').onclick = () => openRecipeFormModal();
+          return;
+        }
+
+        for (const recipe of visible) {
+          grid.appendChild(buildRecipeCardElement(recipe, dexMap.get(recipe.id) || '#001'));
+        }
+      }
+
+      function buildRecipeCardElement(recipe, dexNum) {
+        const el = document.createElement('article');
+        el.className = 'recipe-card';
+
+        const toneBar = document.createElement('div');
+        toneBar.className = 'card-accent-bar tone-' + (recipe.tone || 'terracotta');
+        toneBar.style.zIndex = '2';
+        el.appendChild(toneBar);
+
+        const photos = Array.isArray(recipe.photos) ? recipe.photos : [];
+        const cat = getCategoryInfo(recipe.category);
+        const coverWrap = document.createElement('div');
+        coverWrap.className = 'recipe-cover-wrap';
+
+        if (photos.length > 0) {
+          const img = document.createElement('img');
+          img.className = 'recipe-cover-img';
+          img.src = photos[0];
+          img.alt = recipe.title || 'Cooked dish';
+          img.loading = 'lazy';
+          coverWrap.appendChild(img);
+        } else {
+          const ph = document.createElement('div');
+          ph.className = 'recipe-cover-placeholder';
+          ph.innerHTML = `
+            <span class="recipe-cover-placeholder-icon">${cat ? cat.icon : '🍽'}</span>
+            <span class="recipe-cover-placeholder-label">${cat ? escapeHtml(cat.label) : 'No photo yet'}</span>
+          `;
+          coverWrap.appendChild(ph);
+        }
+
+        const overlay = document.createElement('div');
+        overlay.className = 'recipe-cover-top-badges';
+        overlay.innerHTML = `
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span class="dex-num-badge">${escapeHtml(dexNum)}</span>
+            ${photos.length > 1 ? `<span class="photo-count-badge">📷 ${photos.length}</span>` : ''}
+          </div>
+          <button type="button" class="recipe-card-pin-btn ${recipe.pinned ? 'pinned' : ''}" title="${recipe.pinned ? 'Unpin' : 'Pin favorite'}">
+            ${recipe.pinned ? '★' : '☆'}
+          </button>
+        `;
+        overlay.querySelector('.recipe-card-pin-btn').onclick = (e) => {
+          e.stopPropagation();
+          recipe.pinned = !recipe.pinned;
+          recipe.updatedAt = nowMs();
+          vibrate(10);
+          renderRecipes();
+          broadcastState();
+        };
+        coverWrap.appendChild(overlay);
+        coverWrap.onclick = () => openRecipeDetailModal(recipe.id);
+        el.appendChild(coverWrap);
+
+        const body = document.createElement('div');
+        body.className = 'recipe-card-body';
+
+        const metaLine = document.createElement('div');
+        metaLine.className = 'recipe-meta-line';
+        const rating = Number(recipe.rating) || 0;
+        const starsHtml = rating > 0 ? `<span class="recipe-stars" title="${rating}/5">${'★'.repeat(rating)}${'☆'.repeat(5 - rating)}</span>` : '';
+        metaLine.innerHTML = `
+          <div class="card-badges">
+            ${cat ? `<span class="card-cat-tag">${cat.icon} ${escapeHtml(cat.label)}</span>` : ''}
+            <span class="card-author-mini ${recipe.author === 'Ebba' ? 'avatar-ebba' : 'avatar-pierre'}" title="Logged by ${escapeHtml(recipe.author || 'Pierre')}">${escapeHtml((recipe.author || 'P')[0])}</span>
+          </div>
+          ${starsHtml}
+        `;
+        body.appendChild(metaLine);
+
+        const titleRow = document.createElement('div');
+        titleRow.className = 'card-title-row';
+        titleRow.style.marginBottom = '4px';
+        titleRow.innerHTML = `<h2 class="card-title">${escapeHtml(recipe.title || 'Untitled Dish')}</h2>`;
+        titleRow.onclick = () => openRecipeDetailModal(recipe.id);
+        body.appendChild(titleRow);
+
+        if (recipe.description) {
+          const desc = document.createElement('div');
+          desc.className = 'recipe-desc-preview';
+          desc.textContent = recipe.description;
+          desc.onclick = () => openRecipeDetailModal(recipe.id);
+          body.appendChild(desc);
+        }
+
+        const ings = Array.isArray(recipe.ingredients) ? recipe.ingredients : [];
+        if (ings.length > 0) {
+          const ingWrap = document.createElement('div');
+          ingWrap.className = 'recipe-ing-preview';
+          for (const ing of ings.slice(0, 4)) {
+            const pill = document.createElement('span');
+            pill.className = 'ing-mini-pill';
+            pill.textContent = ing;
+            ingWrap.appendChild(pill);
+          }
+          if (ings.length > 4) {
+            const more = document.createElement('span');
+            more.className = 'ing-mini-pill';
+            more.textContent = `+${ings.length - 4} more`;
+            ingWrap.appendChild(more);
+          }
+          body.appendChild(ingWrap);
+        }
+
+        const foot = document.createElement('div');
+        foot.className = 'card-footer';
+        foot.style.marginTop = 'auto';
+        const cookedCount = Math.max(1, Number(recipe.cookedCount) || 1);
+        const timePart = recipe.prepTime ? ` • ⏱ ${escapeHtml(recipe.prepTime)}` : '';
+        foot.innerHTML = `
+          <span class="cooked-pill">🔥 Cooked ${cookedCount}&times;${timePart}</span>
+          <button type="button" class="open-card-link">Open &rarr;</button>
+        `;
+        foot.querySelector('.open-card-link').onclick = () => openRecipeDetailModal(recipe.id);
+        body.appendChild(foot);
+
+        el.appendChild(body);
+        return el;
+      }
+
+      // Recipe Form Modal (Create / Edit - all fields optional)
+      function renderRecipeFormTonePicker() {
+        const picker = $('recipeTonePicker');
+        picker.innerHTML = '';
+        for (const t of TONES) {
+          const dot = document.createElement('button');
+          dot.type = 'button';
+          dot.className = 'tone-dot' + (recipeFormTone === t.id ? ' selected' : '');
+          dot.style.background = t.hex;
+          dot.title = t.label;
+          dot.onclick = () => {
+            recipeFormTone = t.id;
+            renderRecipeFormTonePicker();
+          };
+          picker.appendChild(dot);
+        }
+      }
+
+      function renderRecipeRatingPicker() {
+        const picker = $('recipeRatingPicker');
+        picker.innerHTML = '';
+        for (let i = 1; i <= 5; i++) {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'star-btn' + (i <= recipeFormRating ? ' active' : '');
+          btn.textContent = '★';
+          btn.title = `${i} star${i > 1 ? 's' : ''}`;
+          btn.onclick = () => {
+            recipeFormRating = recipeFormRating === i ? 0 : i;
+            renderRecipeRatingPicker();
+          };
+          picker.appendChild(btn);
+        }
+        if (recipeFormRating > 0) {
+          const clr = document.createElement('button');
+          clr.type = 'button';
+          clr.className = 'star-clear-btn';
+          clr.textContent = 'Clear';
+          clr.onclick = () => {
+            recipeFormRating = 0;
+            renderRecipeRatingPicker();
+          };
+          picker.appendChild(clr);
+        }
+      }
+
+      function renderRecipeFormPhotoThumbs() {
+        const wrap = $('recipePhotoThumbs');
+        wrap.innerHTML = '';
+        recipeFormPhotos.forEach((src, idx) => {
+          const item = document.createElement('div');
+          item.className = 'photo-thumb-item';
+          item.innerHTML = `
+            <img src="${src}" alt="Recipe photo ${idx + 1}" />
+            <button type="button" class="photo-thumb-del" title="Remove photo">&times;</button>
+            <button type="button" class="photo-thumb-cover ${idx === 0 ? 'is-cover' : ''}" title="${idx === 0 ? 'Cover photo' : 'Make cover photo'}">
+              ${idx === 0 ? 'Cover' : 'Set cover'}
+            </button>
+          `;
+          item.querySelector('.photo-thumb-del').onclick = () => {
+            recipeFormPhotos.splice(idx, 1);
+            renderRecipeFormPhotoThumbs();
+          };
+          item.querySelector('.photo-thumb-cover').onclick = () => {
+            if (idx === 0) return;
+            const [picked] = recipeFormPhotos.splice(idx, 1);
+            recipeFormPhotos.unshift(picked);
+            renderRecipeFormPhotoThumbs();
+          };
+          wrap.appendChild(item);
+        });
+      }
+
+      function renderRecipeIngPreview() {
+        const wrap = $('recipeIngPreviewChips');
+        const parsed = parseIngredientsInput($('recipeIngredientsInput').value);
+        wrap.innerHTML = '';
+        for (const ing of parsed) {
+          const span = document.createElement('span');
+          span.className = 'ing-mini-pill';
+          span.textContent = ing;
+          wrap.appendChild(span);
+        }
+      }
+
+      function openRecipeFormModal(recipeToEdit = null) {
+        editingRecipeId = recipeToEdit ? recipeToEdit.id : null;
+        $('recipeFormModalTitle').textContent = recipeToEdit ? 'Edit Recipe' : 'Log a cooked recipe';
+        $('saveRecipeBtn').textContent = recipeToEdit ? 'Save changes' : 'Save to Recipe Dex';
+
+        recipeFormPhotos = recipeToEdit && Array.isArray(recipeToEdit.photos) ? [...recipeToEdit.photos] : [];
+        recipeFormRating = recipeToEdit ? (Number(recipeToEdit.rating) || 0) : 0;
+        recipeFormTone = recipeToEdit ? (recipeToEdit.tone || 'terracotta') : 'terracotta';
+
+        $('recipeTitleInput').value = recipeToEdit ? (recipeToEdit.title || '') : '';
+        $('recipeCategorySelect').value = recipeToEdit ? (recipeToEdit.category || '') : '';
+        $('recipeTimeInput').value = recipeToEdit ? (recipeToEdit.prepTime || '') : '';
+        $('recipeServingsInput').value = recipeToEdit ? (recipeToEdit.servings || '') : '';
+        $('recipeDescInput').value = recipeToEdit ? (recipeToEdit.description || '') : '';
+        $('recipeIngredientsInput').value = recipeToEdit && Array.isArray(recipeToEdit.ingredients)
+          ? recipeToEdit.ingredients.join('\n')
+          : '';
+        $('recipeInstructionsInput').value = recipeToEdit ? (recipeToEdit.instructions || '') : '';
+        $('recipePinnedInput').checked = recipeToEdit ? !!recipeToEdit.pinned : false;
+        $('recipePhotoInput').value = '';
+
+        renderRecipeFormPhotoThumbs();
+        renderRecipeRatingPicker();
+        renderRecipeFormTonePicker();
+        renderRecipeIngPreview();
+        openModal('recipeFormModal');
+      }
+
+      function saveRecipeForm() {
+        const ts = nowMs();
+        const title = $('recipeTitleInput').value.trim();
+        const category = $('recipeCategorySelect').value;
+        const prepTime = $('recipeTimeInput').value.trim();
+        const servings = $('recipeServingsInput').value.trim();
+        const description = $('recipeDescInput').value.trim();
+        const ingredients = parseIngredientsInput($('recipeIngredientsInput').value);
+        const instructions = $('recipeInstructionsInput').value.trim();
+        const pinned = $('recipePinnedInput').checked;
+
+        if (!Array.isArray(state.recipes)) state.recipes = [];
+
+        if (editingRecipeId) {
+          const rec = state.recipes.find((r) => r.id === editingRecipeId);
+          if (rec) {
+            rec.title = title;
+            rec.category = category;
+            rec.prepTime = prepTime;
+            rec.servings = servings;
+            rec.description = description;
+            rec.ingredients = ingredients;
+            rec.instructions = instructions;
+            rec.rating = recipeFormRating;
+            rec.tone = recipeFormTone;
+            rec.pinned = pinned;
+            rec.photos = [...recipeFormPhotos];
+            rec.photosStripped = false;
+            rec.updatedAt = ts;
+          }
+          closeModal('recipeFormModal');
+          renderRecipes();
+          renderMatcher();
+          if (detailRecipeId === editingRecipeId) renderRecipeDetailModal();
+          broadcastState();
+          showToast('Recipe updated');
+          return;
+        }
+
+        const newRecipe = {
+          id: uid('rec'),
+          title,
+          category,
+          prepTime,
+          servings,
+          description,
+          ingredients,
+          instructions,
+          rating: recipeFormRating,
+          tone: recipeFormTone,
+          pinned,
+          cookedCount: 1,
+          photos: [...recipeFormPhotos],
+          photosStripped: false,
+          author: currentUser || 'Pierre',
+          createdAt: ts,
+          updatedAt: ts,
+          deleted: false
+        };
+
+        state.recipes.unshift(newRecipe);
+        closeModal('recipeFormModal');
+        renderRecipes();
+        renderMatcher();
+        broadcastState();
+        showToast('Saved to Recipe Dex!');
+      }
+
+      // Recipe Detail Modal (Pokédex Card View)
+      function openRecipeDetailModal(recipeId) {
+        detailRecipeId = recipeId;
+        detailPhotoIdx = 0;
+        detailCheckedIngredients = new Set();
+        renderRecipeDetailModal();
+        openModal('recipeDetailModal');
+      }
+
+      function renderCarousel(photos) {
+        const carousel = $('recipeDetailCarousel');
+        if (!photos.length) {
+          carousel.style.display = 'none';
+          return;
+        }
+        carousel.style.display = 'block';
+        if (detailPhotoIdx >= photos.length) detailPhotoIdx = 0;
+        if (detailPhotoIdx < 0) detailPhotoIdx = photos.length - 1;
+
+        $('carouselImg').src = photos[detailPhotoIdx];
+        $('carouselCounter').textContent = `${detailPhotoIdx + 1} / ${photos.length}`;
+        $('carouselPrevBtn').style.display = photos.length > 1 ? 'inline-flex' : 'none';
+        $('carouselNextBtn').style.display = photos.length > 1 ? 'inline-flex' : 'none';
+
+        const dots = $('carouselDots');
+        dots.style.display = photos.length > 1 ? 'flex' : 'none';
+        dots.innerHTML = '';
+        photos.forEach((_, idx) => {
+          const dot = document.createElement('button');
+          dot.type = 'button';
+          dot.className = 'carousel-dot' + (idx === detailPhotoIdx ? ' active' : '');
+          dot.ariaLabel = `Photo ${idx + 1}`;
+          dot.onclick = () => {
+            detailPhotoIdx = idx;
+            renderCarousel(photos);
+          };
+          dots.appendChild(dot);
+        });
+      }
+
+      function renderRecipeDetailModal() {
+        const rec = getActiveRecipes().find((r) => r.id === detailRecipeId);
+        if (!rec) {
+          detailRecipeId = null;
+          closeModal('recipeDetailModal');
+          return;
+        }
+
+        const dexNum = getRecipeDexMap().get(rec.id) || '#001';
+        const cat = getCategoryInfo(rec.category);
+        $('recipeDetailBadges').innerHTML = `
+          <span class="dex-num-badge inline">${escapeHtml(dexNum)}</span>
+          ${cat ? `<span class="card-cat-tag">${cat.icon} ${escapeHtml(cat.label)}</span>` : ''}
+          <span class="card-cat-tag">By ${escapeHtml(rec.author || 'Pierre')}</span>
+        `;
+        $('recipeDetailTitle').textContent = rec.title || 'Untitled Dish';
+
+        const subParts = [];
+        const rating = Number(rec.rating) || 0;
+        if (rating > 0) subParts.push(`<span class="recipe-stars">${'★'.repeat(rating)}${'☆'.repeat(5 - rating)}</span>`);
+        if (rec.prepTime) subParts.push(`<span>⏱ ${escapeHtml(rec.prepTime)}</span>`);
+        if (rec.servings) subParts.push(`<span>🍽 ${escapeHtml(rec.servings)} servings</span>`);
+        $('recipeDetailSubMeta').innerHTML = subParts.join('');
+        $('recipeDetailSubMeta').style.display = subParts.length ? 'flex' : 'none';
+
+        const photos = Array.isArray(rec.photos) ? rec.photos : [];
+        renderCarousel(photos);
+        $('recipePhotoStrippedNotice').style.display = rec.photosStripped && photos.length === 0 ? 'block' : 'none';
+        $('recipeDetailCookedCount').textContent = Math.max(1, Number(rec.cookedCount) || 1);
+
+        if (rec.description) {
+          $('recipeDetailDesc').style.display = 'block';
+          $('recipeDetailDesc').textContent = rec.description;
+        } else {
+          $('recipeDetailDesc').style.display = 'none';
+        }
+
+        const ings = Array.isArray(rec.ingredients) ? rec.ingredients : [];
+        if (ings.length > 0) {
+          $('recipeDetailIngSection').style.display = 'block';
+          const listWrap = $('recipeDetailIngList');
+          listWrap.innerHTML = '';
+          ings.forEach((ing, idx) => {
+            const checked = detailCheckedIngredients.has(idx);
+            const row = document.createElement('div');
+            row.className = 'detail-item-row' + (checked ? ' done' : '');
+            row.style.cursor = 'pointer';
+            row.innerHTML = `
+              <button type="button" class="check-btn ${checked ? 'checked' : ''}" aria-label="Toggle ingredient">
+                ${checked ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
+              </button>
+              <div class="item-body">
+                <div class="item-text">${escapeHtml(ing)}</div>
+              </div>
+            `;
+            row.onclick = () => {
+              if (detailCheckedIngredients.has(idx)) detailCheckedIngredients.delete(idx);
+              else detailCheckedIngredients.add(idx);
+              renderRecipeDetailModal();
+            };
+            listWrap.appendChild(row);
+          });
+        } else {
+          $('recipeDetailIngSection').style.display = 'none';
+        }
+
+        if (rec.instructions) {
+          $('recipeDetailInstSection').style.display = 'block';
+          $('recipeDetailInstructions').textContent = rec.instructions;
+        } else {
+          $('recipeDetailInstSection').style.display = 'none';
+        }
+
+        const isMinimal = !rec.description && ings.length === 0 && !rec.instructions;
+        $('recipeDetailEmptyMsg').style.display = isMinimal ? 'block' : 'none';
+      }
+
+      // ==========================================
+      // SMART INGREDIENT MATCHER ENGINE
+      // ==========================================
+
+      const UNIT_WORDS = new Set([
+        'g', 'gr', 'gram', 'grams', 'kg', 'mg', 'ml', 'l', 'liter', 'liters', 'cl', 'dl',
+        'oz', 'ounce', 'ounces', 'lb', 'lbs', 'pound', 'pounds', 'qt', 'pt',
+        'cup', 'cups', 'tbsp', 'tsp', 'tb', 'ts', 'tablespoon', 'tablespoons', 'teaspoon', 'teaspoons',
+        'pinch', 'pinches', 'clove', 'cloves', 'slice', 'slices', 'can', 'cans',
+        'bunch', 'bunches', 'handful', 'handfuls', 'piece', 'pieces', 'pc', 'pcs', 'sprig', 'sprigs',
+        'dash', 'drop', 'drops', 'pack', 'packs', 'package', 'jar', 'bottle', 'head',
+        'stalk', 'stalks', 'bag', 'box', 'tin', 'x'
+      ]);
+
+      const PREP_WORDS = new Set([
+        'fresh', 'dried', 'dry', 'chopped', 'diced', 'minced', 'sliced', 'grated',
+        'shredded', 'crushed', 'ground', 'melted', 'softened', 'frozen', 'canned',
+        'cooked', 'raw', 'large', 'medium', 'small', 'extra', 'virgin', 'organic',
+        'ripe', 'finely', 'roughly', 'thinly', 'unsalted', 'salted', 'whole',
+        'halved', 'peeled', 'seeded', 'boneless', 'skinless', 'optional', 'warm',
+        'cold', 'hot', 'room', 'temperature', 'of', 'to', 'taste', 'for', 'the', 'a', 'an', 'with'
+      ]);
+
+      const DIRECT_SYNONYMS = {
+        'chilli': 'chili',
+        'courgette': 'zucchini',
+        'aubergine': 'eggplant',
+        'coriander': 'cilantro',
+        'spring onion': 'scallion',
+        'green onion': 'scallion',
+        'capsicum': 'bell pepper',
+        'red pepper': 'bell pepper',
+        'green pepper': 'bell pepper',
+        'yellow pepper': 'bell pepper',
+        'broth': 'stock',
+        'extra virgin olive oil': 'olive oil',
+        'sea salt': 'salt',
+        'kosher salt': 'salt',
+        'garlic clove': 'garlic',
+        'creme fraiche': 'cream'
+      };
+
+      const CULINARY_GROUPS = [
+        {
+          name: 'pasta',
+          interchangeable: true,
+          members: ['pasta', 'spaghetti', 'penne', 'rigatoni', 'fusilli', 'tagliatelle', 'fettuccine', 'linguine', 'macaroni', 'farfalle', 'orzo', 'noodle']
+        },
+        {
+          name: 'cheese',
+          interchangeable: false,
+          members: ['cheese', 'parmesan', 'parmigiano', 'mozzarella', 'cheddar', 'feta', 'gruyere', 'pecorino', 'ricotta', 'goat cheese', 'cream cheese', 'brie', 'emmental', 'halloumi', 'gorgonzola']
+        },
+        {
+          name: 'cream',
+          interchangeable: false,
+          members: ['cream', 'heavy cream', 'double cream', 'whipping cream', 'sour cream', 'cooking cream']
+        },
+        {
+          name: 'tomato',
+          interchangeable: false,
+          members: ['tomato', 'cherry tomato', 'plum tomato', 'tomato paste', 'tomato sauce', 'crushed tomato', 'passata']
+        },
+        {
+          name: 'onion',
+          interchangeable: false,
+          members: ['onion', 'red onion', 'white onion', 'yellow onion', 'shallot']
+        },
+        {
+          name: 'chili',
+          interchangeable: false,
+          members: ['chili', 'chili flake', 'red pepper flake', 'jalapeno', 'cayenne']
+        },
+        {
+          name: 'stock',
+          interchangeable: false,
+          members: ['stock', 'chicken stock', 'vegetable stock', 'beef stock', 'bouillon']
+        },
+        {
+          name: 'milk',
+          interchangeable: false,
+          members: ['milk', 'whole milk', 'oat milk', 'almond milk', 'soy milk']
+        }
+      ];
+
+      function singularizeToken(tok) {
+        if (tok === 'tomatoes') return 'tomato';
+        if (tok === 'potatoes') return 'potato';
+        if (tok.length > 4 && tok.endsWith('ies')) return tok.slice(0, -3) + 'y';
+        if (tok.length > 4 && tok.endsWith('ves')) return tok.slice(0, -3) + 'f';
+        if (tok.length > 4 && /(ch|sh|ss|x|z)es$/.test(tok)) return tok.slice(0, -2);
+        if (tok.length > 3 && tok.endsWith('s') && !tok.endsWith('ss') && !tok.endsWith('us')) return tok.slice(0, -1);
+        return tok;
+      }
+
+      function normalizeIngredient(raw) {
+        if (!raw) return '';
+        let s = String(raw)
+          .toLowerCase()
+          .replace(/\([^)]*\)/g, ' ')
+          .replace(/(\d+)\s*[a-z]+/g, (m, num) => m.replace(num, ' '))
+          .replace(/[^a-z\s]/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim();
+
+        const rawWords = s.split(' ').filter(Boolean);
+        const kept = [];
+        for (const w of rawWords) {
+          if (UNIT_WORDS.has(w) || PREP_WORDS.has(w)) continue;
+          const sing = singularizeToken(w);
+          if (UNIT_WORDS.has(sing) || PREP_WORDS.has(sing)) continue;
+          kept.push(sing);
+        }
+
+        let norm = kept.join(' ').trim();
+        if (DIRECT_SYNONYMS[norm]) norm = DIRECT_SYNONYMS[norm];
+        return norm;
+      }
+
+      function hasTokenBoundaryMatch(haystack, needle) {
+        if (!haystack || !needle) return false;
+        if (haystack === needle) return true;
+        const hPad = ' ' + haystack + ' ';
+        const nPad = ' ' + needle + ' ';
+        return hPad.includes(nPad) || nPad.includes(hPad);
+      }
+
+      function ingredientsMatch(normA, normB) {
+        if (!normA || !normB) return false;
+        if (hasTokenBoundaryMatch(normA, normB)) return true;
+
+        for (const grp of CULINARY_GROUPS) {
+          const aIn = grp.members.some((m) => hasTokenBoundaryMatch(normA, m));
+          const bIn = grp.members.some((m) => hasTokenBoundaryMatch(normB, m));
+          if (aIn && bIn) {
+            if (grp.interchangeable) return true;
+            if (normA === grp.name || normB === grp.name) return true;
+          }
+        }
+        return false;
+      }
+
+      function isPantryStaple(raw, norm) {
+        const lower = String(raw || '').toLowerCase().trim();
+        return PANTRY_STAPLES.has(norm) || PANTRY_STAPLES.has(lower);
+      }
+
+      function computeRecipeMatches(availableList) {
+        const normAvail = availableList
+          .map((raw) => ({ raw, norm: normalizeIngredient(raw) }))
+          .filter((x) => x.norm);
+
+        if (!normAvail.length) return [];
+
+        const results = [];
+        for (const recipe of getActiveRecipes()) {
+          const ings = Array.isArray(recipe.ingredients) ? recipe.ingredients.filter(Boolean) : [];
+
+          if (ings.length > 0) {
+            const matched = [];
+            const missing = [];
+            const staples = [];
+
+            for (const ing of ings) {
+              const ingNorm = normalizeIngredient(ing);
+              const isHit = normAvail.some((av) => ingredientsMatch(ingNorm, av.norm));
+              if (isHit) {
+                matched.push(ing);
+              } else if (isPantryStaple(ing, ingNorm)) {
+                staples.push(ing);
+              } else {
+                missing.push(ing);
+              }
+            }
+
+            if (matched.length === 0) continue;
+
+            const denom = matched.length + missing.length;
+            const score = denom > 0 ? Math.round((matched.length / denom) * 100) : 100;
+            results.push({
+              recipe,
+              mode: 'ingredients',
+              matched,
+              missing,
+              staples,
+              score,
+              ready: missing.length === 0
+            });
+          } else {
+            // Fallback: check recipe title and description if no formal ingredients list was logged
+            const textNorm = normalizeIngredient((recipe.title || '') + ' ' + (recipe.description || ''));
+            if (!textNorm) continue;
+            const keywordHits = [];
+            for (const av of normAvail) {
+              if (ingredientsMatch(textNorm, av.norm)) {
+                keywordHits.push(av.raw);
+              }
+            }
+            if (keywordHits.length > 0) {
+              results.push({
+                recipe,
+                mode: 'text',
+                matched: keywordHits,
+                missing: [],
+                staples: [],
+                score: Math.min(95, Math.round((keywordHits.length / normAvail.length) * 100)),
+                ready: false
+              });
+            }
+          }
+        }
+
+        return results.sort((a, b) => {
+          if (a.ready !== b.ready) return a.ready ? -1 : 1;
+          if (a.mode !== b.mode) return a.mode === 'ingredients' ? -1 : 1;
+          if (a.missing.length !== b.missing.length) return a.missing.length - b.missing.length;
+          if (b.score !== a.score) return b.score - a.score;
+          if (b.matched.length !== a.matched.length) return b.matched.length - a.matched.length;
+          return (b.recipe.updatedAt || 0) - (a.recipe.updatedAt || 0);
+        });
+      }
+
+      function addMatcherIngredientsFromText(rawText) {
+        const items = parseIngredientsInput(rawText);
+        if (!items.length) return;
+        const existingNorms = new Set(matcherIngredients.map((x) => normalizeIngredient(x)));
+        let added = 0;
+        for (const item of items) {
+          const norm = normalizeIngredient(item);
+          if (!norm || existingNorms.has(norm)) continue;
+          existingNorms.add(norm);
+          matcherIngredients.push(item);
+          added++;
+        }
+        if (added > 0) {
+          savePantryList();
+          renderMatcher();
+        }
+      }
+
+      function getQuickPickIngredients() {
+        const freq = new Map();
+        for (const rec of getActiveRecipes()) {
+          if (!Array.isArray(rec.ingredients)) continue;
+          for (const ing of rec.ingredients) {
+            const norm = normalizeIngredient(ing);
+            if (!norm || isPantryStaple(ing, norm)) continue;
+            const prev = freq.get(norm);
+            freq.set(norm, {
+              label: prev ? prev.label : norm,
+              count: (prev ? prev.count : 0) + 1
+            });
+          }
+        }
+        const defaults = ['eggs', 'pasta', 'garlic', 'onion', 'tomato', 'cheese', 'chicken', 'butter', 'rice', 'cream', 'lemon', 'potato'];
+        for (const d of defaults) {
+          if (!freq.has(d)) freq.set(d, { label: d, count: 0 });
+        }
+        return Array.from(freq.entries())
+          .sort((a, b) => b[1].count - a[1].count || a[0].localeCompare(b[0]))
+          .slice(0, 18)
+          .map(([norm, info]) => ({ norm, label: info.label }));
+      }
+
+      function renderMatcher() {
+        const activeSec = $('matcherActiveSection');
+        const activeChips = $('matcherActiveChips');
+        const quickChips = $('matcherQuickChips');
+        const grid = $('matcherResultsGrid');
+        if (!activeChips || !quickChips || !grid) return;
+
+        // Render active pantry chips
+        activeSec.style.display = matcherIngredients.length ? 'block' : 'none';
+        $('matcherActiveCount').textContent = matcherIngredients.length;
+        activeChips.innerHTML = '';
+        matcherIngredients.forEach((ing, idx) => {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'pantry-chip';
+          btn.innerHTML = `<span>${escapeHtml(ing)}</span><span aria-hidden="true">&times;</span>`;
+          btn.onclick = () => {
+            matcherIngredients.splice(idx, 1);
+            savePantryList();
+            renderMatcher();
+          };
+          activeChips.appendChild(btn);
+        });
+
+        // Render quick-pick chips
+        const activeNorms = new Set(matcherIngredients.map((x) => normalizeIngredient(x)));
+        quickChips.innerHTML = '';
+        for (const qp of getQuickPickIngredients()) {
+          const isSelected = activeNorms.has(qp.norm);
+          const chip = document.createElement('button');
+          chip.type = 'button';
+          chip.className = 'quick-chip' + (isSelected ? ' selected' : '');
+          chip.textContent = (isSelected ? '✓ ' : '+ ') + qp.label;
+          chip.onclick = () => {
+            if (isSelected) {
+              matcherIngredients = matcherIngredients.filter((x) => normalizeIngredient(x) !== qp.norm);
+            } else {
+              matcherIngredients.push(qp.label);
+            }
+            savePantryList();
+            renderMatcher();
+          };
+          quickChips.appendChild(chip);
+        }
+
+        // Compute & render match results
+        grid.innerHTML = '';
+        const activeRecipes = getActiveRecipes();
+
+        if (!activeRecipes.length) {
+          $('matcherSummaryText').textContent = 'No recipes in your Dex yet';
+          grid.innerHTML = `
+            <div class="empty-state">
+              <h3>Log recipes first</h3>
+              <p>Add dishes you’ve cooked to the Recipe Dex and we’ll match them against your available ingredients.</p>
+              <button class="btn-secondary" id="matcherEmptyLogBtn">+ Log a recipe</button>
+            </div>
+          `;
+          $('matcherEmptyLogBtn').onclick = () => openRecipeFormModal();
+          return;
+        }
+
+        if (!matcherIngredients.length) {
+          $('matcherSummaryText').textContent = 'Add ingredients above to match recipes';
+          grid.innerHTML = `
+            <div class="empty-state">
+              <h3>What’s in your kitchen?</h3>
+              <p>Type or tap the ingredients you have right now to discover which of your ${activeRecipes.length} saved recipe${activeRecipes.length === 1 ? '' : 's'} you can cook.</p>
+            </div>
+          `;
+          return;
+        }
+
+        const matches = computeRecipeMatches(matcherIngredients);
+        const readyCount = matches.filter((m) => m.ready).length;
+        $('matcherSummaryText').textContent = matches.length
+          ? `${matches.length} matching ${matches.length === 1 ? 'recipe' : 'recipes'} (${readyCount} ready to cook)`
+          : 'No matching recipes found';
+
+        if (!matches.length) {
+          grid.innerHTML = `
+            <div class="empty-state">
+              <h3>No matches yet</h3>
+              <p>None of your saved recipes use those ingredients yet. Try adding a few more ingredients or log a new dish!</p>
+            </div>
+          `;
+          return;
+        }
+
+        const dexMap = getRecipeDexMap();
+        for (const m of matches) {
+          const rec = m.recipe;
+          const dexNum = dexMap.get(rec.id) || '#001';
+          const cat = getCategoryInfo(rec.category);
+          const photos = Array.isArray(rec.photos) ? rec.photos : [];
+
+          const card = document.createElement('article');
+          card.className = 'match-card';
+
+          const header = document.createElement('div');
+          header.className = 'match-card-header';
+          header.innerHTML = `
+            ${photos.length
+              ? `<img class="match-thumb" src="${photos[0]}" alt="${escapeHtml(rec.title || 'Dish')}" />`
+              : `<div class="match-thumb">${cat ? cat.icon : '🍽'}</div>`}
+            <div style="min-width:0;flex:1;">
+              <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:4px;">
+                <span class="dex-num-badge inline">${escapeHtml(dexNum)}</span>
+                <span class="match-score-pill ${m.ready ? 'perfect' : 'partial'}">
+                  ${m.mode === 'text'
+                    ? `Matched in notes (${m.matched.length})`
+                    : m.ready
+                      ? '✓ 100% Ready to cook'
+                      : `${m.score}% • Missing ${m.missing.length}`}
+                </span>
+              </div>
+              <h3 class="card-title" style="font-size:20px;">${escapeHtml(rec.title || 'Untitled Dish')}</h3>
+            </div>
+          `;
+          header.onclick = () => openRecipeDetailModal(rec.id);
+          card.appendChild(header);
+
+          const ingList = document.createElement('div');
+          ingList.className = 'match-ing-list';
+          for (const item of m.matched) {
+            const b = document.createElement('span');
+            b.className = 'ing-badge matched';
+            b.textContent = '✓ ' + item;
+            ingList.appendChild(b);
+          }
+          for (const item of m.missing) {
+            const b = document.createElement('span');
+            b.className = 'ing-badge missing';
+            b.textContent = '✕ ' + item;
+            ingList.appendChild(b);
+          }
+          for (const item of m.staples) {
+            const b = document.createElement('span');
+            b.className = 'ing-badge staple';
+            b.textContent = '• ' + item;
+            ingList.appendChild(b);
+          }
+          card.appendChild(ingList);
+
+          const actions = document.createElement('div');
+          actions.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;padding-top:6px;border-top:1px solid var(--border);';
+
+          if (m.missing.length > 0) {
+            const addBtn = document.createElement('button');
+            addBtn.type = 'button';
+            addBtn.className = 'btn-secondary';
+            addBtn.style.cssText = 'font-size:12px;padding:6px 12px;';
+            addBtn.textContent = `+ Add ${m.missing.length} missing to Grocery List`;
+            addBtn.onclick = () => addIngredientsToGroceryList(m.missing, rec.title || 'Recipe');
+            actions.appendChild(addBtn);
+          } else {
+            const readySpan = document.createElement('span');
+            readySpan.style.cssText = 'font-size:12px;font-weight:600;color:var(--pierre);';
+            readySpan.textContent = m.mode === 'text' ? 'Logged without formal ingredient list' : 'You have everything needed!';
+            actions.appendChild(readySpan);
+          }
+
+          const openBtn = document.createElement('button');
+          openBtn.type = 'button';
+          openBtn.className = 'open-card-link';
+          openBtn.textContent = 'View recipe →';
+          openBtn.onclick = () => openRecipeDetailModal(rec.id);
+          actions.appendChild(openBtn);
+
+          card.appendChild(actions);
+          grid.appendChild(card);
+        }
+      }
+
+      function addIngredientsToGroceryList(ingredients, sourceTitle = '') {
+        const clean = (ingredients || []).map((x) => String(x).trim()).filter(Boolean);
+        if (!clean.length) return;
+
+        const activeLists = (state.cards || []).filter((c) => c && !c.deleted && c.type === 'list');
+        let target = activeLists.find((c) => /grocer|shop|supermarket|market|food|buy/i.test(c.title || ''));
+        if (!target && activeLists.length > 0) {
+          target = activeLists[0];
+        }
+
+        const ts = nowMs();
+        let createdNew = false;
+        if (!target) {
+          target = {
+            id: uid('card'),
+            type: 'list',
+            title: 'Groceries',
+            tone: 'sauge',
+            pinned: false,
+            author: currentUser || 'Pierre',
+            updatedAt: ts,
+            deleted: false,
+            content: '',
+            items: []
+          };
+          state.cards.unshift(target);
+          createdNew = true;
+        }
+
+        if (!Array.isArray(target.items)) target.items = [];
+        const existingSet = new Set(
+          target.items
+            .filter((it) => it && !it.deleted)
+            .map((it) => String(it.text || '').toLowerCase().trim())
+        );
+
+        let added = 0;
+        clean.forEach((ing, i) => {
+          if (existingSet.has(ing.toLowerCase())) return;
+          existingSet.add(ing.toLowerCase());
+          target.items.push({
+            id: uid('it'),
+            text: ing,
+            done: false,
+            priority: false,
+            author: currentUser || 'Pierre',
+            checkedBy: '',
+            updatedAt: ts + i,
+            deleted: false
+          });
+          added++;
+        });
+
+        if (added === 0) {
+          showToast(`Already on "${target.title}"`);
+          return;
+        }
+
+        target.updatedAt = ts;
+        vibrate(12);
+        renderCards();
+        broadcastState();
+        showToast(
+          createdNew
+            ? `Created "Groceries" with ${added} ingredient${added > 1 ? 's' : ''}`
+            : `Added ${added} item${added > 1 ? 's' : ''} to "${target.title}"`
+        );
+      }
+
+      // Wire Recipe Dex & Matcher Events
+      $('tabBtnLists').onclick = () => switchMainTab('lists');
+      $('tabBtnRecipes').onclick = () => switchMainTab('recipes');
+      $('dexModeCollectionBtn').onclick = () => setDexSubMode('collection');
+      $('dexModeMatcherBtn').onclick = () => setDexSubMode('matcher');
+
+      $('recipeSearchInput').oninput = (e) => {
+        recipeSearchQuery = e.target.value;
+        $('clearRecipeSearchBtn').classList.toggle('visible', recipeSearchQuery.length > 0);
+        renderRecipes();
+      };
+
+      $('clearRecipeSearchBtn').onclick = () => {
+        recipeSearchQuery = '';
+        $('recipeSearchInput').value = '';
+        $('clearRecipeSearchBtn').classList.remove('visible');
+        renderRecipes();
+      };
+
+      $('recipePhotoDropzone').onclick = () => $('recipePhotoInput').click();
+      $('recipePhotoDropzone').onkeydown = (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          $('recipePhotoInput').click();
+        }
+      };
+
+      $('recipePhotoInput').onchange = async (e) => {
+        const files = Array.from(e.target.files || []);
+        if (!files.length) return;
+        let added = 0;
+        for (const f of files) {
+          try {
+            const compressed = await compressImageFile(f, 680, 0.72);
+            recipeFormPhotos.push(compressed);
+            added++;
+          } catch (_) {}
+        }
+        $('recipePhotoInput').value = '';
+        renderRecipeFormPhotoThumbs();
+        if (added > 0) {
+          showToast(`Added ${added} photo${added > 1 ? 's' : ''}`);
+        } else {
+          showToast('Could not read selected image');
+        }
+      };
+
+      $('recipeIngredientsInput').oninput = renderRecipeIngPreview;
+      $('saveRecipeBtn').onclick = saveRecipeForm;
+
+      $('carouselPrevBtn').onclick = () => {
+        const rec = getActiveRecipes().find((r) => r.id === detailRecipeId);
+        if (!rec || !Array.isArray(rec.photos)) return;
+        detailPhotoIdx = (detailPhotoIdx - 1 + rec.photos.length) % rec.photos.length;
+        renderCarousel(rec.photos);
+      };
+
+      $('carouselNextBtn').onclick = () => {
+        const rec = getActiveRecipes().find((r) => r.id === detailRecipeId);
+        if (!rec || !Array.isArray(rec.photos)) return;
+        detailPhotoIdx = (detailPhotoIdx + 1) % rec.photos.length;
+        renderCarousel(rec.photos);
+      };
+
+      $('recipeCookedAgainBtn').onclick = () => {
+        const rec = getActiveRecipes().find((r) => r.id === detailRecipeId);
+        if (!rec) return;
+        rec.cookedCount = (Number(rec.cookedCount) || 1) + 1;
+        rec.updatedAt = nowMs();
+        vibrate(14);
+        renderRecipes();
+        renderRecipeDetailModal();
+        broadcastState();
+        showToast(`Cooked ${rec.cookedCount} times! 🔥`);
+      };
+
+      $('addRecipeIngToGroceryBtn').onclick = () => {
+        const rec = getActiveRecipes().find((r) => r.id === detailRecipeId);
+        if (!rec || !Array.isArray(rec.ingredients)) return;
+        addIngredientsToGroceryList(rec.ingredients, rec.title || 'Recipe');
+      };
+
+      $('editRecipeBtn').onclick = () => {
+        const rec = getActiveRecipes().find((r) => r.id === detailRecipeId);
+        if (rec) openRecipeFormModal(rec);
+      };
+
+      $('deleteRecipeBtn').onclick = () => {
+        const rec = getActiveRecipes().find((r) => r.id === detailRecipeId);
+        if (!rec) return;
+        if (!confirm(`Delete "${rec.title || 'Untitled Dish'}" from your Recipe Dex?`)) return;
+        rec.deleted = true;
+        rec.updatedAt = nowMs();
+        detailRecipeId = null;
+        closeModal('recipeDetailModal');
+        renderRecipes();
+        renderMatcher();
+        broadcastState();
+        showToast('Recipe deleted');
+      };
+
+      $('matcherAddForm').onsubmit = (e) => {
+        e.preventDefault();
+        const val = $('matcherInput').value.trim();
+        if (!val) return;
+        addMatcherIngredientsFromText(val);
+        $('matcherInput').value = '';
+      };
+
+      $('matcherClearBtn').onclick = () => {
+        matcherIngredients = [];
+        savePantryList();
+        renderMatcher();
+      };
 
       // Initialize
       applyTheme(localStorage.getItem(STORAGE_KEYS.THEME) || 'light');

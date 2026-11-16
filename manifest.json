@@ -1,14 +1,14 @@
 {
-  "name": "Pierre & Ebba — Nos Listes & Notes",
+  "name": "Pierre & Ebba — Shared Lists & Notes",
   "short_name": "Pierre & Ebba",
-  "description": "Listes partagées et petits mots du quotidien pour Pierre et Ebba.",
+  "description": "Shared lists, daily notes, and Recipe Dex for Pierre and Ebba.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#FAF7F2",
   "theme_color": "#1E1B18",
   "orientation": "portrait",
-  "lang": "fr",
+  "lang": "en",
   "icons": [
     {
       "src": "icon-192.png",
