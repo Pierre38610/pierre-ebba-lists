@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Pierre &amp; Ebba</string>
+    <string name="widget_name">Note of the Day</string>
+    <string name="widget_desc">Shows your partner’s latest Note of the Day right on your home screen.</string>
+</resources>

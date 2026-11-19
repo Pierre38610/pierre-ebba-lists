@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#151311" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>Note of the Day Widget — Pierre &amp; Ebba</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100dvh;
+      background: radial-gradient(circle at 18% 15%, rgba(212, 175, 55, 0.15), transparent 52%),
+                  radial-gradient(circle at 85% 82%, rgba(224, 159, 135, 0.14), transparent 50%),
+                  #141210;
+      color: #FAF7F2;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 18px;
+    }
+
+    .widget-wrap {
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .widget-card {
+      position: relative;
+      display: block;
+      text-decoration: none;
+      color: inherit;
+      background: linear-gradient(145deg, #241F1B 0%, #151311 100%);
+      border: 1px solid rgba(212, 175, 55, 0.38);
+      border-radius: 26px;
+      padding: 20px 22px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+      overflow: hidden;
+      transition: transform 0.18s ease, border-color 0.2s ease;
+    }
+
+    .widget-card:active { transform: scale(0.985); }
+
+    .widget-card::before {
+      content: "";
+      position: absolute;
+      inset: 7px;
+      border-radius: 19px;
+      border: 1px solid rgba(212, 175, 55, 0.14);
+      pointer-events: none;
+    }
+
+    .widget-top {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .widget-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #D4AF37;
+    }
+
+    .widget-refresh {
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(255, 255, 255, 0.06);
+      color: #E7DFD3;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .widget-quote {
+      position: relative;
+      z-index: 1;
+      font-family: 'Cormorant Garamond', Georgia, serif;
+      font-style: italic;
+      font-size: 25px;
+      line-height: 1.32;
+      color: #FAF7F2;
+      margin: 0 0 16px;
+      word-break: break-word;
+    }
+
+    .widget-footer {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 12px;
+      color: #B4A899;
+    }
+
+    .widget-hearts {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(224, 159, 135, 0.16);
+      border: 1px solid rgba(224, 159, 135, 0.35);
+      color: #E09F87;
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .widget-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 0 4px;
+      font-size: 12px;
+      color: #9E9386;
+    }
+
+    .widget-link {
+      color: #D4AF37;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .viewer-switch {
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.05);
+      color: #D6CCC0;
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="widget-wrap">
+    <a class="widget-card" href="./index.html?tab=lists" id="widgetCardLink">
+      <div class="widget-top">
+        <div class="widget-kicker" id="widgetKicker">✦ NOTE OF THE DAY</div>
+        <button type="button" class="widget-refresh" id="refreshBtn" title="Refresh note" aria-label="Refresh">↻</button>
+      </div>
+      <p class="widget-quote" id="widgetQuote">Loading your partner’s latest note...</p>
+      <div class="widget-footer">
+        <span id="widgetMeta">Pierre &amp; Ebba</span>
+        <span class="widget-hearts" id="widgetHearts">♥ 0</span>
+      </div>
+    </a>
+
+    <div class="widget-bar">
+      <button type="button" class="viewer-switch" id="viewerSwitchBtn">Viewing as Pierre</button>
+      <a class="widget-link" href="./index.html?tab=lists">Open full app &rarr;</a>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      'use strict';
+      const NTFY_WIDGET_TOPIC = 'pierre_ebba_widget_907521e5';
+      const KV_APP_KEY = 'x0c969je';
+      const KV_BASE = 'https://keyvalue.immanuel.co/api/KeyVal';
+
+      const params = new URLSearchParams(window.location.search);
+      let viewer = params.get('user');
+      if (viewer !== 'Pierre' && viewer !== 'Ebba') {
+        viewer = localStorage.getItem('pe_current_user_v1') === 'Ebba' ? 'Ebba' : 'Pierre';
+      }
+
+      let snapshot = { p: null, e: null, m: null };
+
+      function base64UrlToBytes(str) {
+        const pad = str.length % 4 ? '='.repeat(4 - (str.length % 4)) : '';
+        const b64 = str.replace(/-/g, '+').replace(/_/g, '/') + pad;
+        const bin = atob(b64);
+        const bytes = new Uint8Array(bin.length);
+        for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+        return bytes;
+      }
+
+      async function decodePayload(str) {
+        if (!str || typeof str !== 'string') return null;
+        if (str.startsWith('{')) return JSON.parse(str);
+        if (str.startsWith('GZ_') && typeof DecompressionStream !== 'undefined') {
+          const bytes = base64UrlToBytes(str.slice(3));
+          const ds = new DecompressionStream('gzip');
+          const writer = ds.writable.getWriter();
+          writer.write(bytes);
+          writer.close();
+          return JSON.parse(await new Response(ds.readable).text());
+        }
+        if (str.startsWith('RAW_')) {
+          return JSON.parse(new TextDecoder().decode(base64UrlToBytes(str.slice(4))));
+        }
+        return null;
+      }
+
+      function mergeNote(cur, inc) {
+        if (!inc || !inc.text) return cur;
+        if (!cur || (inc.updatedAt || 0) >= (cur.updatedAt || 0)) return inc;
+        return cur;
+      }
+
+      function mergeSnapshot(inc) {
+        if (!inc || typeof inc !== 'object') return;
+        snapshot.p = mergeNote(snapshot.p, inc.p);
+        snapshot.e = mergeNote(snapshot.e, inc.e);
+        snapshot.m = mergeNote(snapshot.m, inc.m);
+      }
+
+      function loadLocalFallback() {
+        try {
+          const raw = localStorage.getItem('pe_shared_state_v2');
+          if (!raw) return;
+          const st = JSON.parse(raw);
+          if (st.partnerNotes) {
+            mergeSnapshot({ p: st.partnerNotes.Pierre, e: st.partnerNotes.Ebba, m: st.petitMot });
+          } else if (st.petitMot) {
+            mergeSnapshot({ m: st.petitMot });
+          }
+        } catch (_) {}
+      }
+
+      function formatRelTime(ts) {
+        if (!ts) return 'Just synced';
+        const diff = Math.max(0, Math.floor((Date.now() - ts) / 1000));
+        if (diff < 60) return 'Just now';
+        if (diff < 3600) return `${Math.floor(diff / 60)} min ago`;
+        if (diff < 86400) return `${Math.floor(diff / 3600)} h ago`;
+        return new Date(ts).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      }
+
+      function render() {
+        const partner = viewer === 'Pierre' ? 'Ebba' : 'Pierre';
+        document.getElementById('viewerSwitchBtn').textContent = `Viewing as ${viewer} (tap to switch)`;
+
+        const partnerNote = viewer === 'Pierre' ? snapshot.e : snapshot.p;
+        const chosen = (partnerNote && partnerNote.text) ? partnerNote : (snapshot.m && snapshot.m.text ? snapshot.m : null);
+
+        if (chosen && chosen.text) {
+          const who = chosen.author || partner;
+          document.getElementById('widgetKicker').textContent = `✦ NOTE FROM ${who.toUpperCase()}`;
+          document.getElementById('widgetQuote').textContent = chosen.text;
+          document.getElementById('widgetMeta').textContent = `${formatRelTime(chosen.updatedAt)}`;
+          document.getElementById('widgetHearts').textContent = `♥ ${chosen.hearts || 0}`;
+        } else {
+          document.getElementById('widgetKicker').textContent = `✦ NOTE FROM ${partner.toUpperCase()}`;
+          document.getElementById('widgetQuote').textContent = `No note from ${partner} yet — open the app to send one first!`;
+          document.getElementById('widgetMeta').textContent = 'Pierre & Ebba';
+          document.getElementById('widgetHearts').textContent = '♥ 0';
+        }
+      }
+
+      async function refresh() {
+        try {
+          const metaRes = await fetch(`${KV_BASE}/GetValue/${KV_APP_KEY}/ebba_v2_wn_meta`, { cache: 'no-store' });
+          if (metaRes.ok) {
+            const rawMeta = await metaRes.json();
+            if (rawMeta && typeof rawMeta === 'string' && rawMeta.includes('-')) {
+              const idx = rawMeta.lastIndexOf('-');
+              const gen = rawMeta.slice(0, idx);
+              const count = parseInt(rawMeta.slice(idx + 1), 10);
+              if (gen && count > 0 && count <= 40) {
+                const parts = await Promise.all(
+                  Array.from({ length: count }, (_, i) =>
+                    fetch(`${KV_BASE}/GetValue/${KV_APP_KEY}/ebba_v2_wn_${gen}_${i}`, { cache: 'no-store' }).then((r) => (r.ok ? r.json() : ''))
+                  )
+                );
+                if (parts.every(Boolean)) {
+                  const dec = await decodePayload(parts.join(''));
+                  if (dec) mergeSnapshot(dec);
+                }
+              }
+            }
+          }
+        } catch (_) {}
+
+        try {
+          const r = await fetch(`https://ntfy.sh/${NTFY_WIDGET_TOPIC}/json?poll=1&since=all`, { cache: 'no-store' });
+          if (r.ok) {
+            const lines = (await r.text()).split('\n').filter(Boolean);
+            for (const line of lines) {
+              try {
+                const evt = JSON.parse(line);
+                if (evt.event === 'message' && evt.message) {
+                  const inc = await decodePayload(evt.message);
+                  if (inc) mergeSnapshot(inc);
+                }
+              } catch (_) {}
+            }
+          }
+        } catch (_) {}
+
+        render();
+      }
+
+      document.getElementById('refreshBtn').onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        refresh();
+      };
+
+      document.getElementById('viewerSwitchBtn').onclick = () => {
+        viewer = viewer === 'Pierre' ? 'Ebba' : 'Pierre';
+        render();
+      };
+
+      loadLocalFallback();
+      render();
+      refresh();
+
+      try {
+        const es = new EventSource(`https://ntfy.sh/${NTFY_WIDGET_TOPIC}/sse`);
+        es.onmessage = async (ev) => {
+          try {
+            const evt = JSON.parse(ev.data);
+            if (evt.event === 'message' && evt.message) {
+              const inc = await decodePayload(evt.message);
+              if (inc) {
+                mergeSnapshot(inc);
+                render();
+              }
+            }
+          } catch (_) {}
+        };
+      } catch (_) {}
+    })();
+  </script>
+</body>
+</html>

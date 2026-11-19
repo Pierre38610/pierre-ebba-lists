@@ -88,9 +88,10 @@
     body {
       background-image:
         radial-gradient(circle at 12% 0%, var(--gold-soft) 0%, transparent 42%),
-        radial-gradient(circle at 92% 18%, var(--ebba-soft) 0%, transparent 36%);
+        radial-gradient(circle at 92% 18%, var(--ebba-soft) 0%, transparent 36%),
+        radial-gradient(circle at 50% 100%, var(--pierre-soft) 0%, transparent 44%);
       background-attachment: fixed;
-      padding-bottom: calc(96px + env(safe-area-inset-bottom));
+      padding-bottom: calc(150px + env(safe-area-inset-bottom));
     }
 
     button, input, textarea, select {
@@ -208,6 +209,7 @@
     }
 
     .icon-btn {
+      position: relative;
       width: 38px;
       height: 38px;
       border-radius: 12px;
@@ -223,6 +225,22 @@
 
     .icon-btn:active { transform: scale(0.94); }
     .icon-btn:hover { border-color: var(--border-strong); }
+
+    .notif-status-dot {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--gold);
+      border: 1.5px solid var(--surface);
+      transition: background 0.2s ease;
+    }
+
+    .notif-status-dot.active {
+      background: var(--pierre);
+    }
 
     .identity-toggle {
       display: inline-flex;
@@ -344,6 +362,19 @@
       pointer-events: none;
     }
 
+    .love-note-card::after {
+      content: "“";
+      position: absolute;
+      right: 16px;
+      bottom: -24px;
+      font-family: var(--font-serif);
+      font-size: 112px;
+      line-height: 1;
+      color: var(--gold-soft);
+      pointer-events: none;
+      user-select: none;
+    }
+
     .love-note-header {
       display: flex;
       align-items: center;
@@ -369,11 +400,12 @@
       display: flex;
       align-items: center;
       gap: 6px;
+      flex-wrap: wrap;
     }
 
     .love-note-text {
       font-family: var(--font-serif);
-      font-size: 21px;
+      font-size: 22px;
       font-style: italic;
       font-weight: 500;
       line-height: 1.38;
@@ -382,6 +414,34 @@
       position: relative;
       z-index: 1;
       word-break: break-word;
+    }
+
+    .love-note-partner-strip {
+      position: relative;
+      z-index: 1;
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 8px 12px;
+      margin-bottom: 10px;
+      border-radius: 13px;
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      font-size: 12.5px;
+      color: var(--text-muted);
+    }
+
+    .love-note-partner-strip.visible {
+      display: flex;
+    }
+
+    .love-note-partner-quote {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: 15.5px;
+      color: var(--text);
+      margin-left: 4px;
     }
 
     .love-note-footer {
@@ -400,6 +460,12 @@
       display: flex;
       align-items: center;
       gap: 6px;
+    }
+
+    @keyframes heartPop {
+      0% { transform: scale(1); }
+      45% { transform: scale(1.22); }
+      100% { transform: scale(1); }
     }
 
     .heart-react-btn {
@@ -421,17 +487,27 @@
       border-color: var(--ebba);
       background: var(--ebba-soft);
       color: var(--ebba);
+      animation: heartPop 0.3s ease;
     }
 
     .edit-mot-btn {
       border: 1px solid var(--border);
       background: var(--surface-soft);
       border-radius: var(--radius-pill);
-      padding: 4px 11px;
+      padding: 5px 11px;
       font-size: 11.5px;
       font-weight: 600;
       color: var(--text-muted);
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: border-color 0.15s ease, color 0.15s ease;
+    }
+
+    .edit-mot-btn:hover {
+      border-color: var(--gold);
+      color: var(--text);
     }
 
     /* Controls: Search & Categories */
@@ -867,23 +943,23 @@
     /* FAB */
     .fab-btn {
       position: fixed;
-      right: 20px;
-      bottom: calc(20px + env(safe-area-inset-bottom));
-      height: 56px;
-      padding: 0 22px;
+      right: 18px;
+      bottom: calc(88px + env(safe-area-inset-bottom));
+      height: 52px;
+      padding: 0 20px;
       border-radius: var(--radius-pill);
       border: 1px solid rgba(212, 175, 55, 0.35);
       background: #1E1B18;
       color: #FAF7F2;
       display: inline-flex;
       align-items: center;
-      gap: 9px;
+      gap: 8px;
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
       box-shadow: var(--shadow-lg);
-      z-index: 40;
-      transition: transform 0.18s ease;
+      z-index: 55;
+      transition: transform 0.18s ease, opacity 0.18s ease;
     }
 
     [data-theme="dark"] .fab-btn {
@@ -893,6 +969,7 @@
     }
 
     .fab-btn:active { transform: scale(0.95); }
+    .fab-btn.hidden-fab { display: none; }
 
     /* Modals / Bottom Sheets */
     .modal-backdrop {
@@ -939,7 +1016,7 @@
     }
 
     @keyframes slideUp {
-      from { transform: translateY(18px); opacity: 0.5; }
+      from { transform: translateY(14px); opacity: 0.92; }
       to { transform: translateY(0); opacity: 1; }
     }
 
@@ -1205,7 +1282,7 @@
     .toast {
       position: fixed;
       left: 50%;
-      bottom: calc(88px + env(safe-area-inset-bottom));
+      bottom: calc(154px + env(safe-area-inset-bottom));
       transform: translateX(-50%) translateY(20px);
       background: #1E1B18;
       color: #FAF7F2;
@@ -1236,55 +1313,114 @@
 
     .hidden-input { display: none; }
 
-    /* Main Two-Tab Navigation */
-    .main-tabs {
+    /* Floating Frosted-Glass Bottom Navigation Dock */
+    .bottom-nav {
+      position: fixed;
+      left: 50%;
+      transform: translateX(-50%);
+      bottom: calc(12px + env(safe-area-inset-bottom));
+      width: calc(100% - 24px);
+      max-width: 480px;
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 6px;
-      background: var(--bg-elevated);
-      border: 1px solid var(--border);
-      border-radius: 18px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
       padding: 5px;
-      margin-bottom: 18px;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid var(--border);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      box-shadow: var(--shadow-lg);
+      z-index: 60;
+    }
+
+    [data-theme="dark"] .bottom-nav {
+      background: rgba(31, 28, 24, 0.86);
+      border-color: var(--border-strong);
+    }
+
+    .bottom-nav-btn {
+      position: relative;
+      border: none;
+      background: transparent;
+      border-radius: 19px;
+      padding: 8px 6px 7px;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      transition: background 0.22s ease, color 0.22s ease, transform 0.14s ease;
+    }
+
+    .bottom-nav-btn:active { transform: scale(0.95); }
+
+    .bottom-nav-btn.active {
+      background: var(--accent);
+      color: var(--accent-text);
       box-shadow: var(--shadow-sm);
     }
 
-    .main-tab-btn {
-      border: none;
-      background: transparent;
-      border-radius: 13px;
-      padding: 10px 14px;
-      font-size: 13.5px;
-      font-weight: 600;
-      color: var(--text-muted);
-      cursor: pointer;
+    .bottom-nav-icon-row {
+      position: relative;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      transition: background 0.2s ease, color 0.2s ease, box-shadow 0.2s ease, transform 0.12s ease;
+      gap: 4px;
     }
 
-    .main-tab-btn:active { transform: scale(0.98); }
-
-    .main-tab-btn.active {
-      background: var(--surface);
-      color: var(--text);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .tab-count-badge {
+    .bottom-nav-label {
       font-size: 11px;
       font-weight: 700;
-      padding: 2px 7px;
+      letter-spacing: 0.01em;
+      line-height: 1;
+    }
+
+    .bottom-nav-badge {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 1px 6px;
       border-radius: var(--radius-pill);
       background: var(--bg-elevated);
       color: var(--text-muted);
+      line-height: 1.35;
     }
 
-    .main-tab-btn.active .tab-count-badge {
-      background: var(--gold-soft);
-      color: var(--gold);
+    .bottom-nav-btn.active .bottom-nav-badge {
+      background: rgba(255, 255, 255, 0.18);
+      color: var(--accent-text);
+    }
+
+    [data-theme="dark"] .bottom-nav-btn.active .bottom-nav-badge {
+      background: rgba(20, 18, 16, 0.16);
+    }
+
+    .nav-pulse-dot {
+      position: absolute;
+      top: -2px;
+      right: -7px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 0 2px var(--surface);
+      display: none;
+      animation: pulse 1.6s infinite;
+    }
+
+    .nav-pulse-dot.visible {
+      display: block;
+    }
+
+    @keyframes cardReveal {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card, .recipe-card, .word-card, .match-card {
+      animation: cardReveal 0.24s ease;
     }
 
     /* Recipe Dex Hero & Mode Switch */
@@ -2083,6 +2219,484 @@
       .dex-stat-pill {
         flex: 1;
       }
+      .today-exchange-grid,
+      .h2h-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ==========================================
+       WORDS TAB, STREAKS, QUIZ & SCOREBOARD
+       ========================================== */
+    .words-hero-card {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 18px 20px;
+      margin-bottom: 18px;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .words-hero-card::before {
+      content: "";
+      position: absolute;
+      inset: 6px;
+      border: 1px solid var(--gold-soft);
+      border-radius: 16px;
+      pointer-events: none;
+    }
+
+    .streak-pill-big {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 14px;
+      border-radius: var(--radius-pill);
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.2), rgba(200, 125, 101, 0.2));
+      border: 1px solid rgba(212, 175, 55, 0.45);
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .streak-sub-row {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .mini-stat-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .week-strip {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      margin-bottom: 14px;
+      padding: 10px 8px;
+      border-radius: 16px;
+      background: var(--bg-elevated);
+    }
+
+    .week-day-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .week-day-lbl {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-soft);
+    }
+
+    .week-day-cell.today .week-day-lbl {
+      color: var(--gold);
+    }
+
+    .week-day-orb {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border-strong);
+      background: var(--surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .week-day-orb.both {
+      border-color: var(--gold);
+      background: var(--gold-soft);
+      box-shadow: 0 0 0 2px var(--gold-soft);
+    }
+
+    .week-day-orb.today {
+      border-style: dashed;
+    }
+
+    .week-day-orb.both.today {
+      border-style: solid;
+    }
+
+    .lang-micro-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--border-strong);
+    }
+
+    .lang-micro-dot.fr-on { background: var(--pierre); }
+    .lang-micro-dot.sv-on { background: var(--ebba); }
+
+    .today-status-bar {
+      position: relative;
+      z-index: 1;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .today-exchange-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .today-slot {
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      background: var(--surface-soft);
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 6px;
+      min-height: 92px;
+    }
+
+    .today-slot.empty {
+      border-style: dashed;
+      cursor: pointer;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .today-slot.empty:hover {
+      border-color: var(--gold);
+      background: var(--bg-elevated);
+    }
+
+    .today-slot-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .today-slot-word {
+      font-family: var(--font-serif);
+      font-size: 22px;
+      font-weight: 600;
+      line-height: 1.15;
+      color: var(--text);
+    }
+
+    .today-slot-meaning {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .speak-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 13px;
+      flex-shrink: 0;
+      transition: transform 0.12s ease, border-color 0.15s ease;
+    }
+
+    .speak-btn:active { transform: scale(0.9); }
+    .speak-btn:hover { border-color: var(--gold); }
+
+    .study-toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .word-card {
+      position: relative;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 18px 18px 15px;
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      transition: box-shadow 0.2s ease;
+    }
+
+    .word-card:hover { box-shadow: var(--shadow-md); }
+
+    .word-term {
+      font-family: var(--font-serif);
+      font-size: 26px;
+      font-weight: 600;
+      line-height: 1.15;
+      margin: 4px 0 4px;
+      color: var(--text);
+    }
+
+    .word-phonetic {
+      display: inline-block;
+      font-size: 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      color: var(--text-soft);
+      background: var(--bg-elevated);
+      padding: 2px 8px;
+      border-radius: var(--radius-pill);
+      margin-bottom: 8px;
+    }
+
+    .word-meaning {
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin: 4px 0 10px;
+      transition: filter 0.2s ease;
+    }
+
+    .word-card.study-hidden .word-meaning,
+    .word-card.study-hidden .word-example-en {
+      filter: blur(6px);
+      user-select: none;
+    }
+
+    .study-hint-badge {
+      display: none;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    .word-card.study-hidden .study-hint-badge {
+      display: block;
+    }
+
+    .word-example-box {
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      padding: 9px 12px;
+      margin-bottom: 10px;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .word-example-orig {
+      font-style: italic;
+      color: var(--text);
+    }
+
+    .word-example-en {
+      color: var(--text-muted);
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    .mastered-btn {
+      border: 1px solid var(--border);
+      background: var(--surface-soft);
+      color: var(--text-muted);
+      border-radius: var(--radius-pill);
+      padding: 4px 11px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .mastered-btn.active {
+      background: var(--pierre-soft);
+      border-color: var(--pierre);
+      color: var(--pierre);
+    }
+
+    /* Quiz & Scoreboard */
+    .quiz-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      padding: 18px 20px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .quiz-choices-list {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+      margin: 14px 0;
+    }
+
+    .quiz-choice-btn {
+      width: 100%;
+      text-align: left;
+      padding: 13px 15px;
+      border-radius: 15px;
+      border: 1.5px solid var(--border);
+      background: var(--surface-soft);
+      font-size: 14.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      transition: border-color 0.18s ease, background 0.18s ease, transform 0.12s ease;
+    }
+
+    .quiz-choice-btn:active:not(:disabled) { transform: scale(0.985); }
+    .quiz-choice-btn:hover:not(:disabled) { border-color: var(--gold); }
+
+    .quiz-choice-btn.correct {
+      border-color: var(--pierre);
+      background: var(--pierre-soft);
+      color: var(--pierre);
+    }
+
+    .quiz-choice-btn.wrong {
+      border-color: var(--danger);
+      background: rgba(184, 74, 57, 0.12);
+      color: var(--danger);
+    }
+
+    .h2h-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 12px 0 16px;
+    }
+
+    .h2h-card {
+      border-radius: 18px;
+      padding: 14px;
+      border: 1px solid var(--border);
+      background: var(--surface-soft);
+    }
+
+    .h2h-card.pierre {
+      border-color: rgba(74, 107, 93, 0.35);
+      background: linear-gradient(160deg, var(--pierre-soft), transparent 70%);
+    }
+
+    .h2h-card.ebba {
+      border-color: rgba(200, 125, 101, 0.35);
+      background: linear-gradient(160deg, var(--ebba-soft), transparent 70%);
+    }
+
+    .quiz-history-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 11px 13px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--surface-soft);
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .quiz-ready-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 7px;
+      border-radius: var(--radius-pill);
+      background: var(--gold);
+      color: #141210;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    /* Widget Preview & Notif Modals */
+    .widget-preview-box {
+      position: relative;
+      border-radius: 22px;
+      padding: 18px 20px;
+      background: linear-gradient(145deg, #241F1B 0%, #151311 100%);
+      border: 1px solid rgba(212, 175, 55, 0.42);
+      color: #FAF7F2;
+      box-shadow: var(--shadow-md);
+      margin: 12px 0 16px;
+    }
+
+    .widget-preview-box::before {
+      content: "";
+      position: absolute;
+      inset: 6px;
+      border-radius: 16px;
+      border: 1px solid rgba(212, 175, 55, 0.14);
+      pointer-events: none;
+    }
+
+    .apk-promo-card {
+      border-radius: 16px;
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      background: linear-gradient(140deg, var(--gold-soft), var(--ebba-soft));
+      padding: 14px 16px;
+      margin-bottom: 14px;
+    }
+
+    .notif-pref-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 10px 0 14px;
+    }
+
+    .notif-pref-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 13px;
+      border-radius: 13px;
+      background: var(--surface-soft);
+      border: 1px solid var(--border);
+      font-size: 13.5px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .notif-pref-row input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--gold);
+      cursor: pointer;
     }
   </style>
 </head>
@@ -2105,6 +2719,13 @@
         <button class="identity-toggle" id="identityBtn" title="Switch profile (Pierre / Ebba)">
           <span class="avatar-dot avatar-pierre" id="identityAvatar">P</span>
           <span id="identityName">Pierre</span>
+        </button>
+        <button class="icon-btn" id="notifBtn" title="Notifications &amp; alerts" aria-label="Notifications">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          <span class="notif-status-dot" id="notifStatusDot"></span>
         </button>
         <button class="icon-btn" id="themeBtn" title="Switch theme (Light / Dark)" aria-label="Theme">
           <svg id="themeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -2136,18 +2757,6 @@
       </div>
     </div>
 
-    <!-- Main Two-Tab Navigation -->
-    <nav class="main-tabs" aria-label="Main sections">
-      <button type="button" class="main-tab-btn active" id="tabBtnLists" data-tab="lists">
-        <span>☑ Lists &amp; Notes</span>
-        <span class="tab-count-badge" id="tabCountLists">0</span>
-      </button>
-      <button type="button" class="main-tab-btn" id="tabBtnRecipes" data-tab="recipes">
-        <span>📖 Recipe Dex</span>
-        <span class="tab-count-badge" id="tabCountRecipes">0</span>
-      </button>
-    </nav>
-
     <!-- Tab 1: Lists & Notes -->
     <div id="listsTabView">
       <!-- Note of the Day Card -->
@@ -2157,10 +2766,12 @@
             <span>✦</span> Note of the Day
           </div>
           <div class="love-note-actions">
-            <button class="edit-mot-btn" id="editMotBtn">Write a note</button>
+            <button type="button" class="edit-mot-btn" id="openWidgetBtn" title="Add Note of the Day widget to Home Screen">📱 Widget</button>
+            <button type="button" class="edit-mot-btn" id="editMotBtn">Write a note</button>
           </div>
         </div>
         <p class="love-note-text" id="motText">Loading...</p>
+        <div class="love-note-partner-strip" id="motPartnerStrip"></div>
         <div class="love-note-footer">
           <div class="love-note-meta" id="motMeta">Shared between Pierre &amp; Ebba</div>
           <button class="heart-react-btn" id="heartReactBtn" title="Send a heart">
@@ -2284,7 +2895,118 @@
         <div class="cards-grid" id="matcherResultsGrid"></div>
       </div>
     </div>
+
+    <!-- Tab 3: Daily Words (French <-> Swedish, Streak & Weekly Quiz) -->
+    <div id="wordsTabView" style="display:none;">
+      <section class="words-hero-card" aria-label="Daily words and streak overview">
+        <div class="dex-hero-top" style="margin-bottom:10px;">
+          <div>
+            <div class="dex-kicker"><span>✦</span> Daily Language Exchange</div>
+            <h2 class="dex-hero-title">French 🇫🇷 &amp; Swedish 🇸🇪</h2>
+            <p class="dex-hero-sub">Teach each other one word a day &amp; compete every week</p>
+          </div>
+          <div class="streak-pill-big" id="wordsCoupleStreakPill">
+            <span>🔥</span>
+            <span id="wordsCoupleStreakVal">0</span>
+            <span>day streak</span>
+          </div>
+        </div>
+
+        <div class="streak-sub-row">
+          <span class="mini-stat-chip">🏆 Best: <strong id="wordsBestStreakVal">0</strong>d</span>
+          <span class="mini-stat-chip">🇫🇷 Pierre: <strong id="wordsFrStreakVal">0</strong>d (<span id="wordsFrTotalVal">0</span>)</span>
+          <span class="mini-stat-chip">🇸🇪 Ebba: <strong id="wordsSvStreakVal">0</strong>d (<span id="wordsSvTotalVal">0</span>)</span>
+        </div>
+
+        <div class="week-strip" id="wordsWeekStrip" aria-label="Last 7 days streak progress"></div>
+
+        <div class="today-status-bar" id="wordsTodayStatus">Share today’s French &amp; Swedish words!</div>
+
+        <div class="today-exchange-grid" id="wordsTodayGrid"></div>
+
+        <div class="dex-mode-switch" role="tablist" aria-label="Words mode">
+          <button type="button" class="dex-mode-btn active" id="wordsModeBookBtn">📚 Wordbook</button>
+          <button type="button" class="dex-mode-btn" id="wordsModeQuizBtn">
+            🏆 Weekly Quiz <span class="quiz-ready-badge" id="weeklyQuizReadyBadge" style="display:none;">Ready</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Sub-view 1: Wordbook -->
+      <div id="wordsBookView">
+        <section class="controls-wrap">
+          <div class="search-row">
+            <div class="search-box">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--text-soft);flex-shrink:0;">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+              </svg>
+              <input type="search" id="wordSearchInput" placeholder="Search French, Swedish, or English meaning..." autocomplete="off" />
+              <button class="clear-search-btn" id="clearWordSearchBtn" aria-label="Clear word search">&times;</button>
+            </div>
+          </div>
+          <div class="study-toggle-row">
+            <div class="filter-scroll" id="wordFilterPills"></div>
+            <button type="button" class="cat-pill" id="studyModeToggleBtn" title="Hide English meanings to test yourself">👁 Study Mode</button>
+          </div>
+        </section>
+
+        <div class="section-summary">
+          <span id="wordsSummaryText">0 words</span>
+          <span>Tap 🔊 to hear pronunciation</span>
+        </div>
+
+        <main class="cards-grid" id="wordsGrid"></main>
+      </div>
+
+      <!-- Sub-view 2: Weekly Quiz & Scoreboard -->
+      <div id="wordsQuizView" style="display:none;">
+        <div id="weeklyQuizBanner" class="quiz-panel"></div>
+        <div id="quizRunnerCard" class="quiz-panel" style="display:none;"></div>
+        <div id="quizScoreboardCard" class="quiz-panel"></div>
+      </div>
+    </div>
   </div>
+
+  <!-- Floating Frosted-Glass Bottom Navigation Dock -->
+  <nav class="bottom-nav" aria-label="Main sections">
+    <button type="button" class="bottom-nav-btn active" id="tabBtnLists" data-tab="lists">
+      <div class="bottom-nav-icon-row">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="16" rx="3"/>
+          <path d="M8 9h8M8 13h6M8 17h4"/>
+        </svg>
+        <span class="bottom-nav-badge" id="tabCountLists">0</span>
+      </div>
+      <span class="bottom-nav-label">Lists</span>
+    </button>
+
+    <button type="button" class="bottom-nav-btn" id="tabBtnRecipes" data-tab="recipes">
+      <div class="bottom-nav-icon-row">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+        </svg>
+        <span class="bottom-nav-badge" id="tabCountRecipes">0</span>
+      </div>
+      <span class="bottom-nav-label">Recipes</span>
+    </button>
+
+    <button type="button" class="bottom-nav-btn" id="tabBtnWords" data-tab="words">
+      <div class="bottom-nav-icon-row">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m5 8 6 6"/>
+          <path d="m4 14 6-6 2-3"/>
+          <path d="M2 5h12"/>
+          <path d="M7 2h1"/>
+          <path d="m22 22-5-10-5 10"/>
+          <path d="M14 18h6"/>
+        </svg>
+        <span class="bottom-nav-badge" id="tabCountWords">0</span>
+        <span class="nav-pulse-dot" id="wordsTodayDot" title="Share today's word"></span>
+      </div>
+      <span class="bottom-nav-label">Words</span>
+    </button>
+  </nav>
 
   <!-- Floating Create Button -->
   <button class="fab-btn" id="createFabBtn">
@@ -2320,7 +3042,7 @@
   </div>
 
   <!-- Modal 2: Create / Edit List or Note -->
-  <div class="modal-backdrop" id="createModal">
+  <div class="modal-backdrop" id="createModal" style="z-index:110;">
     <div class="modal-sheet">
       <div class="modal-header">
         <h2 class="modal-title" id="createModalTitle">New list or note</h2>
@@ -2440,8 +3162,12 @@
       </p>
 
       <button class="btn-primary" id="modalInstallBtn" style="margin-bottom:10px;">
-        📲 Install the app on Android
+        📲 Install the web app (PWA)
       </button>
+
+      <a class="btn-secondary" id="modalApkDownloadBtn" href="https://github.com/Pierre38610/pierre-ebba-lists/releases/download/android-latest/pierre-ebba.apk" target="_blank" rel="noopener" style="width:100%;margin-bottom:10px;text-decoration:none;border-color:var(--gold);color:var(--text);">
+        🤖 Download Android App (.apk) — Notifications &amp; Widget
+      </a>
 
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
         <button class="btn-secondary" id="nativeShareBtn">💌 Send to Ebba</button>
@@ -2614,24 +3340,150 @@
     </div>
   </div>
 
+  <!-- Modal 8: Add / Edit Daily Word -->
+  <div class="modal-backdrop" id="wordFormModal" style="z-index:110;">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title" id="wordFormModalTitle">Teach today’s word</h2>
+          <p style="margin:2px 0 0;font-size:12px;color:var(--text-muted);">French 🇫🇷 or Swedish 🇸🇪 with its English meaning</p>
+        </div>
+        <button class="close-btn" data-close="wordFormModal">&times;</button>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label">Language</label>
+        <div class="segmented" id="wordLangSelector">
+          <button type="button" class="seg-btn active" data-lang="fr">🇫🇷 French</button>
+          <button type="button" class="seg-btn" data-lang="sv">🇸🇪 Swedish</button>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="wordTermInput">Word or expression *</label>
+        <input type="text" class="input-ctrl" id="wordTermInput" placeholder="E.g., Lagom, Chaleureux..." maxlength="90" />
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="wordMeaningInput">English meaning *</label>
+        <input type="text" class="input-ctrl" id="wordMeaningInput" placeholder="E.g., Just the right amount, Warm & friendly..." maxlength="140" />
+      </div>
+
+      <div class="form-row-2">
+        <div class="field-group">
+          <label class="field-label" for="wordPhoneticInput">Pronunciation tip (optional)</label>
+          <input type="text" class="input-ctrl" id="wordPhoneticInput" placeholder="E.g., lah-gom" maxlength="80" />
+        </div>
+        <div class="field-group">
+          <label class="field-label" for="wordDateInput">Day</label>
+          <input type="date" class="input-ctrl" id="wordDateInput" />
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="wordExampleInput">Example sentence (optional)</label>
+        <input type="text" class="input-ctrl" id="wordExampleInput" placeholder="E.g., Kaffet är alldeles lagom varmt." maxlength="180" />
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="wordExampleEnInput">Example in English (optional)</label>
+        <input type="text" class="input-ctrl" id="wordExampleEnInput" placeholder="E.g., The coffee is just the right temperature." maxlength="180" />
+      </div>
+
+      <button class="btn-primary" id="saveWordBtn">Save &amp; keep streak alive 🔥</button>
+    </div>
+  </div>
+
+  <!-- Modal 9: Android & Web Notifications Center -->
+  <div class="modal-backdrop" id="notifModal" style="z-index:105;">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">Android Notifications</h2>
+          <p style="margin:2px 0 0;font-size:12px;color:var(--text-muted);" id="notifModalSubtitle">Get message-like phone alerts when your partner updates anything</p>
+        </div>
+        <button class="close-btn" data-close="notifModal">&times;</button>
+      </div>
+
+      <div id="notifModalContent"></div>
+
+      <div style="margin-top:14px;">
+        <span class="field-label">Notify me on updates to:</span>
+        <div class="notif-pref-list">
+          <label class="notif-pref-row">
+            <span>💌 Note of the Day &amp; likes</span>
+            <input type="checkbox" id="notifPrefMot" />
+          </label>
+          <label class="notif-pref-row">
+            <span>☑ Shared Lists &amp; Notes</span>
+            <input type="checkbox" id="notifPrefLists" />
+          </label>
+          <label class="notif-pref-row">
+            <span>📖 Recipe Dex</span>
+            <input type="checkbox" id="notifPrefRecipes" />
+          </label>
+          <label class="notif-pref-row">
+            <span>🇫🇷🇸🇪 Daily Words &amp; Quizzes</span>
+            <input type="checkbox" id="notifPrefWords" />
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal 10: Note of the Day Home Screen Widget -->
+  <div class="modal-backdrop" id="widgetModal" style="z-index:105;">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">Home Screen Widget</h2>
+          <p style="margin:2px 0 0;font-size:12px;color:var(--text-muted);">See your partner’s latest Note of the Day right on your phone</p>
+        </div>
+        <button class="close-btn" data-close="widgetModal">&times;</button>
+      </div>
+
+      <div class="widget-preview-box">
+        <div style="position:relative;z-index:1;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <span style="font-size:11px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:#D4AF37;" id="widgetPreviewKicker">✦ NOTE FROM EBBA</span>
+            <span style="font-size:12px;color:#9E9386;">↻</span>
+          </div>
+          <p style="font-family:var(--font-serif);font-style:italic;font-size:21px;line-height:1.35;margin:0 0 12px;color:#FAF7F2;" id="widgetPreviewQuote">Loading note...</p>
+          <div style="display:flex;align-items:center;justify-content:space-between;font-size:11.5px;color:#B4A899;">
+            <span id="widgetPreviewMeta">Pierre &amp; Ebba</span>
+            <span style="padding:3px 9px;border-radius:999px;background:rgba(224,159,135,0.16);color:#E09F87;font-weight:700;" id="widgetPreviewHearts">♥ 0</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="widgetModalActions"></div>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 
   <script>
     (() => {
       'use strict';
 
-      // Cloud Sync Configuration (Pre-configured, zero setup required)
+      // Cloud Sync & Notifications Configuration
       const NTFY_TOPIC = 'pierre_ebba_shared_v2_907521e5';
       const NTFY_BASE = 'https://ntfy.sh/' + NTFY_TOPIC;
+      const NTFY_NOTIF_PIERRE = 'pierre_ebba_notif_pierre_907521e5';
+      const NTFY_NOTIF_EBBA = 'pierre_ebba_notif_ebba_907521e5';
+      const NTFY_WIDGET_TOPIC = 'pierre_ebba_widget_907521e5';
       const KV_APP_KEY = 'x0c969je';
       const KV_BASE = 'https://keyvalue.immanuel.co/api/KeyVal';
+      const APP_PUBLIC_URL = 'https://pierre38610.github.io/pierre-ebba-lists/';
+      const APK_DOWNLOAD_URL = 'https://github.com/Pierre38610/pierre-ebba-lists/releases/download/android-latest/pierre-ebba.apk';
 
       const STORAGE_KEYS = {
         STATE: 'pe_shared_state_v2',
         USER: 'pe_current_user_v1',
         THEME: 'pe_theme_v1',
         BANNER_DISMISSED: 'pe_install_dismissed_v1',
-        PANTRY: 'pe_pantry_ingredients_v1'
+        PANTRY: 'pe_pantry_ingredients_v1',
+        NOTIF_PREFS: 'pe_notif_prefs_v1'
       };
 
       const TONES = [
@@ -2654,6 +3506,14 @@
         { id: 'other', label: 'Other', icon: '🍽' }
       ];
 
+      const WORD_FILTERS = [
+        { id: 'all', label: '✦ All' },
+        { id: 'fr', label: '🇫🇷 French' },
+        { id: 'sv', label: '🇸🇪 Swedish' },
+        { id: 'starred', label: '★ Favorites' },
+        { id: 'mastered', label: '✓ Mastered' }
+      ];
+
       const PANTRY_STAPLES = new Set([
         'salt', 'sea salt', 'kosher salt', 'pepper', 'black pepper',
         'water', 'oil', 'olive oil', 'extra virgin olive oil'
@@ -2662,12 +3522,21 @@
       const CLIENT_ID = 'cli_' + Math.random().toString(36).slice(2, 10);
 
       let currentUser = localStorage.getItem(STORAGE_KEYS.USER) || '';
-      let activeTab = 'lists'; // 'lists' | 'recipes'
+      let activeTab = 'lists'; // 'lists' | 'recipes' | 'words'
       let dexSubMode = 'collection'; // 'collection' | 'matcher'
+      let wordsSubMode = 'book'; // 'book' | 'quiz'
       let searchQuery = '';
       let recipeSearchQuery = '';
       let recipeCategoryFilter = 'all';
+      let wordSearchQuery = '';
+      let wordFilter = 'all';
+      let studyMode = false;
+      let revealedWordIds = new Set();
+      let editingWordId = null;
+      let wordFormLang = 'fr';
+      let quizSession = null;
       let matcherIngredients = loadPantryList();
+      let notifPrefs = loadNotifPrefs();
       let state = loadLocalState();
       let deferredPrompt = null;
       let editingCardId = null;
@@ -2686,8 +3555,43 @@
       let kvSaving = false;
       let kvDirty = false;
       let syncState = 'connecting'; // connecting | ok | syncing | offline
+      const seenActivityIds = new Set();
+      const coalesceTimers = new Map();
 
       const $ = (id) => document.getElementById(id);
+
+      function loadNotifPrefs() {
+        const defaults = { mot: true, lists: true, recipes: true, words: true, foregroundWeb: false };
+        try {
+          const raw = localStorage.getItem(STORAGE_KEYS.NOTIF_PREFS);
+          if (!raw) return defaults;
+          return { ...defaults, ...JSON.parse(raw) };
+        } catch (_) {
+          return defaults;
+        }
+      }
+
+      function saveNotifPrefs() {
+        try {
+          localStorage.setItem(STORAGE_KEYS.NOTIF_PREFS, JSON.stringify(notifPrefs));
+        } catch (_) {}
+      }
+
+      function isNativeApk() {
+        return !!(window.AndroidBridge && typeof window.AndroidBridge.isNativeApp === 'function' && window.AndroidBridge.isNativeApp());
+      }
+
+      function getPartnerName(user = currentUser) {
+        return user === 'Ebba' ? 'Pierre' : 'Ebba';
+      }
+
+      function getMyNotifTopic(user = currentUser) {
+        return user === 'Ebba' ? NTFY_NOTIF_EBBA : NTFY_NOTIF_PIERRE;
+      }
+
+      function getPartnerNotifTopic(user = currentUser) {
+        return user === 'Ebba' ? NTFY_NOTIF_PIERRE : NTFY_NOTIF_EBBA;
+      }
 
       function loadPantryList() {
         try {
@@ -2739,7 +3643,7 @@
 
       function createDefaultState() {
         return {
-          schema: 3,
+          schema: 4,
           petitMot: {
             text: '',
             author: '',
@@ -2747,9 +3651,28 @@
             heartedBy: [],
             updatedAt: 0
           },
+          partnerNotes: {
+            Pierre: null,
+            Ebba: null
+          },
           cards: [],
-          recipes: []
+          recipes: [],
+          words: [],
+          quizResults: []
         };
+      }
+
+      function seedPartnerNotesIfNeeded(st) {
+        if (!st.partnerNotes || typeof st.partnerNotes !== 'object') {
+          st.partnerNotes = { Pierre: null, Ebba: null };
+        }
+        if (st.petitMot && st.petitMot.text && (st.petitMot.author === 'Pierre' || st.petitMot.author === 'Ebba')) {
+          const auth = st.petitMot.author;
+          const existing = st.partnerNotes[auth];
+          if (!existing || (st.petitMot.updatedAt || 0) > (existing.updatedAt || 0)) {
+            st.partnerNotes[auth] = { ...st.petitMot };
+          }
+        }
       }
 
       function loadLocalState() {
@@ -2760,6 +3683,9 @@
             if (parsed && Array.isArray(parsed.cards)) {
               parsed.cards = parsed.cards.filter((c) => c && c.id && !String(c.id).startsWith('welcome_'));
               parsed.recipes = Array.isArray(parsed.recipes) ? parsed.recipes.filter((r) => r && r.id) : [];
+              parsed.words = Array.isArray(parsed.words) ? parsed.words.filter((w) => w && w.id) : [];
+              parsed.quizResults = Array.isArray(parsed.quizResults) ? parsed.quizResults.filter((q) => q && q.id) : [];
+              seedPartnerNotesIfNeeded(parsed);
               return parsed;
             }
           }
@@ -2778,13 +3704,25 @@
         if (!incoming || typeof incoming !== 'object') return false;
         let changed = false;
 
-        // 1. Merge Note of the Day
+        // 1. Merge Note of the Day & per-author Partner Notes
         if (incoming.petitMot && incoming.petitMot.updatedAt) {
           if (!local.petitMot || incoming.petitMot.updatedAt > (local.petitMot.updatedAt || 0)) {
             local.petitMot = { ...incoming.petitMot };
             changed = true;
           }
         }
+        if (!local.partnerNotes) local.partnerNotes = { Pierre: null, Ebba: null };
+        if (incoming.partnerNotes && typeof incoming.partnerNotes === 'object') {
+          for (const who of ['Pierre', 'Ebba']) {
+            const remNote = incoming.partnerNotes[who];
+            const locNote = local.partnerNotes[who];
+            if (remNote && remNote.updatedAt && (!locNote || remNote.updatedAt > (locNote.updatedAt || 0))) {
+              local.partnerNotes[who] = { ...remNote };
+              changed = true;
+            }
+          }
+        }
+        seedPartnerNotesIfNeeded(local);
 
         // 2. Merge Cards
         if (Array.isArray(incoming.cards)) {
@@ -2891,6 +3829,53 @@
           local.recipes = Array.from(rMap.values());
         }
 
+        // 4. Merge Words (Daily Language Exchange)
+        if (!Array.isArray(local.words)) local.words = [];
+        if (Array.isArray(incoming.words)) {
+          const wMap = new Map(local.words.filter((w) => w && w.id).map((w) => [w.id, w]));
+          for (const rem of incoming.words) {
+            if (!rem || !rem.id) continue;
+            const cur = wMap.get(rem.id);
+            if (!cur) {
+              wMap.set(rem.id, JSON.parse(JSON.stringify(rem)));
+              changed = true;
+            } else if ((rem.updatedAt || 0) > (cur.updatedAt || 0)) {
+              Object.assign(cur, {
+                word: rem.word || '',
+                meaning: rem.meaning || '',
+                lang: rem.lang === 'sv' ? 'sv' : 'fr',
+                phonetic: rem.phonetic || '',
+                example: rem.example || '',
+                exampleEn: rem.exampleEn || '',
+                date: rem.date || cur.date || '',
+                author: rem.author || cur.author || 'Pierre',
+                starred: !!rem.starred,
+                masteredBy: Array.isArray(rem.masteredBy) ? [...rem.masteredBy] : [],
+                createdAt: rem.createdAt || cur.createdAt || rem.updatedAt,
+                updatedAt: rem.updatedAt,
+                deleted: !!rem.deleted
+              });
+              changed = true;
+            }
+          }
+          local.words = Array.from(wMap.values());
+        }
+
+        // 5. Merge Quiz Results
+        if (!Array.isArray(local.quizResults)) local.quizResults = [];
+        if (Array.isArray(incoming.quizResults)) {
+          const qMap = new Map(local.quizResults.filter((q) => q && q.id).map((q) => [q.id, q]));
+          for (const rem of incoming.quizResults) {
+            if (!rem || !rem.id) continue;
+            const cur = qMap.get(rem.id);
+            if (!cur || (rem.updatedAt || 0) > (cur.updatedAt || 0)) {
+              qMap.set(rem.id, JSON.parse(JSON.stringify(rem)));
+              changed = true;
+            }
+          }
+          local.quizResults = Array.from(qMap.values());
+        }
+
         return changed;
       }
 
@@ -2959,15 +3944,178 @@
         label.textContent = text;
       }
 
+      // Native Android Bridge & Partner Notification System
+      function syncNativeBridge() {
+        try {
+          if (window.AndroidBridge && typeof window.AndroidBridge.syncConfig === 'function') {
+            window.AndroidBridge.syncConfig(JSON.stringify({
+              currentUser: currentUser || 'Pierre',
+              partnerNotes: state.partnerNotes || { Pierre: null, Ebba: null },
+              petitMot: state.petitMot || null
+            }));
+          }
+        } catch (_) {}
+      }
+
+      async function sendPartnerPushPayload(opts) {
+        const targetTopic = getPartnerNotifTopic(opts.actor || currentUser || 'Pierre');
+        const tab = opts.tab || 'lists';
+        const payload = {
+          topic: targetTopic,
+          title: opts.title || 'Pierre & Ebba',
+          message: opts.body || 'Shared update',
+          priority: 4,
+          tags: Array.isArray(opts.tags) && opts.tags.length ? opts.tags : ['sparkles'],
+          click: APP_PUBLIC_URL + '?tab=' + encodeURIComponent(tab),
+          icon: APP_PUBLIC_URL + 'icon-192.png'
+        };
+        try {
+          await fetch('https://ntfy.sh/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+        } catch (_) {}
+      }
+
+      function notifyPartner(opts) {
+        if (!opts) return;
+        const payload = { ...opts, actor: currentUser || 'Pierre' };
+        if (opts.coalesceKey) {
+          const existing = coalesceTimers.get(opts.coalesceKey);
+          if (existing) clearTimeout(existing);
+          const timer = setTimeout(() => {
+            coalesceTimers.delete(opts.coalesceKey);
+            sendPartnerPushPayload(payload);
+          }, 2000);
+          coalesceTimers.set(opts.coalesceKey, timer);
+          return;
+        }
+        sendPartnerPushPayload(payload);
+      }
+
+      function compactNote(note) {
+        if (!note || !note.text) return null;
+        return {
+          text: String(note.text).slice(0, 240),
+          author: note.author || '',
+          hearts: Number(note.hearts) || 0,
+          updatedAt: Number(note.updatedAt) || 0
+        };
+      }
+
+      async function publishWidgetNotesSnapshot() {
+        seedPartnerNotesIfNeeded(state);
+        const snap = {
+          p: compactNote(state.partnerNotes && state.partnerNotes.Pierre),
+          e: compactNote(state.partnerNotes && state.partnerNotes.Ebba),
+          m: compactNote(state.petitMot)
+        };
+        syncNativeBridge();
+        try {
+          await fetch('https://ntfy.sh/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              topic: NTFY_WIDGET_TOPIC,
+              message: JSON.stringify(snap)
+            })
+          });
+        } catch (_) {}
+        try {
+          const jsonStr = JSON.stringify(snap);
+          const encoded = 'RAW_' + bytesToBase64Url(new TextEncoder().encode(jsonStr));
+          const CHUNK_SIZE = 175;
+          const chunks = [];
+          for (let i = 0; i < encoded.length; i += CHUNK_SIZE) {
+            chunks.push(encoded.slice(i, i + CHUNK_SIZE));
+          }
+          const gen = Date.now().toString(36);
+          for (let idx = 0; idx < chunks.length; idx++) {
+            const ok = await kvPostWithRetry(`ebba_v2_wn_${gen}_${idx}`, chunks[idx]);
+            if (!ok) return;
+          }
+          await kvPostWithRetry('ebba_v2_wn_meta', `${gen}-${chunks.length}`);
+        } catch (_) {}
+      }
+
+      function isNotifCategoryAllowed(category) {
+        if (!category) return true;
+        if (category === 'mot') return notifPrefs.mot !== false;
+        if (category === 'lists') return notifPrefs.lists !== false;
+        if (category === 'recipes') return notifPrefs.recipes !== false;
+        if (category === 'words') return notifPrefs.words !== false;
+        return true;
+      }
+
+      async function maybeShowWebNotification(act) {
+        if (!act || !act.id || seenActivityIds.has(act.id)) return;
+        seenActivityIds.add(act.id);
+        if (seenActivityIds.size > 120) {
+          const first = seenActivityIds.values().next().value;
+          seenActivityIds.delete(first);
+        }
+        if (isNativeApk()) return;
+        if (!('Notification' in window) || Notification.permission !== 'granted') return;
+        if (!isNotifCategoryAllowed(act.category)) return;
+        if (!act.force && !document.hidden && !notifPrefs.foregroundWeb) return;
+
+        try {
+          const tab = act.tab || 'lists';
+          const opts = {
+            body: act.body || 'Updated your shared space',
+            icon: './icon-192.png',
+            badge: './icon-192.png',
+            tag: act.id,
+            vibrate: [140, 70, 140],
+            data: { url: './index.html?tab=' + encodeURIComponent(tab), tab }
+          };
+          if ('serviceWorker' in navigator) {
+            const reg = await navigator.serviceWorker.ready;
+            if (reg && reg.showNotification) {
+              await reg.showNotification(act.title || 'Pierre & Ebba', opts);
+              return;
+            }
+          }
+          new Notification(act.title || 'Pierre & Ebba', opts);
+        } catch (_) {}
+      }
+
+      function updateNotifIndicator() {
+        const dot = $('notifStatusDot');
+        if (!dot) return;
+        let active = false;
+        if (isNativeApk()) {
+          try {
+            active = window.AndroidBridge.hasNotificationPermission() && window.AndroidBridge.isLivePushEnabled();
+          } catch (_) {
+            active = true;
+          }
+        } else {
+          active = ('Notification' in window && Notification.permission === 'granted');
+        }
+        dot.classList.toggle('active', active);
+      }
+
       // Publish update to ntfy (real-time) and schedule KV snapshot (permanent)
-      async function broadcastState(actorName = '') {
+      async function broadcastState(actorName = '', activity = null) {
         saveLocalState();
+        syncNativeBridge();
         setSyncStatus('syncing', 'Syncing...');
+        const actor = actorName || currentUser || 'Pierre';
         const envelope = {
           v: 1,
           sender: CLIENT_ID,
-          actor: actorName || currentUser || 'Pierre',
+          actor,
           ts: Date.now(),
+          activity: activity ? {
+            id: uid('act'),
+            actor,
+            category: activity.category || 'lists',
+            title: activity.title || `${actor} updated Pierre & Ebba`,
+            body: activity.body || '',
+            tab: activity.tab || 'lists'
+          } : null,
           state
         };
 
@@ -3092,11 +4240,15 @@
           const changed = mergeStates(state, remoteState);
           if (changed) {
             saveLocalState();
+            syncNativeBridge();
             renderAll();
             if (detailCardId) renderDetailModal();
             if (detailRecipeId) renderRecipeDetailModal();
             if (payload.actor && payload.actor !== currentUser) {
               showToast(`${payload.actor} updated your shared space ✦`);
+              if (payload.activity) {
+                maybeShowWebNotification(payload.activity);
+              }
             }
           }
         } catch (_) {}
@@ -3134,6 +4286,7 @@
         } catch (_) {}
 
         renderAll();
+        syncNativeBridge();
         if (detailCardId) renderDetailModal();
         if (detailRecipeId) renderRecipeDetailModal();
 
@@ -3188,6 +4341,8 @@
         av.className = 'avatar-dot ' + (currentUser === 'Ebba' ? 'avatar-ebba' : 'avatar-pierre');
         nm.textContent = currentUser;
         if (closeModal) closeAllModals();
+        syncNativeBridge();
+        updateNotifIndicator();
         renderAll();
       }
 
@@ -3206,6 +4361,7 @@
 
       // Rendering
       function renderPetitMot() {
+        seedPartnerNotesIfNeeded(state);
         const mot = state.petitMot || { text: '', author: '', hearts: 0, heartedBy: [], updatedAt: 0 };
         $('motText').textContent = mot.text || 'Write a little note for the two of us...';
         const timeStr = formatRelTime(mot.updatedAt);
@@ -3222,6 +4378,26 @@
         $('heartEmoji').textContent = hasHeart ? '♥' : '♡';
         $('heartCount').textContent = mot.hearts || 0;
         $('heartReactBtn').classList.toggle('active', !!hasHeart);
+
+        // Show partner's latest note strip if currentUser wrote the top note and partner also wrote one
+        const strip = $('motPartnerStrip');
+        if (strip) {
+          const partner = getPartnerName();
+          const partnerNote = state.partnerNotes && state.partnerNotes[partner];
+          if (mot.author === (currentUser || 'Pierre') && partnerNote && partnerNote.text && partnerNote.text !== mot.text) {
+            strip.innerHTML = `
+              <div style="min-width:0;flex:1;">
+                <strong style="color:var(--gold);">Latest from ${escapeHtml(partner)}:</strong>
+                <span class="love-note-partner-quote">“${escapeHtml(partnerNote.text)}”</span>
+              </div>
+              <span style="font-size:11px;color:var(--text-soft);white-space:nowrap;">${formatRelTime(partnerNote.updatedAt)}</span>
+            `;
+            strip.classList.add('visible');
+          } else {
+            strip.innerHTML = '';
+            strip.classList.remove('visible');
+          }
+        }
       }
 
       function sortItems(items) {
@@ -3437,7 +4613,15 @@
         vibrate(10);
         renderCards();
         if (detailCardId === card.id) renderDetailModal();
-        broadcastState();
+        const actor = currentUser || 'Pierre';
+        const act = {
+          category: 'lists',
+          title: `${actor} updated "${card.title || 'List'}"`,
+          body: `Added: ${text}`,
+          tab: 'lists'
+        };
+        broadcastState(actor, act);
+        notifyPartner({ ...act, tags: ['memo'], coalesceKey: 'list_' + card.id });
       }
 
       function toggleItemDone(card, item) {
@@ -3449,7 +4633,15 @@
         vibrate(14);
         renderCards();
         if (detailCardId === card.id) renderDetailModal();
-        broadcastState();
+        const actor = currentUser || 'Pierre';
+        const act = {
+          category: 'lists',
+          title: `${actor} updated "${card.title || 'List'}"`,
+          body: `${item.done ? '✓ Checked' : 'Unchecked'}: ${item.text}`,
+          tab: 'lists'
+        };
+        broadcastState(actor, act);
+        notifyPartner({ ...act, tags: ['white_check_mark'], coalesceKey: 'list_' + card.id });
       }
 
       // Create / Edit Card Modal
@@ -3553,7 +4745,15 @@
         state.cards.unshift(newCard);
         closeModal('createModal');
         renderCards();
-        broadcastState();
+        const actor = currentUser || 'Pierre';
+        const act = {
+          category: 'lists',
+          title: `${actor} added a new ${formType === 'list' ? 'list' : 'note'}`,
+          body: `"${title}"${formType === 'list' && newCard.items.length ? ` (${newCard.items.length} items)` : ''}`,
+          tab: 'lists'
+        };
+        broadcastState(actor, act);
+        notifyPartner({ ...act, tags: ['spiral_notepad'] });
         showToast(formType === 'list' ? 'List created & shared' : 'Note saved');
       }
 
@@ -3654,6 +4854,18 @@
         const activeRecipes = (state.recipes || []).filter((r) => r && !r.deleted).length;
         if ($('tabCountLists')) $('tabCountLists').textContent = activeCards;
         if ($('tabCountRecipes')) $('tabCountRecipes').textContent = activeRecipes;
+
+        if ($('tabCountWords')) {
+          const streakInfo = computeWordStreaks();
+          const activeWords = getActiveWords().length;
+          $('tabCountWords').textContent = streakInfo.coupleStreak > 0 ? `🔥 ${streakInfo.coupleStreak}` : String(activeWords);
+          const dot = $('wordsTodayDot');
+          if (dot) {
+            const needFr = (currentUser || 'Pierre') === 'Pierre' && !streakInfo.todayFr;
+            const needSv = currentUser === 'Ebba' && !streakInfo.todaySv;
+            dot.classList.toggle('visible', needFr || needSv);
+          }
+        }
       }
 
       function renderAll() {
@@ -3661,7 +4873,9 @@
         renderCards();
         renderRecipes();
         renderMatcher();
+        renderWordsTab();
         updateTabCounts();
+        updateNotifIndicator();
       }
 
       // PWA Install & Share
@@ -3754,19 +4968,35 @@
         setTimeout(() => $('motInput').focus(), 100);
       };
 
+      $('openWidgetBtn').onclick = () => openWidgetModal();
+      $('notifBtn').onclick = () => openNotifModal();
+
       $('saveMotBtn').onclick = () => {
         const text = $('motInput').value.trim();
         if (!text) return;
-        state.petitMot = {
+        const who = currentUser || 'Pierre';
+        const ts = nowMs();
+        const noteObj = {
           text,
-          author: currentUser || 'Pierre',
+          author: who,
           hearts: 0,
           heartedBy: [],
-          updatedAt: nowMs()
+          updatedAt: ts
         };
+        state.petitMot = noteObj;
+        if (!state.partnerNotes) state.partnerNotes = { Pierre: null, Ebba: null };
+        state.partnerNotes[who] = { ...noteObj };
         closeModal('motModal');
         renderPetitMot();
-        broadcastState();
+        const act = {
+          category: 'mot',
+          title: `💌 New Note of the Day from ${who}`,
+          body: text,
+          tab: 'lists'
+        };
+        broadcastState(who, act);
+        notifyPartner({ ...act, tags: ['love_letter'] });
+        publishWidgetNotesSnapshot();
         showToast('Note posted ♥');
       };
 
@@ -3775,18 +5005,35 @@
         const who = currentUser || 'Pierre';
         const list = Array.isArray(state.petitMot.heartedBy) ? [...state.petitMot.heartedBy] : [];
         const idx = list.indexOf(who);
+        let likedNow = false;
         if (idx >= 0) {
           list.splice(idx, 1);
           state.petitMot.hearts = Math.max(0, (state.petitMot.hearts || 1) - 1);
         } else {
           list.push(who);
           state.petitMot.hearts = (state.petitMot.hearts || 0) + 1;
+          likedNow = true;
         }
         state.petitMot.heartedBy = list;
         state.petitMot.updatedAt = nowMs();
+        if (state.petitMot.author && state.partnerNotes && state.partnerNotes[state.petitMot.author]) {
+          state.partnerNotes[state.petitMot.author].hearts = state.petitMot.hearts;
+          state.partnerNotes[state.petitMot.author].heartedBy = [...list];
+          state.partnerNotes[state.petitMot.author].updatedAt = state.petitMot.updatedAt;
+        }
         vibrate(15);
         renderPetitMot();
-        broadcastState();
+        const act = likedNow ? {
+          category: 'mot',
+          title: `♥ ${who} liked your Note of the Day`,
+          body: state.petitMot.text ? `"${state.petitMot.text}"` : 'Sent you a heart ♥',
+          tab: 'lists'
+        } : null;
+        broadcastState(who, act);
+        if (likedNow) {
+          notifyPartner({ ...act, tags: ['heart'] });
+        }
+        publishWidgetNotesSnapshot();
       };
 
       $('searchInput').oninput = (e) => {
@@ -3805,6 +5052,8 @@
       $('createFabBtn').onclick = () => {
         if (activeTab === 'recipes') {
           openRecipeFormModal();
+        } else if (activeTab === 'words') {
+          openWordFormModal();
         } else {
           openCreateModal();
         }
@@ -3852,7 +5101,15 @@
         card.updatedAt = nowMs();
         closeModal('detailModal');
         renderCards();
-        broadcastState();
+        const actor = currentUser || 'Pierre';
+        const act = {
+          category: 'lists',
+          title: `${actor} updated note "${card.title || 'Note'}"`,
+          body: (card.content || '').slice(0, 120) || 'Updated note content',
+          tab: 'lists'
+        };
+        broadcastState(actor, act);
+        notifyPartner({ ...act, tags: ['pencil2'], coalesceKey: 'note_' + card.id });
         showToast('Note saved');
       };
 
@@ -3921,10 +5178,15 @@
         setSyncStatus('offline', 'Offline • local');
       });
 
-      // Service Worker Registration
+      // Service Worker Registration & Notification Click Bridge
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
           navigator.serviceWorker.register('./sw.js').catch(() => {});
+        });
+        navigator.serviceWorker.addEventListener('message', (event) => {
+          if (event.data && event.data.type === 'OPEN_TAB' && event.data.tab) {
+            switchMainTab(event.data.tab);
+          }
         });
       }
 
@@ -3932,21 +5194,40 @@
       // TAB SWITCHING & RECIPE DEX / MATCHER
       // ==========================================
 
+      function updateFabVisibility() {
+        const hideFab = (activeTab === 'words' && wordsSubMode === 'quiz') ||
+          (activeTab === 'recipes' && dexSubMode === 'matcher');
+        $('createFabBtn').classList.toggle('hidden-fab', hideFab);
+      }
+
       function switchMainTab(tab) {
-        activeTab = tab === 'recipes' ? 'recipes' : 'lists';
+        activeTab = (tab === 'recipes' || tab === 'words') ? tab : 'lists';
+        const isLists = activeTab === 'lists';
         const isRecipes = activeTab === 'recipes';
-        $('tabBtnLists').classList.toggle('active', !isRecipes);
+        const isWords = activeTab === 'words';
+
+        $('tabBtnLists').classList.toggle('active', isLists);
         $('tabBtnRecipes').classList.toggle('active', isRecipes);
-        $('listsTabView').style.display = isRecipes ? 'none' : 'block';
+        $('tabBtnWords').classList.toggle('active', isWords);
+
+        $('listsTabView').style.display = isLists ? 'block' : 'none';
         $('recipesTabView').style.display = isRecipes ? 'block' : 'none';
-        $('fabLabel').textContent = isRecipes ? 'Log Recipe' : 'New';
+        $('wordsTabView').style.display = isWords ? 'block' : 'none';
+
+        $('fabLabel').textContent = isRecipes ? 'Log Recipe' : (isWords ? 'Add Word' : 'New');
+        updateFabVisibility();
+
         if (isRecipes) {
           renderRecipes();
           renderMatcher();
+        } else if (isWords) {
+          renderWordsTab();
         } else {
           renderCards();
         }
       }
+
+      window.__peOpenTab = (tab) => switchMainTab(tab);
 
       function setDexSubMode(mode) {
         dexSubMode = mode === 'matcher' ? 'matcher' : 'collection';
@@ -3955,6 +5236,7 @@
         $('dexModeMatcherBtn').classList.toggle('active', isMatcher);
         $('dexCollectionView').style.display = isMatcher ? 'none' : 'block';
         $('dexMatcherView').style.display = isMatcher ? 'block' : 'none';
+        updateFabVisibility();
         if (isMatcher) {
           renderMatcher();
         } else {
@@ -4388,7 +5670,15 @@
           renderRecipes();
           renderMatcher();
           if (detailRecipeId === editingRecipeId) renderRecipeDetailModal();
-          broadcastState();
+          const actor = currentUser || 'Pierre';
+          const act = {
+            category: 'recipes',
+            title: `${actor} updated a recipe`,
+            body: title || 'Untitled Dish',
+            tab: 'recipes'
+          };
+          broadcastState(actor, act);
+          notifyPartner({ ...act, tags: ['cook'] });
           showToast('Recipe updated');
           return;
         }
@@ -4418,7 +5708,15 @@
         closeModal('recipeFormModal');
         renderRecipes();
         renderMatcher();
-        broadcastState();
+        const actor = currentUser || 'Pierre';
+        const act = {
+          category: 'recipes',
+          title: `🍳 ${actor} added a recipe to the Dex`,
+          body: title || 'New cooked dish',
+          tab: 'recipes'
+        };
+        broadcastState(actor, act);
+        notifyPartner({ ...act, tags: ['fork_and_knife'] });
         showToast('Saved to Recipe Dex!');
       }
 
@@ -5038,7 +6336,15 @@
         target.updatedAt = ts;
         vibrate(12);
         renderCards();
-        broadcastState();
+        const actor = currentUser || 'Pierre';
+        const act = {
+          category: 'lists',
+          title: `${actor} updated "${target.title || 'Groceries'}"`,
+          body: `Added ${added} missing ingredient${added > 1 ? 's' : ''}${sourceTitle ? ` for ${sourceTitle}` : ''}`,
+          tab: 'lists'
+        };
+        broadcastState(actor, act);
+        notifyPartner({ ...act, tags: ['shopping_cart'], coalesceKey: 'list_' + target.id });
         showToast(
           createdNew
             ? `Created "Groceries" with ${added} ingredient${added > 1 ? 's' : ''}`
@@ -5049,6 +6355,7 @@
       // Wire Recipe Dex & Matcher Events
       $('tabBtnLists').onclick = () => switchMainTab('lists');
       $('tabBtnRecipes').onclick = () => switchMainTab('recipes');
+      $('tabBtnWords').onclick = () => switchMainTab('words');
       $('dexModeCollectionBtn').onclick = () => setDexSubMode('collection');
       $('dexModeMatcherBtn').onclick = () => setDexSubMode('matcher');
 
@@ -5118,7 +6425,15 @@
         vibrate(14);
         renderRecipes();
         renderRecipeDetailModal();
-        broadcastState();
+        const actor = currentUser || 'Pierre';
+        const act = {
+          category: 'recipes',
+          title: `🔥 ${actor} cooked "${rec.title || 'a dish'}" again!`,
+          body: `Cooked ${rec.cookedCount} times together`,
+          tab: 'recipes'
+        };
+        broadcastState(actor, act);
+        notifyPartner({ ...act, tags: ['fire'] });
         showToast(`Cooked ${rec.cookedCount} times! 🔥`);
       };
 
@@ -5161,6 +6476,1340 @@
         renderMatcher();
       };
 
+      // ==========================================
+      // DAILY WORDS (FR <-> SV), STREAKS & WEEKLY QUIZ
+      // ==========================================
+
+      function getLocalDateKey(date = new Date()) {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      }
+
+      function shiftDateKey(dateKey, deltaDays) {
+        const [y, m, d] = String(dateKey).split('-').map(Number);
+        const dt = new Date(y, m - 1, d + deltaDays);
+        return getLocalDateKey(dt);
+      }
+
+      function dateKeyToLocalDate(dateKey) {
+        const [y, m, d] = String(dateKey).split('-').map(Number);
+        return new Date(y, (m || 1) - 1, d || 1);
+      }
+
+      function getIsoWeekInfo(date = new Date()) {
+        const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        const dayNum = d.getDay() || 7;
+        d.setDate(d.getDate() + 4 - dayNum);
+        const yearStart = new Date(d.getFullYear(), 0, 1);
+        const weekNum = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+        const weekKey = `${d.getFullYear()}-W${String(weekNum).padStart(2, '0')}`;
+        const mon = new Date(date.getFullYear(), date.getMonth(), date.getDate() - ((date.getDay() || 7) - 1));
+        const sun = new Date(mon.getFullYear(), mon.getMonth(), mon.getDate() + 6);
+        const fmt = (x) => x.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        return { weekKey, weekNum, year: d.getFullYear(), rangeLabel: `${fmt(mon)} – ${fmt(sun)}` };
+      }
+
+      function formatWordDateLabel(dateKey) {
+        if (!dateKey) return '';
+        const today = getLocalDateKey();
+        const yest = shiftDateKey(today, -1);
+        if (dateKey === today) return 'Today';
+        if (dateKey === yest) return 'Yesterday';
+        return dateKeyToLocalDate(dateKey).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      }
+
+      function getActiveWords() {
+        return (state.words || []).filter((w) => w && !w.deleted);
+      }
+
+      function computeWordStreaks() {
+        const words = getActiveWords();
+        const todayKey = getLocalDateKey();
+        const yestKey = shiftDateKey(todayKey, -1);
+        const byDate = new Map();
+
+        let todayFr = null;
+        let todaySv = null;
+        let frTotal = 0;
+        let svTotal = 0;
+
+        for (const w of words) {
+          const dk = w.date || getLocalDateKey(new Date(w.createdAt || w.updatedAt || Date.now()));
+          if (!byDate.has(dk)) byDate.set(dk, { fr: false, sv: false });
+          const entry = byDate.get(dk);
+          if (w.lang === 'sv') {
+            entry.sv = true;
+            svTotal++;
+            if (dk === todayKey && (!todaySv || (w.updatedAt || 0) > (todaySv.updatedAt || 0))) {
+              todaySv = w;
+            }
+          } else {
+            entry.fr = true;
+            frTotal++;
+            if (dk === todayKey && (!todayFr || (w.updatedAt || 0) > (todayFr.updatedAt || 0))) {
+              todayFr = w;
+            }
+          }
+        }
+
+        function calcStreak(pred) {
+          let cursor = pred(byDate.get(todayKey)) ? todayKey : (pred(byDate.get(yestKey)) ? yestKey : null);
+          if (!cursor) return 0;
+          let count = 0;
+          while (pred(byDate.get(cursor))) {
+            count++;
+            cursor = shiftDateKey(cursor, -1);
+          }
+          return count;
+        }
+
+        const coupleStreak = calcStreak((e) => !!(e && e.fr && e.sv));
+        const frStreak = calcStreak((e) => !!(e && e.fr));
+        const svStreak = calcStreak((e) => !!(e && e.sv));
+
+        // All-time best couple streak
+        const bothDates = Array.from(byDate.entries())
+          .filter(([, v]) => v.fr && v.sv)
+          .map(([k]) => k)
+          .sort();
+        let bestCoupleStreak = 0;
+        let run = 0;
+        let prev = null;
+        for (const dk of bothDates) {
+          if (prev && dk === shiftDateKey(prev, 1)) {
+            run++;
+          } else {
+            run = 1;
+          }
+          if (run > bestCoupleStreak) bestCoupleStreak = run;
+          prev = dk;
+        }
+
+        // Last 7 days strip
+        const weekStrip = [];
+        for (let offset = -6; offset <= 0; offset++) {
+          const dk = shiftDateKey(todayKey, offset);
+          const e = byDate.get(dk) || { fr: false, sv: false };
+          const dt = dateKeyToLocalDate(dk);
+          const label = offset === 0 ? 'Today' : dt.toLocaleDateString('en-US', { weekday: 'short' }).slice(0, 2);
+          weekStrip.push({
+            dateKey: dk,
+            label,
+            fr: e.fr,
+            sv: e.sv,
+            both: e.fr && e.sv,
+            isToday: offset === 0
+          });
+        }
+
+        return {
+          todayKey,
+          coupleStreak,
+          bestCoupleStreak,
+          frStreak,
+          svStreak,
+          frTotal,
+          svTotal,
+          todayFr,
+          todaySv,
+          weekStrip
+        };
+      }
+
+      function speakWord(text, lang) {
+        if (!text) return;
+        if (!('speechSynthesis' in window)) {
+          showToast('Audio pronunciation unavailable on this device');
+          return;
+        }
+        try {
+          window.speechSynthesis.cancel();
+          const utter = new SpeechSynthesisUtterance(text);
+          utter.lang = lang === 'sv' ? 'sv-SE' : 'fr-FR';
+          utter.rate = 0.92;
+          window.speechSynthesis.speak(utter);
+        } catch (_) {
+          showToast('Could not play audio');
+        }
+      }
+
+      function setWordsSubMode(mode) {
+        wordsSubMode = mode === 'quiz' ? 'quiz' : 'book';
+        const isQuiz = wordsSubMode === 'quiz';
+        $('wordsModeBookBtn').classList.toggle('active', !isQuiz);
+        $('wordsModeQuizBtn').classList.toggle('active', isQuiz);
+        $('wordsBookView').style.display = isQuiz ? 'none' : 'block';
+        $('wordsQuizView').style.display = isQuiz ? 'block' : 'none';
+        updateFabVisibility();
+        if (isQuiz) {
+          renderQuizSection();
+          renderQuizScoreboard();
+        } else {
+          renderWordsBook();
+        }
+      }
+
+      function renderWordsTab() {
+        renderWordsHero();
+        if (wordsSubMode === 'quiz') {
+          renderQuizSection();
+          renderQuizScoreboard();
+        } else {
+          renderWordsBook();
+        }
+      }
+
+      function renderWordsHero() {
+        const info = computeWordStreaks();
+        $('wordsCoupleStreakVal').textContent = info.coupleStreak;
+        $('wordsBestStreakVal').textContent = info.bestCoupleStreak;
+        $('wordsFrStreakVal').textContent = info.frStreak;
+        $('wordsSvStreakVal').textContent = info.svStreak;
+        $('wordsFrTotalVal').textContent = info.frTotal;
+        $('wordsSvTotalVal').textContent = info.svTotal;
+
+        // 7-day strip
+        const strip = $('wordsWeekStrip');
+        strip.innerHTML = '';
+        for (const day of info.weekStrip) {
+          const cell = document.createElement('div');
+          cell.className = 'week-day-cell' + (day.isToday ? ' today' : '');
+          cell.title = `${day.dateKey}: French ${day.fr ? '✓' : '—'}, Swedish ${day.sv ? '✓' : '—'}`;
+          cell.innerHTML = `
+            <span class="week-day-lbl">${escapeHtml(day.label)}</span>
+            <div class="week-day-orb ${day.both ? 'both' : ''} ${day.isToday ? 'today' : ''}">
+              <span class="lang-micro-dot ${day.fr ? 'fr-on' : ''}"></span>
+              <span class="lang-micro-dot ${day.sv ? 'sv-on' : ''}"></span>
+            </div>
+          `;
+          strip.appendChild(cell);
+        }
+
+        // Dynamic daily status prompt
+        const statusEl = $('wordsTodayStatus');
+        if (info.todayFr && info.todaySv) {
+          statusEl.innerHTML = `✨ <span>Both words shared today! Couple streak is safe at <strong>${info.coupleStreak}</strong> day${info.coupleStreak === 1 ? '' : 's'}.</span>`;
+        } else if (!info.todayFr && !info.todaySv) {
+          statusEl.innerHTML = `⏳ <span>Neither word added yet today — keep your streak alive before midnight!</span>`;
+        } else if (!info.todayFr) {
+          statusEl.innerHTML = `🇫🇷 <span>Ebba shared her Swedish word! Waiting for <strong>Pierre’s French word</strong> today.</span>`;
+        } else {
+          statusEl.innerHTML = `🇸🇪 <span>Pierre shared his French word! Waiting for <strong>Ebba’s Swedish word</strong> today.</span>`;
+        }
+
+        // Dual today slots
+        const grid = $('wordsTodayGrid');
+        grid.innerHTML = '';
+
+        function buildSlot(lang, wordObj) {
+          const isSv = lang === 'sv';
+          const slot = document.createElement('div');
+          if (wordObj) {
+            slot.className = 'today-slot';
+            slot.innerHTML = `
+              <div class="today-slot-head">
+                <span>${isSv ? '🇸🇪 Today’s Swedish' : '🇫🇷 Today’s French'}</span>
+                <button type="button" class="speak-btn" title="Listen" aria-label="Listen">🔊</button>
+              </div>
+              <div class="today-slot-word">${escapeHtml(wordObj.word)}</div>
+              <div class="today-slot-meaning">${escapeHtml(wordObj.meaning)}</div>
+            `;
+            slot.querySelector('.speak-btn').onclick = (e) => {
+              e.stopPropagation();
+              speakWord(wordObj.word, lang);
+            };
+          } else {
+            slot.className = 'today-slot empty';
+            slot.innerHTML = `
+              <div class="today-slot-head">
+                <span>${isSv ? '🇸🇪 Today’s Swedish' : '🇫🇷 Today’s French'}</span>
+                <span>+</span>
+              </div>
+              <div style="font-size:13.5px;font-weight:600;color:var(--gold);">
+                + Share today’s ${isSv ? 'Swedish' : 'French'} word
+              </div>
+              <div style="font-size:11.5px;color:var(--text-soft);">
+                ${isSv ? 'For Ebba to teach Pierre' : 'For Pierre to teach Ebba'}
+              </div>
+            `;
+            slot.onclick = () => openWordFormModal(null, lang);
+          }
+          return slot;
+        }
+
+        grid.appendChild(buildSlot('fr', info.todayFr));
+        grid.appendChild(buildSlot('sv', info.todaySv));
+
+        // Ready badge on Weekly Quiz switch
+        const curWeek = getIsoWeekInfo();
+        const me = currentUser || 'Pierre';
+        const partnerLang = me === 'Ebba' ? 'fr' : 'sv';
+        const partnerWordCount = getActiveWords().filter((w) => w.lang === partnerLang).length;
+        const doneThisWeek = (state.quizResults || []).some(
+          (q) => q && q.mode === 'weekly' && q.weekKey === curWeek.weekKey && q.player === me
+        );
+        const readyBadge = $('weeklyQuizReadyBadge');
+        if (readyBadge) {
+          readyBadge.style.display = (!doneThisWeek && partnerWordCount > 0) ? 'inline-flex' : 'none';
+        }
+      }
+
+      function renderWordFilterPills() {
+        const wrap = $('wordFilterPills');
+        if (!wrap) return;
+        const words = getActiveWords();
+        const me = currentUser || 'Pierre';
+        wrap.innerHTML = '';
+        for (const f of WORD_FILTERS) {
+          let count = 0;
+          if (f.id === 'all') count = words.length;
+          else if (f.id === 'fr' || f.id === 'sv') count = words.filter((w) => w.lang === f.id).length;
+          else if (f.id === 'starred') count = words.filter((w) => w.starred).length;
+          else if (f.id === 'mastered') count = words.filter((w) => Array.isArray(w.masteredBy) && w.masteredBy.includes(me)).length;
+
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'cat-pill' + (wordFilter === f.id ? ' active' : '');
+          btn.textContent = `${f.label}` + (count ? ` (${count})` : '');
+          btn.onclick = () => {
+            wordFilter = f.id;
+            renderWordsBook();
+          };
+          wrap.appendChild(btn);
+        }
+      }
+
+      function renderWordsBook() {
+        renderWordFilterPills();
+        const studyBtn = $('studyModeToggleBtn');
+        if (studyBtn) {
+          studyBtn.classList.toggle('active', studyMode);
+          studyBtn.textContent = studyMode ? '👁 Study Mode: ON' : '👁 Study Mode';
+        }
+
+        const grid = $('wordsGrid');
+        if (!grid) return;
+        const q = wordSearchQuery.trim().toLowerCase();
+        const me = currentUser || 'Pierre';
+
+        const visible = getActiveWords()
+          .filter((w) => {
+            if (wordFilter === 'fr' && w.lang !== 'fr') return false;
+            if (wordFilter === 'sv' && w.lang !== 'sv') return false;
+            if (wordFilter === 'starred' && !w.starred) return false;
+            if (wordFilter === 'mastered' && !(Array.isArray(w.masteredBy) && w.masteredBy.includes(me))) return false;
+            if (!q) return true;
+            return (
+              (w.word || '').toLowerCase().includes(q) ||
+              (w.meaning || '').toLowerCase().includes(q) ||
+              (w.phonetic || '').toLowerCase().includes(q) ||
+              (w.example || '').toLowerCase().includes(q) ||
+              (w.exampleEn || '').toLowerCase().includes(q)
+            );
+          })
+          .sort((a, b) => {
+            const da = a.date || '';
+            const db = b.date || '';
+            if (da !== db) return db.localeCompare(da);
+            return (b.updatedAt || 0) - (a.updatedAt || 0);
+          });
+
+        $('wordsSummaryText').textContent = `${visible.length} ${visible.length === 1 ? 'word' : 'words'}`;
+        grid.innerHTML = '';
+
+        if (!visible.length) {
+          const empty = document.createElement('div');
+          empty.className = 'empty-state';
+          empty.innerHTML = `
+            <h3>${q || wordFilter !== 'all' ? 'No matching words' : 'Start your French ↔ Swedish dictionary'}</h3>
+            <p>${q || wordFilter !== 'all' ? 'Try clearing your filter or search query.' : 'Share one French word and one Swedish word each day to build your couple streak!'}</p>
+            <button class="btn-secondary" id="emptyAddWordBtn">+ Add a word</button>
+          `;
+          grid.appendChild(empty);
+          $('emptyAddWordBtn').onclick = () => openWordFormModal();
+          return;
+        }
+
+        for (const w of visible) {
+          grid.appendChild(buildWordCardElement(w));
+        }
+      }
+
+      function buildWordCardElement(w) {
+        const isSv = w.lang === 'sv';
+        const me = currentUser || 'Pierre';
+        const mastered = Array.isArray(w.masteredBy) && w.masteredBy.includes(me);
+        const hiddenByStudy = studyMode && !revealedWordIds.has(w.id);
+
+        const el = document.createElement('article');
+        el.className = 'word-card' + (hiddenByStudy ? ' study-hidden' : '');
+
+        const bar = document.createElement('div');
+        bar.className = 'card-accent-bar ' + (isSv ? 'tone-terracotta' : 'tone-sauge');
+        el.appendChild(bar);
+
+        const top = document.createElement('div');
+        top.className = 'card-top';
+        top.innerHTML = `
+          <div class="card-badges">
+            <span class="card-cat-tag">${isSv ? '🇸🇪 Swedish' : '🇫🇷 French'}</span>
+            <span class="card-cat-tag">${escapeHtml(formatWordDateLabel(w.date))}</span>
+          </div>
+          <div class="card-tools">
+            <button type="button" class="speak-btn" data-act="speak" title="Listen">🔊</button>
+            <button type="button" class="card-mini-btn ${w.starred ? 'pinned' : ''}" data-act="star" title="Favorite">${w.starred ? '★' : '☆'}</button>
+            <button type="button" class="card-mini-btn" data-act="edit" title="Edit">✎</button>
+            <button type="button" class="card-mini-btn" data-act="del" title="Delete">&times;</button>
+          </div>
+        `;
+        top.querySelector('[data-act="speak"]').onclick = (e) => {
+          e.stopPropagation();
+          speakWord(w.word, w.lang);
+        };
+        top.querySelector('[data-act="star"]').onclick = (e) => {
+          e.stopPropagation();
+          w.starred = !w.starred;
+          w.updatedAt = nowMs();
+          vibrate(10);
+          renderWordsBook();
+          broadcastState(me);
+        };
+        top.querySelector('[data-act="edit"]').onclick = (e) => {
+          e.stopPropagation();
+          openWordFormModal(w);
+        };
+        top.querySelector('[data-act="del"]').onclick = (e) => {
+          e.stopPropagation();
+          if (!confirm(`Delete "${w.word}" from your Wordbook?`)) return;
+          w.deleted = true;
+          w.updatedAt = nowMs();
+          renderWordsTab();
+          updateTabCounts();
+          broadcastState(me);
+          showToast('Word removed');
+        };
+        el.appendChild(top);
+
+        const body = document.createElement('div');
+        body.style.cursor = studyMode ? 'pointer' : 'default';
+        body.innerHTML = `
+          <h3 class="word-term">${escapeHtml(w.word)}</h3>
+          ${w.phonetic ? `<div class="word-phonetic">/${escapeHtml(w.phonetic)}/</div>` : ''}
+          <div class="word-meaning">${escapeHtml(w.meaning)}</div>
+          ${studyMode ? `<div class="study-hint-badge">${hiddenByStudy ? 'Tap card to reveal meaning' : 'Tap to hide again'}</div>` : ''}
+          ${w.example ? `
+            <div class="word-example-box">
+              <div class="word-example-orig">“${escapeHtml(w.example)}”</div>
+              ${w.exampleEn ? `<div class="word-example-en">${escapeHtml(w.exampleEn)}</div>` : ''}
+            </div>
+          ` : ''}
+        `;
+        if (studyMode) {
+          body.onclick = () => {
+            if (revealedWordIds.has(w.id)) revealedWordIds.delete(w.id);
+            else revealedWordIds.add(w.id);
+            renderWordsBook();
+          };
+        }
+        el.appendChild(body);
+
+        const foot = document.createElement('div');
+        foot.className = 'card-footer';
+        foot.innerHTML = `
+          <span>Taught by <strong>${escapeHtml(w.author || (isSv ? 'Ebba' : 'Pierre'))}</strong></span>
+          <button type="button" class="mastered-btn ${mastered ? 'active' : ''}">${mastered ? 'Mastered ✓' : 'Mark known'}</button>
+        `;
+        foot.querySelector('.mastered-btn').onclick = (e) => {
+          e.stopPropagation();
+          if (!Array.isArray(w.masteredBy)) w.masteredBy = [];
+          const idx = w.masteredBy.indexOf(me);
+          if (idx >= 0) w.masteredBy.splice(idx, 1);
+          else w.masteredBy.push(me);
+          w.updatedAt = nowMs();
+          vibrate(12);
+          renderWordsBook();
+          broadcastState(me);
+        };
+        el.appendChild(foot);
+
+        return el;
+      }
+
+      function setWordFormLang(lang) {
+        wordFormLang = lang === 'sv' ? 'sv' : 'fr';
+        document.querySelectorAll('#wordLangSelector .seg-btn').forEach((b) => {
+          b.classList.toggle('active', b.dataset.lang === wordFormLang);
+        });
+      }
+
+      function openWordFormModal(wordToEdit = null, presetLang = null) {
+        editingWordId = wordToEdit ? wordToEdit.id : null;
+        $('wordFormModalTitle').textContent = wordToEdit ? 'Edit word' : 'Teach a word';
+        const defaultLang = presetLang || ((currentUser === 'Ebba') ? 'sv' : 'fr');
+        setWordFormLang(wordToEdit ? wordToEdit.lang : defaultLang);
+
+        $('wordTermInput').value = wordToEdit ? (wordToEdit.word || '') : '';
+        $('wordMeaningInput').value = wordToEdit ? (wordToEdit.meaning || '') : '';
+        $('wordPhoneticInput').value = wordToEdit ? (wordToEdit.phonetic || '') : '';
+        $('wordExampleInput').value = wordToEdit ? (wordToEdit.example || '') : '';
+        $('wordExampleEnInput').value = wordToEdit ? (wordToEdit.exampleEn || '') : '';
+        $('wordDateInput').value = (wordToEdit && wordToEdit.date) ? wordToEdit.date : getLocalDateKey();
+
+        openModal('wordFormModal');
+        setTimeout(() => $('wordTermInput').focus(), 120);
+      }
+
+      function saveWordForm() {
+        const word = $('wordTermInput').value.trim();
+        const meaning = $('wordMeaningInput').value.trim();
+        if (!word || !meaning) {
+          showToast('Please enter both the word and its meaning');
+          return;
+        }
+        const phonetic = $('wordPhoneticInput').value.trim();
+        const example = $('wordExampleInput').value.trim();
+        const exampleEn = $('wordExampleEnInput').value.trim();
+        const date = $('wordDateInput').value || getLocalDateKey();
+        const ts = nowMs();
+        const actor = currentUser || 'Pierre';
+
+        if (!Array.isArray(state.words)) state.words = [];
+
+        if (editingWordId) {
+          const w = state.words.find((x) => x.id === editingWordId);
+          if (w) {
+            w.word = word;
+            w.meaning = meaning;
+            w.lang = wordFormLang;
+            w.phonetic = phonetic;
+            w.example = example;
+            w.exampleEn = exampleEn;
+            w.date = date;
+            w.updatedAt = ts;
+          }
+          closeModal('wordFormModal');
+          renderWordsTab();
+          updateTabCounts();
+          broadcastState(actor);
+          showToast('Word updated');
+          return;
+        }
+
+        const newWord = {
+          id: uid('w'),
+          word,
+          meaning,
+          lang: wordFormLang,
+          phonetic,
+          example,
+          exampleEn,
+          date,
+          author: actor,
+          starred: false,
+          masteredBy: [],
+          createdAt: ts,
+          updatedAt: ts,
+          deleted: false
+        };
+        state.words.unshift(newWord);
+        closeModal('wordFormModal');
+        renderWordsTab();
+        updateTabCounts();
+
+        const streakInfo = computeWordStreaks();
+        const flag = wordFormLang === 'sv' ? '🇸🇪' : '🇫🇷';
+        const langName = wordFormLang === 'sv' ? 'Swedish' : 'French';
+        const act = {
+          category: 'words',
+          title: `${flag} ${actor} shared today’s ${langName} word!`,
+          body: `"${word}" — ${meaning}${streakInfo.coupleStreak > 0 ? ` (🔥 ${streakInfo.coupleStreak}d streak)` : ''}`,
+          tab: 'words'
+        };
+        broadcastState(actor, act);
+        notifyPartner({ ...act, tags: [wordFormLang === 'sv' ? 'se' : 'fr'] });
+        showToast('Word saved & shared! 🔥');
+      }
+
+      // ==========================================
+      // WEEKLY QUIZ & SCOREBOARD
+      // ==========================================
+
+      function normalizeAnswerStr(s) {
+        return String(s || '')
+          .trim()
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/[^a-z0-9\s]/g, ' ')
+          .replace(/\s+/g, ' ')
+          .trim();
+      }
+
+      function shuffleArr(arr) {
+        const copy = [...arr];
+        for (let i = copy.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [copy[i], copy[j]] = [copy[j], copy[i]];
+        }
+        return copy;
+      }
+
+      function buildQuizQuestions(targetLang, mode) {
+        const allActive = getActiveWords();
+        const filtered = targetLang === 'both'
+          ? allActive
+          : allActive.filter((w) => w.lang === targetLang);
+
+        if (!filtered.length) return [];
+
+        const curWeekKey = getIsoWeekInfo().weekKey;
+        const sevenDaysAgo = shiftDateKey(getLocalDateKey(), -6);
+        const me = currentUser || 'Pierre';
+
+        const recent = [];
+        const rest = [];
+        for (const w of filtered) {
+          const wWeek = w.date ? getIsoWeekInfo(dateKeyToLocalDate(w.date)).weekKey : '';
+          if (wWeek === curWeekKey || (w.date && w.date >= sevenDaysAgo)) {
+            recent.push(w);
+          } else {
+            rest.push(w);
+          }
+        }
+
+        const unmasteredRest = rest.filter((w) => !(Array.isArray(w.masteredBy) && w.masteredBy.includes(me)));
+        const masteredRest = rest.filter((w) => Array.isArray(w.masteredBy) && w.masteredBy.includes(me));
+
+        const picked = [
+          ...shuffleArr(recent),
+          ...shuffleArr(unmasteredRest),
+          ...shuffleArr(masteredRest)
+        ].slice(0, 10);
+
+        return picked.map((wordObj, idx) => {
+          const dir = idx % 2 === 0 ? 'target_to_en' : 'en_to_target';
+          const sameLangPool = filtered.filter((x) => x.lang === wordObj.lang && x.id !== wordObj.id);
+          const canDoChoices = sameLangPool.length >= 1;
+
+          if (!canDoChoices) {
+            return {
+              wordObj,
+              type: 'type',
+              dir: 'target_to_en',
+              prompt: wordObj.word,
+              promptLang: wordObj.lang,
+              correctAnswer: wordObj.meaning,
+              choices: [],
+              userChoice: null,
+              isCorrect: null
+            };
+          }
+
+          const distractors = shuffleArr(sameLangPool).slice(0, 3);
+          if (dir === 'target_to_en') {
+            const choices = shuffleArr([wordObj.meaning, ...distractors.map((d) => d.meaning)]);
+            return {
+              wordObj,
+              type: 'choice',
+              dir,
+              prompt: wordObj.word,
+              promptLang: wordObj.lang,
+              correctAnswer: wordObj.meaning,
+              choices: Array.from(new Set(choices)),
+              userChoice: null,
+              isCorrect: null
+            };
+          } else {
+            const choices = shuffleArr([wordObj.word, ...distractors.map((d) => d.word)]);
+            return {
+              wordObj,
+              type: 'choice',
+              dir,
+              prompt: wordObj.meaning,
+              promptLang: 'en',
+              correctAnswer: wordObj.word,
+              choices: Array.from(new Set(choices)),
+              userChoice: null,
+              isCorrect: null
+            };
+          }
+        });
+      }
+
+      function startQuiz(mode, targetLang = null) {
+        const me = currentUser || 'Pierre';
+        const resolvedLang = mode === 'weekly'
+          ? (me === 'Ebba' ? 'fr' : 'sv')
+          : (targetLang || (me === 'Ebba' ? 'fr' : 'sv'));
+        const questions = buildQuizQuestions(resolvedLang, mode);
+        if (!questions.length) {
+          showToast('Add some words in that language first!');
+          return;
+        }
+        quizSession = {
+          mode,
+          weekInfo: getIsoWeekInfo(),
+          player: me,
+          targetLang: resolvedLang,
+          questions,
+          index: 0,
+          score: 0,
+          answered: false,
+          finished: false
+        };
+        updateFabVisibility();
+        renderQuizSection();
+      }
+
+      function answerQuizChoice(selected) {
+        if (!quizSession || quizSession.answered || quizSession.finished) return;
+        const q = quizSession.questions[quizSession.index];
+        q.userChoice = selected;
+        q.isCorrect = normalizeAnswerStr(selected) === normalizeAnswerStr(q.correctAnswer);
+        if (q.isCorrect) quizSession.score++;
+        quizSession.answered = true;
+        vibrate(q.isCorrect ? 12 : 25);
+        renderQuizSection();
+      }
+
+      function submitQuizTypedAnswer(typedVal) {
+        if (!quizSession || quizSession.answered || quizSession.finished) return;
+        const clean = String(typedVal || '').trim();
+        if (!clean) return;
+        const q = quizSession.questions[quizSession.index];
+        q.userChoice = clean;
+        const normTyped = normalizeAnswerStr(clean);
+        const normTarget = normalizeAnswerStr(q.correctAnswer);
+        q.isCorrect = normTyped === normTarget || (normTarget.length >= 4 && normTarget.split(/[\s,;/]+/).includes(normTyped));
+        if (q.isCorrect) quizSession.score++;
+        quizSession.answered = true;
+        vibrate(q.isCorrect ? 12 : 25);
+        renderQuizSection();
+      }
+
+      function advanceQuizQuestion() {
+        if (!quizSession) return;
+        if (quizSession.index + 1 < quizSession.questions.length) {
+          quizSession.index++;
+          quizSession.answered = false;
+          renderQuizSection();
+        } else {
+          finishQuiz();
+        }
+      }
+
+      function finishQuiz() {
+        if (!quizSession) return;
+        quizSession.finished = true;
+        const total = quizSession.questions.length;
+        const score = quizSession.score;
+        const pct = total ? Math.round((score / total) * 100) : 0;
+        const ts = nowMs();
+
+        if (!Array.isArray(state.quizResults)) state.quizResults = [];
+        const resObj = {
+          id: quizSession.mode === 'weekly'
+            ? `wk_${quizSession.weekInfo.weekKey}_${quizSession.player}`
+            : uid('pq'),
+          weekKey: quizSession.weekInfo.weekKey,
+          player: quizSession.player,
+          targetLang: quizSession.targetLang,
+          score,
+          total,
+          pct,
+          mode: quizSession.mode,
+          completedAt: ts,
+          updatedAt: ts
+        };
+
+        const existingIdx = state.quizResults.findIndex((r) => r && r.id === resObj.id);
+        if (existingIdx >= 0) state.quizResults[existingIdx] = resObj;
+        else state.quizResults.push(resObj);
+
+        renderWordsHero();
+        renderQuizSection();
+        renderQuizScoreboard();
+
+        const langLabel = quizSession.targetLang === 'sv' ? 'Swedish' : (quizSession.targetLang === 'fr' ? 'French' : 'French & Swedish');
+        const act = {
+          category: 'words',
+          title: `🏆 ${quizSession.player} finished ${quizSession.mode === 'weekly' ? `Week ${quizSession.weekInfo.weekNum}` : 'a practice'} quiz!`,
+          body: `Scored ${score}/${total} (${pct}%) on ${langLabel} words`,
+          tab: 'words'
+        };
+        broadcastState(quizSession.player, act);
+        if (quizSession.mode === 'weekly') {
+          notifyPartner({ ...act, tags: ['trophy'] });
+        }
+      }
+
+      function renderQuizSection() {
+        const banner = $('weeklyQuizBanner');
+        const runner = $('quizRunnerCard');
+        if (!banner || !runner) return;
+
+        const weekInfo = getIsoWeekInfo();
+        const me = currentUser || 'Pierre';
+        const partner = getPartnerName(me);
+        const myTargetLang = me === 'Ebba' ? 'fr' : 'sv';
+        const allWords = getActiveWords();
+        const myPoolCount = allWords.filter((w) => w.lang === myTargetLang).length;
+        const frCount = allWords.filter((w) => w.lang === 'fr').length;
+        const svCount = allWords.filter((w) => w.lang === 'sv').length;
+
+        const results = (state.quizResults || []).filter((r) => r && r.mode === 'weekly' && r.weekKey === weekInfo.weekKey);
+        const pierreRes = results.find((r) => r.player === 'Pierre');
+        const ebbaRes = results.find((r) => r.player === 'Ebba');
+        const myRes = me === 'Ebba' ? ebbaRes : pierreRes;
+
+        banner.innerHTML = `
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
+            <div>
+              <div class="dex-kicker"><span>🏆</span> Week ${weekInfo.weekNum} Official Match</div>
+              <h3 style="font-family:var(--font-serif);font-size:23px;font-weight:600;margin:0;">Weekly Language Quiz</h3>
+              <p style="font-size:12.5px;color:var(--text-muted);margin:3px 0 0;">${escapeHtml(weekInfo.rangeLabel)} • Test what ${escapeHtml(partner)} taught you</p>
+            </div>
+            <span class="card-cat-tag">${escapeHtml(weekInfo.weekKey)}</span>
+          </div>
+
+          <div class="h2h-grid" style="margin-top:0;margin-bottom:14px;">
+            <div class="h2h-card pierre">
+              <div style="font-size:11.5px;font-weight:700;color:var(--pierre);margin-bottom:4px;">🇫🇷→🇸🇪 Pierre (Swedish)</div>
+              <div style="font-family:var(--font-serif);font-size:22px;font-weight:700;">
+                ${pierreRes ? `${pierreRes.score}/${pierreRes.total} (${pierreRes.pct}%)` : 'Not taken'}
+              </div>
+            </div>
+            <div class="h2h-card ebba">
+              <div style="font-size:11.5px;font-weight:700;color:var(--ebba);margin-bottom:4px;">🇸🇪→🇫🇷 Ebba (French)</div>
+              <div style="font-family:var(--font-serif);font-size:22px;font-weight:700;">
+                ${ebbaRes ? `${ebbaRes.score}/${ebbaRes.total} (${ebbaRes.pct}%)` : 'Not taken'}
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            ${myRes
+              ? `<span class="match-score-pill perfect">✓ Completed this week (${myRes.score}/${myRes.total})</span>`
+              : `<button type="button" class="btn-primary" id="startOfficialQuizBtn" style="width:auto;padding:11px 18px;" ${myPoolCount === 0 ? 'disabled' : ''}>
+                  🎯 Take Week ${weekInfo.weekNum} Official Quiz
+                </button>`}
+            <button type="button" class="btn-secondary" id="practiceSvBtn" style="font-size:12.5px;padding:9px 13px;" ${svCount === 0 ? 'disabled' : ''}>🇸🇪 Practice Swedish</button>
+            <button type="button" class="btn-secondary" id="practiceFrBtn" style="font-size:12.5px;padding:9px 13px;" ${frCount === 0 ? 'disabled' : ''}>🇫🇷 Practice French</button>
+            <button type="button" class="btn-secondary" id="practiceBothBtn" style="font-size:12.5px;padding:9px 13px;" ${allWords.length === 0 ? 'disabled' : ''}>🌍 Mixed Practice</button>
+          </div>
+          ${!myRes && myPoolCount === 0 ? `<p style="font-size:12px;color:var(--text-soft);margin:8px 0 0;">Waiting for ${escapeHtml(partner)} to add at least 1 ${myTargetLang === 'sv' ? 'Swedish' : 'French'} word before you can take your official quiz.</p>` : ''}
+        `;
+
+        if ($('startOfficialQuizBtn')) {
+          $('startOfficialQuizBtn').onclick = () => startQuiz('weekly');
+        }
+        $('practiceSvBtn').onclick = () => startQuiz('practice', 'sv');
+        $('practiceFrBtn').onclick = () => startQuiz('practice', 'fr');
+        $('practiceBothBtn').onclick = () => startQuiz('practice', 'both');
+
+        if (!quizSession) {
+          runner.style.display = 'none';
+          return;
+        }
+
+        runner.style.display = 'block';
+
+        if (quizSession.finished) {
+          const total = quizSession.questions.length;
+          const pct = total ? Math.round((quizSession.score / total) * 100) : 0;
+          const praise = pct >= 80
+            ? (quizSession.targetLang === 'sv' ? 'Bra jobbat! 🌟' : 'Très bien ! 🌟')
+            : (pct >= 50 ? 'Nice progress! Keep practicing ✨' : 'Good warm-up — review the words below!');
+          const missed = quizSession.questions.filter((q) => !q.isCorrect);
+
+          runner.innerHTML = `
+            <div style="text-align:center;padding:8px 0 14px;">
+              <div class="dex-kicker" style="justify-content:center;">${quizSession.mode === 'weekly' ? `Week ${quizSession.weekInfo.weekNum} Official Result` : 'Practice Result'}</div>
+              <div style="font-family:var(--font-serif);font-size:46px;font-weight:700;line-height:1.05;color:var(--gold);margin:4px 0;">
+                ${quizSession.score} / ${total} <span style="font-size:24px;color:var(--text-muted);">(${pct}%)</span>
+              </div>
+              <p style="font-size:14.5px;font-weight:600;margin:6px 0 0;">${praise}</p>
+            </div>
+            ${missed.length ? `
+              <div style="margin-bottom:14px;">
+                <span class="field-label">Words to review</span>
+                ${missed.map((m) => `
+                  <div class="quiz-history-row" style="margin-bottom:6px;">
+                    <strong>${escapeHtml(m.wordObj.word)}</strong>
+                    <span style="color:var(--text-muted);">${escapeHtml(m.wordObj.meaning)}</span>
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+            <button type="button" class="btn-primary" id="closeQuizRunnerBtn">Done</button>
+          `;
+          $('closeQuizRunnerBtn').onclick = () => {
+            quizSession = null;
+            updateFabVisibility();
+            renderQuizSection();
+          };
+          return;
+        }
+
+        const q = quizSession.questions[quizSession.index];
+        const total = quizSession.questions.length;
+        const pctProg = Math.round(((quizSession.index + (quizSession.answered ? 1 : 0)) / total) * 100);
+        const promptHint = q.dir === 'target_to_en'
+          ? `What does this ${q.wordObj.lang === 'sv' ? 'Swedish 🇸🇪' : 'French 🇫🇷'} word mean?`
+          : `How do you say this in ${q.wordObj.lang === 'sv' ? 'Swedish 🇸🇪' : 'French 🇫🇷'}?`;
+
+        runner.innerHTML = `
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;">
+            <span class="card-cat-tag">${quizSession.mode === 'weekly' ? `Week ${quizSession.weekInfo.weekNum} Official` : 'Practice Quiz'}</span>
+            <div style="display:flex;align-items:center;gap:8px;">
+              <span style="font-size:12px;font-weight:700;color:var(--text-muted);">Question ${quizSession.index + 1} / ${total}</span>
+              <button type="button" class="close-btn" id="abortQuizBtn" title="Exit quiz" style="width:28px;height:28px;font-size:14px;">&times;</button>
+            </div>
+          </div>
+
+          <div class="progress-wrap" style="margin-bottom:14px;">
+            <div class="progress-track"><div class="progress-fill" style="width:${pctProg}%"></div></div>
+            <div class="progress-label">${quizSession.score} pts</div>
+          </div>
+
+          <div style="margin-bottom:6px;font-size:12.5px;color:var(--text-muted);font-weight:600;">${promptHint}</div>
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <div style="font-family:var(--font-serif);font-size:32px;font-weight:700;line-height:1.15;">${escapeHtml(q.prompt)}</div>
+            ${q.promptLang !== 'en' ? `<button type="button" class="speak-btn" id="quizSpeakBtn" title="Listen">🔊</button>` : ''}
+          </div>
+
+          ${q.type === 'choice'
+            ? `<div class="quiz-choices-list" id="quizChoicesWrap"></div>`
+            : `<form id="quizTypeForm" style="display:flex;gap:8px;margin:12px 0;">
+                <input type="text" class="input-ctrl" id="quizTypeInput" placeholder="Type your answer..." autocomplete="off" ${quizSession.answered ? 'disabled' : ''} value="${escapeHtml(q.userChoice || '')}" />
+                ${quizSession.answered ? '' : '<button type="submit" class="btn-primary" style="width:auto;padding:0 18px;">Check</button>'}
+              </form>`}
+
+          <div id="quizFeedbackBox" style="display:${quizSession.answered ? 'block' : 'none'};margin-top:12px;padding:12px 14px;border-radius:14px;background:var(--surface-soft);border:1px solid ${q.isCorrect ? 'var(--pierre)' : 'var(--danger)'};">
+            <div style="font-weight:700;font-size:13.5px;color:${q.isCorrect ? 'var(--pierre)' : 'var(--danger)'};margin-bottom:4px;">
+              ${q.isCorrect ? '✓ Correct!' : `✕ Answer: ${escapeHtml(q.correctAnswer)}`}
+            </div>
+            ${q.wordObj.phonetic ? `<div style="font-size:12px;color:var(--text-soft);">Pronunciation: /${escapeHtml(q.wordObj.phonetic)}/</div>` : ''}
+            ${q.wordObj.example ? `<div style="font-size:12.5px;color:var(--text-muted);font-style:italic;margin-top:4px;">“${escapeHtml(q.wordObj.example)}”</div>` : ''}
+          </div>
+
+          ${quizSession.answered ? `
+            <button type="button" class="btn-primary" id="quizNextBtn" style="margin-top:12px;">
+              ${quizSession.index + 1 < total ? 'Next Question &rarr;' : 'See Results 🏆'}
+            </button>
+          ` : ''}
+        `;
+
+        $('abortQuizBtn').onclick = () => {
+          quizSession = null;
+          updateFabVisibility();
+          renderQuizSection();
+        };
+
+        if ($('quizSpeakBtn')) {
+          $('quizSpeakBtn').onclick = () => speakWord(q.prompt, q.promptLang);
+        }
+
+        if (q.type === 'choice') {
+          const wrap = $('quizChoicesWrap');
+          for (const choice of q.choices) {
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'quiz-choice-btn';
+            btn.disabled = quizSession.answered;
+            if (quizSession.answered) {
+              const isTarget = normalizeAnswerStr(choice) === normalizeAnswerStr(q.correctAnswer);
+              const isPicked = normalizeAnswerStr(choice) === normalizeAnswerStr(q.userChoice);
+              if (isTarget) btn.classList.add('correct');
+              else if (isPicked) btn.classList.add('wrong');
+            }
+            btn.innerHTML = `<span>${escapeHtml(choice)}</span>`;
+            btn.onclick = () => answerQuizChoice(choice);
+            wrap.appendChild(btn);
+          }
+        } else if ($('quizTypeForm')) {
+          $('quizTypeForm').onsubmit = (e) => {
+            e.preventDefault();
+            submitQuizTypedAnswer($('quizTypeInput').value);
+          };
+          if (!quizSession.answered) {
+            setTimeout(() => { if ($('quizTypeInput')) $('quizTypeInput').focus(); }, 60);
+          }
+        }
+
+        if ($('quizNextBtn')) {
+          $('quizNextBtn').onclick = advanceQuizQuestion;
+        }
+      }
+
+      function renderQuizScoreboard() {
+        const card = $('quizScoreboardCard');
+        if (!card) return;
+
+        const official = (state.quizResults || []).filter((r) => r && r.mode === 'weekly');
+
+        // Group by weekKey
+        const byWeek = new Map();
+        for (const r of official) {
+          if (!byWeek.has(r.weekKey)) byWeek.set(r.weekKey, {});
+          const entry = byWeek.get(r.weekKey);
+          entry[r.player] = r;
+        }
+
+        const stats = {
+          Pierre: { wins: 0, points: 0, totalQ: 0, quizzes: 0 },
+          Ebba: { wins: 0, points: 0, totalQ: 0, quizzes: 0 }
+        };
+
+        for (const r of official) {
+          const st = stats[r.player];
+          if (!st) continue;
+          st.points += Number(r.score) || 0;
+          st.totalQ += Number(r.total) || 0;
+          st.quizzes++;
+        }
+
+        const weekKeys = Array.from(byWeek.keys()).sort((a, b) => b.localeCompare(a));
+        for (const wk of weekKeys) {
+          const pair = byWeek.get(wk);
+          if (pair.Pierre && pair.Ebba) {
+            if (pair.Pierre.pct > pair.Ebba.pct) stats.Pierre.wins++;
+            else if (pair.Ebba.pct > pair.Pierre.pct) stats.Ebba.wins++;
+            else if (pair.Pierre.score > pair.Ebba.score) stats.Pierre.wins++;
+            else if (pair.Ebba.score > pair.Pierre.score) stats.Ebba.wins++;
+          }
+        }
+
+        const pAvg = stats.Pierre.totalQ ? Math.round((stats.Pierre.points / stats.Pierre.totalQ) * 100) : 0;
+        const eAvg = stats.Ebba.totalQ ? Math.round((stats.Ebba.points / stats.Ebba.totalQ) * 100) : 0;
+
+        card.innerHTML = `
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px;">
+            <h3 style="font-family:var(--font-serif);font-size:23px;font-weight:600;margin:0;">Scoreboard &amp; Weekly Crowns</h3>
+            <span style="font-size:11.5px;color:var(--text-soft);">${weekKeys.length} week${weekKeys.length === 1 ? '' : 's'}</span>
+          </div>
+
+          <div class="h2h-grid">
+            <div class="h2h-card pierre">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                <strong style="font-family:var(--font-serif);font-size:20px;">Pierre</strong>
+                <span style="font-size:15px;font-weight:700;">👑 ${stats.Pierre.wins}</span>
+              </div>
+              <div style="font-size:12px;color:var(--text-muted);line-height:1.55;">
+                Points: <strong>${stats.Pierre.points}</strong><br/>
+                Avg accuracy: <strong>${pAvg}%</strong><br/>
+                Quizzes: <strong>${stats.Pierre.quizzes}</strong>
+              </div>
+            </div>
+
+            <div class="h2h-card ebba">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                <strong style="font-family:var(--font-serif);font-size:20px;">Ebba</strong>
+                <span style="font-size:15px;font-weight:700;">👑 ${stats.Ebba.wins}</span>
+              </div>
+              <div style="font-size:12px;color:var(--text-muted);line-height:1.55;">
+                Points: <strong>${stats.Ebba.points}</strong><br/>
+                Avg accuracy: <strong>${eAvg}%</strong><br/>
+                Quizzes: <strong>${stats.Ebba.quizzes}</strong>
+              </div>
+            </div>
+          </div>
+
+          <span class="field-label">Weekly Match History</span>
+          <div id="quizHistoryList">
+            ${weekKeys.length ? weekKeys.map((wk) => {
+              const pair = byWeek.get(wk);
+              const pStr = pair.Pierre ? `${pair.Pierre.score}/${pair.Pierre.total} (${pair.Pierre.pct}%)` : '—';
+              const eStr = pair.Ebba ? `${pair.Ebba.score}/${pair.Ebba.total} (${pair.Ebba.pct}%)` : '—';
+              let badge = '';
+              if (pair.Pierre && pair.Ebba) {
+                if (pair.Pierre.pct > pair.Ebba.pct || (pair.Pierre.pct === pair.Ebba.pct && pair.Pierre.score > pair.Ebba.score)) {
+                  badge = '<span class="card-cat-tag" style="background:var(--pierre-soft);color:var(--pierre);">👑 Pierre</span>';
+                } else if (pair.Ebba.pct > pair.Pierre.pct || (pair.Ebba.pct === pair.Pierre.pct && pair.Ebba.score > pair.Pierre.score)) {
+                  badge = '<span class="card-cat-tag" style="background:var(--ebba-soft);color:var(--ebba);">👑 Ebba</span>';
+                } else {
+                  badge = '<span class="card-cat-tag">🤝 Tie</span>';
+                }
+              } else {
+                const waitingFor = pair.Pierre ? 'Ebba' : 'Pierre';
+                badge = `<span class="card-cat-tag">⏳ Waiting for ${waitingFor}</span>`;
+              }
+              return `
+                <div class="quiz-history-row">
+                  <div>
+                    <strong>${escapeHtml(wk)}</strong>
+                    <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">
+                      Pierre: <strong>${escapeHtml(pStr)}</strong> • Ebba: <strong>${escapeHtml(eStr)}</strong>
+                    </div>
+                  </div>
+                  ${badge}
+                </div>
+              `;
+            }).join('') : `<p style="font-size:13px;color:var(--text-soft);margin:6px 0 0;">Complete your first Week ${getIsoWeekInfo().weekNum} quiz above to appear on the scoreboard!</p>`}
+          </div>
+        `;
+      }
+
+      // ==========================================
+      // NOTIFICATIONS & HOME SCREEN WIDGET MODALS
+      // ==========================================
+
+      function getPartnerLatestNoteForWidget() {
+        seedPartnerNotesIfNeeded(state);
+        const me = currentUser || 'Pierre';
+        const partner = getPartnerName(me);
+        const pNote = state.partnerNotes && state.partnerNotes[partner];
+        if (pNote && pNote.text) return { ...pNote, partner };
+        if (state.petitMot && state.petitMot.text) return { ...state.petitMot, partner };
+        return { text: '', author: partner, hearts: 0, updatedAt: 0, partner };
+      }
+
+      function openWidgetModal() {
+        const note = getPartnerLatestNoteForWidget();
+        const who = (note.author || note.partner || 'Ebba').toUpperCase();
+        $('widgetPreviewKicker').textContent = `✦ NOTE FROM ${who}`;
+        $('widgetPreviewQuote').textContent = note.text || `No note from ${note.partner} yet — ask them to write a Note of the Day!`;
+        $('widgetPreviewMeta').textContent = note.updatedAt ? formatRelTime(note.updatedAt) : 'Pierre & Ebba';
+        $('widgetPreviewHearts').textContent = `♥ ${note.hearts || 0}`;
+
+        const actions = $('widgetModalActions');
+        if (isNativeApk()) {
+          actions.innerHTML = `
+            <button type="button" class="btn-primary" id="pinWidgetNativeBtn" style="margin-bottom:10px;">
+              📌 Add Widget to Home Screen
+            </button>
+            <p style="font-size:12px;color:var(--text-muted);text-align:center;margin:0;">
+              Shows ${escapeHtml(note.partner)}’s latest Note of the Day and updates automatically!
+            </p>
+          `;
+          $('pinWidgetNativeBtn').onclick = () => {
+            syncNativeBridge();
+            try {
+              const ok = window.AndroidBridge.pinNoteWidget();
+              if (ok === false) {
+                showToast('Long-press your Home Screen → Widgets → Pierre & Ebba');
+              } else {
+                closeModal('widgetModal');
+              }
+            } catch (_) {
+              showToast('Long-press your Home Screen → Widgets → Pierre & Ebba');
+            }
+          };
+        } else {
+          actions.innerHTML = `
+            <div class="apk-promo-card">
+              <div style="font-weight:700;font-size:14px;margin-bottom:4px;">📱 Install the Android App for the Home Screen Widget</div>
+              <p style="font-size:12.5px;color:var(--text-muted);margin:0 0 10px;line-height:1.45;">
+                Android Chrome PWAs cannot pin native desktop widgets directly, so we packaged a tiny companion Android app that unlocks the real Home Screen Widget + instant phone notifications!
+              </p>
+              <a class="btn-primary" href="${APK_DOWNLOAD_URL}" target="_blank" rel="noopener" style="text-decoration:none;">
+                📲 Download Android App (.apk)
+              </a>
+            </div>
+            <div class="steps-box" style="margin-top:0;">
+              <strong>2 quick steps on Android:</strong><br/>
+              1. Install <strong>pierre-ebba.apk</strong> once on your phone.<br/>
+              2. Open it and tap <strong>📱 Widget &rarr; Add Widget to Home Screen</strong>!
+            </div>
+            <div style="margin-top:10px;text-align:center;">
+              <a href="./widget.html" class="open-card-link" style="font-size:12.5px;">Open web widget preview &rarr;</a>
+            </div>
+          `;
+        }
+
+        openModal('widgetModal');
+      }
+
+      function openNotifModal() {
+        const container = $('notifModalContent');
+        const me = currentUser || 'Pierre';
+        const myTopic = getMyNotifTopic(me);
+        const ntfyDeepLink = `ntfy://ntfy.sh/${myTopic}`;
+
+        if (isNativeApk()) {
+          let hasPerm = false;
+          let liveEnabled = true;
+          try {
+            hasPerm = window.AndroidBridge.hasNotificationPermission();
+            liveEnabled = window.AndroidBridge.isLivePushEnabled();
+          } catch (_) {}
+
+          container.innerHTML = `
+            <div class="apk-promo-card" style="margin-bottom:12px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;">
+                <strong style="font-size:14px;">🤖 Native Android Push (${escapeHtml(me)})</strong>
+                <span class="match-score-pill ${hasPerm ? 'perfect' : 'partial'}">${hasPerm ? '✓ Allowed' : 'Needs permission'}</span>
+              </div>
+              ${hasPerm ? '' : '<button type="button" class="btn-primary" id="reqNativeNotifBtn" style="margin-bottom:8px;">🔔 Enable Android Notifications</button>'}
+              <label class="notif-pref-row" style="margin-bottom:8px;">
+                <span>⚡ Instant Background Push Service</span>
+                <input type="checkbox" id="nativeLivePushChk" ${liveEnabled ? 'checked' : ''} />
+              </label>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                <button type="button" class="btn-secondary" id="nativeTestNotifBtn" style="font-size:12px;padding:9px 10px;">🔔 Test Alert</button>
+                <button type="button" class="btn-secondary" id="nativeBatteryBtn" style="font-size:12px;padding:9px 10px;">🔋 Unrestricted</button>
+              </div>
+            </div>
+            <button type="button" class="btn-secondary" id="notifOpenWidgetBtn" style="width:100%;">📌 Add Note Widget to Home Screen</button>
+          `;
+
+          if ($('reqNativeNotifBtn')) {
+            $('reqNativeNotifBtn').onclick = () => {
+              try { window.AndroidBridge.requestNotificationPermission(); } catch (_) {}
+              setTimeout(() => { updateNotifIndicator(); openNotifModal(); }, 600);
+            };
+          }
+          $('nativeLivePushChk').onchange = (e) => {
+            try { window.AndroidBridge.setLivePushEnabled(e.target.checked); } catch (_) {}
+            updateNotifIndicator();
+            showToast(e.target.checked ? 'Live push service active ⚡' : 'Background polling only');
+          };
+          $('nativeTestNotifBtn').onclick = () => {
+            try {
+              window.AndroidBridge.sendTestLocalNotification(
+                '💌 Pierre & Ebba',
+                `Notifications work on ${me}’s phone!`,
+                activeTab || 'lists'
+              );
+            } catch (_) {}
+          };
+          $('nativeBatteryBtn').onclick = () => {
+            try { window.AndroidBridge.openBatteryOptimizationSettings(); } catch (_) {}
+          };
+          $('notifOpenWidgetBtn').onclick = () => {
+            closeModal('notifModal');
+            openWidgetModal();
+          };
+        } else {
+          const perm = ('Notification' in window) ? Notification.permission : 'unsupported';
+          const permLabel = perm === 'granted' ? '✓ Browser alerts active' : (perm === 'denied' ? 'Blocked in browser' : 'Not enabled');
+
+          container.innerHTML = `
+            <div class="apk-promo-card">
+              <div style="font-weight:700;font-size:14.5px;margin-bottom:4px;">📲 Best for Android: Pierre &amp; Ebba APK</div>
+              <p style="font-size:12.5px;color:var(--text-muted);margin:0 0 10px;line-height:1.45;">
+                Get true message-style Android notifications even when Chrome is closed, plus the Note of the Day Home Screen Widget.
+              </p>
+              <a class="btn-primary" href="${APK_DOWNLOAD_URL}" target="_blank" rel="noopener" style="text-decoration:none;">
+                🤖 Download Android App (.apk)
+              </a>
+            </div>
+
+            <div style="border:1px solid var(--border);border-radius:16px;padding:12px 14px;background:var(--surface-soft);margin-bottom:10px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;">
+                <strong style="font-size:13px;">🌐 Browser / PWA Notifications</strong>
+                <span class="card-cat-tag">${escapeHtml(permLabel)}</span>
+              </div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <button type="button" class="btn-secondary" id="webNotifEnableBtn" style="flex:1;font-size:12.5px;padding:9px 12px;">
+                  ${perm === 'granted' ? '🔔 Send Test Alert' : '🔔 Enable Browser Alerts'}
+                </button>
+              </div>
+            </div>
+
+            <details style="font-size:12.5px;color:var(--text-muted);background:var(--bg-elevated);padding:10px 13px;border-radius:14px;">
+              <summary style="cursor:pointer;font-weight:600;color:var(--text);">Alternative: instant alerts via ntfy app (Play Store)</summary>
+              <p style="margin:8px 0;">If you prefer not to install the APK, install free <strong>ntfy</strong> on Android and tap below to subscribe to <strong>${escapeHtml(me)}</strong>’s private channel:</p>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <a class="btn-secondary" href="${ntfyDeepLink}" style="font-size:12px;padding:7px 12px;text-decoration:none;">Subscribe in ntfy app</a>
+                <button type="button" class="btn-secondary" id="copyMyTopicBtn" style="font-size:12px;padding:7px 12px;">Copy topic</button>
+              </div>
+            </details>
+          `;
+
+          $('webNotifEnableBtn').onclick = async () => {
+            if (!('Notification' in window)) {
+              showToast('Browser notifications not supported here — use the Android APK');
+              return;
+            }
+            if (Notification.permission !== 'granted') {
+              const res = await Notification.requestPermission();
+              updateNotifIndicator();
+              if (res !== 'granted') {
+                showToast('Permission denied — use Android APK or browser settings');
+                openNotifModal();
+                return;
+              }
+            }
+            await maybeShowWebNotification({
+              id: 'test_' + Date.now(),
+              title: '💌 Pierre & Ebba',
+              body: `Browser notifications are ready for ${me}!`,
+              tab: activeTab || 'lists',
+              category: 'mot',
+              force: true
+            });
+            showToast('Test notification triggered 🔔');
+            openNotifModal();
+          };
+
+          $('copyMyTopicBtn').onclick = async () => {
+            try {
+              await navigator.clipboard.writeText(myTopic);
+              showToast('Copied: ' + myTopic);
+            } catch (_) {
+              showToast(myTopic);
+            }
+          };
+        }
+
+        $('notifPrefMot').checked = notifPrefs.mot !== false;
+        $('notifPrefLists').checked = notifPrefs.lists !== false;
+        $('notifPrefRecipes').checked = notifPrefs.recipes !== false;
+        $('notifPrefWords').checked = notifPrefs.words !== false;
+
+        openModal('notifModal');
+      }
+
+      // Wire Words, Quiz & Notification Preference Events
+      $('wordsModeBookBtn').onclick = () => setWordsSubMode('book');
+      $('wordsModeQuizBtn').onclick = () => setWordsSubMode('quiz');
+
+      $('wordSearchInput').oninput = (e) => {
+        wordSearchQuery = e.target.value;
+        $('clearWordSearchBtn').classList.toggle('visible', wordSearchQuery.length > 0);
+        renderWordsBook();
+      };
+
+      $('clearWordSearchBtn').onclick = () => {
+        wordSearchQuery = '';
+        $('wordSearchInput').value = '';
+        $('clearWordSearchBtn').classList.remove('visible');
+        renderWordsBook();
+      };
+
+      $('studyModeToggleBtn').onclick = () => {
+        studyMode = !studyMode;
+        if (!studyMode) revealedWordIds.clear();
+        renderWordsBook();
+      };
+
+      document.querySelectorAll('#wordLangSelector .seg-btn').forEach((btn) => {
+        btn.onclick = () => setWordFormLang(btn.dataset.lang);
+      });
+      $('saveWordBtn').onclick = saveWordForm;
+
+      [
+        ['notifPrefMot', 'mot'],
+        ['notifPrefLists', 'lists'],
+        ['notifPrefRecipes', 'recipes'],
+        ['notifPrefWords', 'words']
+      ].forEach(([elId, key]) => {
+        $(elId).onchange = (e) => {
+          notifPrefs[key] = e.target.checked;
+          saveNotifPrefs();
+        };
+      });
+
+      window.addEventListener('pe-notif-updated', () => {
+        updateNotifIndicator();
+        if ($('notifModal') && $('notifModal').classList.contains('open')) {
+          openNotifModal();
+        }
+      });
+
       // Initialize
       applyTheme(localStorage.getItem(STORAGE_KEYS.THEME) || 'light');
       if (currentUser) {
@@ -5171,7 +7820,14 @@
         setTimeout(() => openModal('identityModal'), 250);
       }
 
+      const initialTabParam = new URLSearchParams(window.location.search).get('tab');
+      if (initialTabParam === 'recipes' || initialTabParam === 'words' || initialTabParam === 'lists') {
+        switchMainTab(initialTabParam);
+      }
+
       renderAll();
+      syncNativeBridge();
+      updateNotifIndicator();
       refreshInstallBanner();
       connectLiveStream();
       syncFromCloud(true);
