@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pierre-ebba-v8';
+const CACHE_NAME = 'pierre-ebba-v9';
 const APP_SHELL = [
   './',
   './index.html',
@@ -30,13 +30,14 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // Never cache real-time cloud sync requests or external downloads
+  // Never cache real-time cloud sync requests, version metadata, or external downloads
   if (
     url.hostname === 'ntfy.sh' ||
     url.hostname === 'keyvalue.immanuel.co' ||
     url.hostname === 'api.qrserver.com' ||
     url.hostname === 'github.com' ||
     url.hostname.endsWith('.githubusercontent.com') ||
+    url.pathname.endsWith('/version.json') ||
     event.request.method !== 'GET'
   ) {
     event.respondWith(fetch(event.request));

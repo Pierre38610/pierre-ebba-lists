@@ -29,6 +29,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import org.json.JSONObject
+import java.net.HttpURLConnection
+import java.net.URL
 
 class MainActivity : AppCompatActivity() {
 
@@ -36,6 +39,9 @@ class MainActivity : AppCompatActivity() {
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
     private var pendingTab: String? = null
     private var pendingWebPermissionRequest: PermissionRequest? = null
+
+    @Volatile
+    private var webUpdateCheckerActive = false
 
     private val fileChooserLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -243,6 +249,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        webView.setDownloadListener { url, _, _, _, _ ->
+            if (!url.isNullOrBlank()) {
+                openExternalUrlInternal(url)
+            }
+        }
+
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (webView.canGoBack()) {
@@ -263,6 +275,7 @@ class MainActivity : AppCompatActivity() {
         webView.loadUrl(startUrl)
 
         requestNotificationPermissionIfNeeded()
+        checkNativeApkUpdateFallback()
     }
 
     override fun onStart() {
@@ -296,6 +309,69 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun openExternalUrlInternal(url: String) {
+        runOnUiThread {
+            try {
+                val uri = Uri.parse(url)
+                if (uri.scheme == "https") {
+                    startActivity(Intent(Intent.ACTION_VIEW, uri))
+                }
+            } catch (_: Exception) {
+            }
+        }
+    }
+
+    private fun checkNativeApkUpdateFallback() {
+        Thread({
+            try {
+                Thread.sleep(4000)
+                if (webUpdateCheckerActive || isFinishing || isDestroyed) return@Thread
+
+                var conn: HttpURLConnection? = null
+                val raw = try {
+                    val url = URL("${AppPrefs.APP_URL}version.json?t=${System.currentTimeMillis()}")
+                    conn = (url.openConnection() as HttpURLConnection).apply {
+                        connectTimeout = 6000
+                        readTimeout = 6000
+                        requestMethod = "GET"
+                        setRequestProperty("Cache-Control", "no-store")
+                    }
+                    if (conn.responseCode in 200..299) {
+                        conn.inputStream.bufferedReader(Charsets.UTF_8).use { it.readText() }
+                    } else null
+                } finally {
+                    conn?.disconnect()
+                }
+
+                if (raw.isNullOrBlank() || webUpdateCheckerActive) return@Thread
+                val obj = JSONObject(raw)
+                val remoteCode = obj.optInt("apkVersionCode", 0)
+                val remoteVer = obj.optString("apkVersion", "").ifBlank { return@Thread }
+                val downloadUrl = obj.optString(
+                    "downloadUrl",
+                    "https://github.com/Pierre38610/pierre-ebba-lists/releases/download/android-latest/pierre-ebba.apk"
+                )
+
+                if (remoteCode > CURRENT_VERSION_CODE && !webUpdateCheckerActive) {
+                    runOnUiThread {
+                        if (!webUpdateCheckerActive && !isFinishing && !isDestroyed) {
+                            AlertDialog.Builder(this@MainActivity)
+                                .setTitle("Update Available (v$remoteVer)")
+                                .setMessage("A new version of Pierre & Ebba is available. Your lists, recipes, and words are kept safely during the update.")
+                                .setPositiveButton("Update (.apk)") { _, _ -> openExternalUrlInternal(downloadUrl) }
+                                .setNegativeButton("Later", null)
+                                .show()
+                        }
+                    }
+                }
+            } catch (_: Exception) {
+            }
+        }, "pe-apk-update-check").apply {
+            isDaemon = true
+            start()
+        }
+    }
+
     private fun requestNotificationPermissionIfNeeded() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
             !NotificationHelper.hasPostPermission(this)
@@ -309,7 +385,17 @@ class MainActivity : AppCompatActivity() {
         fun isNativeApp(): Boolean = true
 
         @JavascriptInterface
-        fun getAppVersion(): String = "1.1.0"
+        fun getAppVersion(): String = "1.2.0"
+
+        @JavascriptInterface
+        fun openExternalUrl(url: String) {
+            openExternalUrlInternal(url)
+        }
+
+        @JavascriptInterface
+        fun markWebUpdateCheckerActive() {
+            webUpdateCheckerActive = true
+        }
 
         @JavascriptInterface
         fun syncConfig(jsonStr: String) {
@@ -414,5 +500,6 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_TAB = "extra_tab"
+        private const val CURRENT_VERSION_CODE = 3
     }
 }

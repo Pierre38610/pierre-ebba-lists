@@ -3266,6 +3266,8 @@
         Install the app on your phone and send this same link to <strong>Ebba</strong>: your lists sync automatically in real time.
       </p>
 
+      <div id="shareRuntimeStatus" style="font-size:12px;color:var(--text-muted);background:var(--bg-elevated);border:1px solid var(--border);border-radius:12px;padding:8px 12px;margin-bottom:10px;"></div>
+
       <button class="btn-primary" id="modalInstallBtn" style="margin-bottom:10px;">
         📲 Install the web app (PWA)
       </button>
@@ -3584,17 +3586,22 @@
         <button class="close-btn" data-close="apkUpdateModal">&times;</button>
       </div>
 
-      <div class="apk-promo-card" style="margin-bottom:14px;">
+      <div class="apk-promo-card" style="margin-bottom:12px;">
         <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
-          <strong style="font-size:14.5px;">📲 Pierre &amp; Ebba <span id="apkLatestVerLabel">v1.1.0</span></strong>
+          <strong style="font-size:14.5px;">📲 Pierre &amp; Ebba <span id="apkLatestVerLabel">v1.2.0</span></strong>
           <span class="match-score-pill partial">Installed: <span id="apkInstalledVerLabel">v1.0.0</span></span>
         </div>
-        <ul style="margin:0;padding-left:18px;font-size:12.5px;color:var(--text-muted);line-height:1.55;">
-          <li>Write Notes &amp; like directly from the Home Screen Widget</li>
-          <li>Record &amp; play voice pronunciations in Daily Words</li>
-          <li>No more permanent “Listening for updates” notification</li>
+        <ul id="apkUpdateNotesList" style="margin:0;padding-left:18px;font-size:12.5px;color:var(--text-muted);line-height:1.55;">
+          <li>Voice pronunciation recording &amp; playback in Daily Words</li>
+          <li>Interactive Home Screen Widget (like &amp; write notes directly)</li>
+          <li>Removed permanent “Listening for updates” notification</li>
+          <li>Built-in APK update checker &amp; automatic cloud backup before updates</li>
         </ul>
       </div>
+
+      <p style="margin:0 0 12px;font-size:12px;color:var(--pierre);font-weight:600;text-align:center;">
+        ✓ Your shared lists, recipes, and vocabulary words are backed up &amp; preserved during updates.
+      </p>
 
       <a class="btn-primary" id="apkUpdateDownloadBtn" href="https://github.com/Pierre38610/pierre-ebba-lists/releases/download/android-latest/pierre-ebba.apk" target="_blank" rel="noopener" style="text-decoration:none;margin-bottom:9px;">
         📲 Download &amp; Update (.apk)
@@ -3619,7 +3626,8 @@
       const KV_BASE = 'https://keyvalue.immanuel.co/api/KeyVal';
       const APP_PUBLIC_URL = 'https://pierre38610.github.io/pierre-ebba-lists/';
       const APK_DOWNLOAD_URL = 'https://github.com/Pierre38610/pierre-ebba-lists/releases/download/android-latest/pierre-ebba.apk';
-      const LATEST_APK_VERSION = '1.1.0'; // Must match android/app/build.gradle.kts versionName
+      const LATEST_APK_VERSION = '1.2.0'; // Must match android/app/build.gradle.kts versionName
+      const WEB_BUILD_VERSION = '2026-11-20.3';
 
       const STORAGE_KEYS = {
         STATE: 'pe_shared_state_v2',
@@ -3683,6 +3691,15 @@
       let matcherIngredients = loadPantryList();
       let notifPrefs = loadNotifPrefs();
       let state = loadLocalState();
+      const hadLocalDataAtBoot = !!(
+        (state.cards && state.cards.some((c) => c && !c.deleted)) ||
+        (state.recipes && state.recipes.some((r) => r && !r.deleted)) ||
+        (state.words && state.words.some((w) => w && !w.deleted)) ||
+        (state.quizResults && state.quizResults.length > 0) ||
+        (state.petitMot && state.petitMot.text)
+      );
+      let initialCloudSyncDone = false;
+      let remoteVersionInfo = null;
       let deferredPrompt = null;
       let editingCardId = null;
       let detailCardId = null;
@@ -4528,11 +4545,21 @@
         return false;
       }
 
-      async function flushKvSave() {
+      async function flushKvSave(force = false) {
+        if (force) kvDirty = true;
         if (kvSaving || !kvDirty) return;
         kvSaving = true;
         kvDirty = false;
         try {
+          if (!initialCloudSyncDone && !hadLocalDataAtBoot) {
+            const existingKv = await loadFromKv();
+            if (existingKv) {
+              if (mergeStates(state, existingKv)) {
+                saveLocalState();
+              }
+              initialCloudSyncDone = true;
+            }
+          }
           let encoded = await encodePayload(state);
           if (encoded.length > 32000) {
             const strippedState = {
@@ -4564,6 +4591,20 @@
         }
       }
 
+      async function flushAllDataBeforeUpdate() {
+        saveLocalState();
+        try {
+          await Promise.race([
+            Promise.allSettled([
+              flushKvSave(true),
+              publishWidgetNotesSnapshot(),
+              retryPendingAudioUploads()
+            ]),
+            new Promise((resolve) => setTimeout(resolve, 3000))
+          ]);
+        } catch (_) {}
+      }
+
       async function loadFromKv() {
         try {
           const metaRes = await fetch(`${KV_BASE}/GetValue/${KV_APP_KEY}/ebba_v2_meta`, { cache: 'no-store' });
@@ -4573,7 +4614,7 @@
           const lastDash = rawMeta.lastIndexOf('-');
           const gen = rawMeta.slice(0, lastDash);
           const count = parseInt(rawMeta.slice(lastDash + 1), 10);
-          if (!gen || !count || count > 200) return null;
+          if (!gen || !count || count > 400) return null;
 
           const parts = await Promise.all(
             Array.from({ length: count }, (_, i) =>
@@ -4699,6 +4740,7 @@
         if (detailRecipeId) renderRecipeDetailModal();
 
         if (anyOk) {
+          initialCloudSyncDone = true;
           setSyncStatus('ok', 'Synced • live');
           $('lastSyncInfo').textContent = 'Synced at ' + new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
         } else {
@@ -5365,14 +5407,32 @@
         const appUrl = window.location.href.split('#')[0];
         $('qrCodeImg').src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=6&data=' + encodeURIComponent(appUrl);
         $('modalInstallBtn').style.display = isStandalone() ? 'none' : 'inline-flex';
+        const latestVer = getEffectiveLatestApkVersion();
+        const installed = getInstalledApkVersion();
+        const runtimeEl = $('shareRuntimeStatus');
+        if (runtimeEl) {
+          if (installed) {
+            const outdated = compareVersions(installed, latestVer) < 0;
+            runtimeEl.innerHTML = outdated
+              ? `🤖 Running <strong>Android App v${escapeHtml(installed)}</strong> • <strong style="color:var(--gold);">Update available: v${escapeHtml(latestVer)}</strong>`
+              : `🤖 Running <strong>Android App v${escapeHtml(installed)}</strong> • <span style="color:var(--pierre);font-weight:600;">Up to date ✓</span>`;
+          } else {
+            runtimeEl.innerHTML = '🌐 Running in <strong>Web Browser / PWA</strong> — download the Android App (.apk) below for native widget &amp; notifications.';
+          }
+        }
         const apkBtn = $('modalApkDownloadBtn');
         if (apkBtn) {
-          const installed = getInstalledApkVersion();
-          if (installed && compareVersions(installed, LATEST_APK_VERSION) < 0) {
-            apkBtn.textContent = `📲 Update Android App (v${installed} → v${LATEST_APK_VERSION})`;
+          const dlUrl = (remoteVersionInfo && remoteVersionInfo.downloadUrl) || APK_DOWNLOAD_URL;
+          apkBtn.href = dlUrl;
+          if (installed && compareVersions(installed, latestVer) < 0) {
+            apkBtn.textContent = `📲 Update Android App (v${installed} → v${latestVer})`;
           } else {
-            apkBtn.textContent = '🤖 Download Android App (.apk) — Notifications & Widget';
+            apkBtn.textContent = `🤖 Download Android App (.apk) — v${latestVer}`;
           }
+          apkBtn.onclick = (e) => {
+            e.preventDefault();
+            triggerApkDownload(apkBtn, dlUrl);
+          };
         }
         openModal('shareModal');
       }
@@ -5634,6 +5694,7 @@
         if (document.visibilityState === 'visible') {
           syncFromCloud(true);
           connectLiveStream();
+          checkApkUpdatePrompt();
         }
       });
 
@@ -8655,24 +8716,107 @@
         return '1.0.0';
       }
 
+      function getEffectiveLatestApkVersion() {
+        if (remoteVersionInfo && remoteVersionInfo.apkVersion && compareVersions(remoteVersionInfo.apkVersion, LATEST_APK_VERSION) > 0) {
+          return String(remoteVersionInfo.apkVersion);
+        }
+        return LATEST_APK_VERSION;
+      }
+
+      async function fetchLatestVersionInfo() {
+        try {
+          const res = await fetch(`./version.json?t=${Date.now()}`, { cache: 'no-store' });
+          if (!res.ok) return null;
+          const data = await res.json();
+          if (data && typeof data === 'object') {
+            remoteVersionInfo = data;
+            if (data.webVersion && data.webVersion !== WEB_BUILD_VERSION) {
+              try {
+                if (sessionStorage.getItem('pe_web_reloaded_for') !== data.webVersion) {
+                  sessionStorage.setItem('pe_web_reloaded_for', data.webVersion);
+                  window.location.reload();
+                  return data;
+                }
+              } catch (_) {}
+            }
+            return data;
+          }
+        } catch (_) {}
+        return null;
+      }
+
+      async function triggerApkDownload(btnEl, url = APK_DOWNLOAD_URL) {
+        const targetUrl = url || APK_DOWNLOAD_URL;
+        const origText = btnEl ? btnEl.textContent : '';
+        if (btnEl) {
+          btnEl.style.pointerEvents = 'none';
+          btnEl.textContent = 'Syncing data & downloading...';
+        }
+        await flushAllDataBeforeUpdate();
+        if (btnEl) {
+          btnEl.style.pointerEvents = '';
+          btnEl.textContent = origText;
+        }
+        if (isNativeApk()) {
+          try {
+            if (window.AndroidBridge && typeof window.AndroidBridge.openExternalUrl === 'function') {
+              window.AndroidBridge.openExternalUrl(targetUrl);
+              return;
+            }
+          } catch (_) {}
+          window.location.href = targetUrl;
+        } else {
+          window.open(targetUrl, '_blank', 'noopener');
+        }
+      }
+
       function dismissApkUpdateForSession() {
         try {
-          sessionStorage.setItem('pe_apk_update_dismissed', LATEST_APK_VERSION);
+          sessionStorage.setItem('pe_apk_update_dismissed', getEffectiveLatestApkVersion());
         } catch (_) {}
       }
 
-      function checkApkUpdatePrompt() {
-        const installed = getInstalledApkVersion();
-        if (!installed || compareVersions(installed, LATEST_APK_VERSION) >= 0) return;
+      async function checkApkUpdatePrompt() {
         try {
-          if (sessionStorage.getItem('pe_apk_update_dismissed') === LATEST_APK_VERSION) return;
+          if (isNativeApk() && window.AndroidBridge && typeof window.AndroidBridge.markWebUpdateCheckerActive === 'function') {
+            window.AndroidBridge.markWebUpdateCheckerActive();
+          }
+        } catch (_) {}
+
+        await fetchLatestVersionInfo();
+        const installed = getInstalledApkVersion();
+        const latestVer = getEffectiveLatestApkVersion();
+        if (!installed || compareVersions(installed, latestVer) >= 0) return;
+
+        try {
+          if (sessionStorage.getItem('pe_apk_update_dismissed') === latestVer) return;
         } catch (_) {}
         if ($('identityModal') && $('identityModal').classList.contains('open')) return;
+
         if ($('apkInstalledVerLabel')) $('apkInstalledVerLabel').textContent = 'v' + installed.replace(/^v/i, '');
-        if ($('apkLatestVerLabel')) $('apkLatestVerLabel').textContent = 'v' + LATEST_APK_VERSION.replace(/^v/i, '');
+        if ($('apkLatestVerLabel')) $('apkLatestVerLabel').textContent = 'v' + latestVer.replace(/^v/i, '');
+        if (remoteVersionInfo && Array.isArray(remoteVersionInfo.notes) && remoteVersionInfo.notes.length && $('apkUpdateNotesList')) {
+          $('apkUpdateNotesList').innerHTML = remoteVersionInfo.notes
+            .map((n) => `<li>${escapeHtml(String(n))}</li>`)
+            .join('');
+        }
+        const dlUrl = (remoteVersionInfo && remoteVersionInfo.downloadUrl) || APK_DOWNLOAD_URL;
+        if ($('apkUpdateDownloadBtn')) {
+          $('apkUpdateDownloadBtn').href = dlUrl;
+          $('apkUpdateDownloadBtn').onclick = (e) => {
+            e.preventDefault();
+            triggerApkDownload($('apkUpdateDownloadBtn'), dlUrl);
+          };
+        }
         openModal('apkUpdateModal');
       }
 
+      if ($('apkUpdateDownloadBtn')) {
+        $('apkUpdateDownloadBtn').onclick = (e) => {
+          e.preventDefault();
+          triggerApkDownload($('apkUpdateDownloadBtn'), (remoteVersionInfo && remoteVersionInfo.downloadUrl) || APK_DOWNLOAD_URL);
+        };
+      }
       if ($('apkUpdateLaterBtn')) {
         $('apkUpdateLaterBtn').onclick = () => closeModal('apkUpdateModal');
       }

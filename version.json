@@ -1,0 +1,12 @@
+{
+  "apkVersion": "1.2.0",
+  "apkVersionCode": 3,
+  "webVersion": "2026-11-20.3",
+  "downloadUrl": "https://github.com/Pierre38610/pierre-ebba-lists/releases/download/android-latest/pierre-ebba.apk",
+  "notes": [
+    "Voice pronunciation recording & playback in Daily Words",
+    "Interactive Home Screen Widget (like & write notes directly)",
+    "Removed permanent \"Listening for updates\" notification",
+    "Built-in APK update checker & automatic cloud backup before updates"
+  ]
+}
