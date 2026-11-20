@@ -3573,6 +3573,36 @@
     </div>
   </div>
 
+  <!-- Modal 11: Android App Update Prompt -->
+  <div class="modal-backdrop" id="apkUpdateModal" style="z-index:120;">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">Update Available</h2>
+          <p style="margin:2px 0 0;font-size:12px;color:var(--text-muted);">A newer version of the Android app is ready</p>
+        </div>
+        <button class="close-btn" data-close="apkUpdateModal">&times;</button>
+      </div>
+
+      <div class="apk-promo-card" style="margin-bottom:14px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+          <strong style="font-size:14.5px;">📲 Pierre &amp; Ebba <span id="apkLatestVerLabel">v1.1.0</span></strong>
+          <span class="match-score-pill partial">Installed: <span id="apkInstalledVerLabel">v1.0.0</span></span>
+        </div>
+        <ul style="margin:0;padding-left:18px;font-size:12.5px;color:var(--text-muted);line-height:1.55;">
+          <li>Write Notes &amp; like directly from the Home Screen Widget</li>
+          <li>Record &amp; play voice pronunciations in Daily Words</li>
+          <li>No more permanent “Listening for updates” notification</li>
+        </ul>
+      </div>
+
+      <a class="btn-primary" id="apkUpdateDownloadBtn" href="https://github.com/Pierre38610/pierre-ebba-lists/releases/download/android-latest/pierre-ebba.apk" target="_blank" rel="noopener" style="text-decoration:none;margin-bottom:9px;">
+        📲 Download &amp; Update (.apk)
+      </a>
+      <button type="button" class="btn-secondary" id="apkUpdateLaterBtn" style="width:100%;">Later</button>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 
   <script>
@@ -3589,6 +3619,7 @@
       const KV_BASE = 'https://keyvalue.immanuel.co/api/KeyVal';
       const APP_PUBLIC_URL = 'https://pierre38610.github.io/pierre-ebba-lists/';
       const APK_DOWNLOAD_URL = 'https://github.com/Pierre38610/pierre-ebba-lists/releases/download/android-latest/pierre-ebba.apk';
+      const LATEST_APK_VERSION = '1.1.0'; // Must match android/app/build.gradle.kts versionName
 
       const STORAGE_KEYS = {
         STATE: 'pe_shared_state_v2',
@@ -4732,6 +4763,9 @@
         if (id === 'wordFormModal' && typeof cleanupWordRecorder === 'function') {
           cleanupWordRecorder();
         }
+        if (id === 'apkUpdateModal' && typeof dismissApkUpdateForSession === 'function') {
+          dismissApkUpdateForSession();
+        }
         $(id).classList.remove('open');
       }
 
@@ -5331,13 +5365,30 @@
         const appUrl = window.location.href.split('#')[0];
         $('qrCodeImg').src = 'https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=6&data=' + encodeURIComponent(appUrl);
         $('modalInstallBtn').style.display = isStandalone() ? 'none' : 'inline-flex';
+        const apkBtn = $('modalApkDownloadBtn');
+        if (apkBtn) {
+          const installed = getInstalledApkVersion();
+          if (installed && compareVersions(installed, LATEST_APK_VERSION) < 0) {
+            apkBtn.textContent = `📲 Update Android App (v${installed} → v${LATEST_APK_VERSION})`;
+          } else {
+            apkBtn.textContent = '🤖 Download Android App (.apk) — Notifications & Widget';
+          }
+        }
         openModal('shareModal');
       }
 
       // Wire events
       $('identityBtn').onclick = () => openModal('identityModal');
-      $('choosePierreBtn').onclick = () => { setIdentity('Pierre'); showToast('Active profile: Pierre'); };
-      $('chooseEbbaBtn').onclick = () => { setIdentity('Ebba'); showToast('Active profile: Ebba'); };
+      $('choosePierreBtn').onclick = () => {
+        setIdentity('Pierre');
+        showToast('Active profile: Pierre');
+        setTimeout(checkApkUpdatePrompt, 250);
+      };
+      $('chooseEbbaBtn').onclick = () => {
+        setIdentity('Ebba');
+        showToast('Active profile: Ebba');
+        setTimeout(checkApkUpdatePrompt, 250);
+      };
 
       $('themeBtn').onclick = () => {
         const cur = localStorage.getItem(STORAGE_KEYS.THEME) || 'light';
@@ -8581,6 +8632,51 @@
         };
       });
 
+      function compareVersions(a, b) {
+        const pa = String(a || '0').replace(/^v/i, '').split('.').map((n) => parseInt(n, 10) || 0);
+        const pb = String(b || '0').replace(/^v/i, '').split('.').map((n) => parseInt(n, 10) || 0);
+        const len = Math.max(pa.length, pb.length);
+        for (let i = 0; i < len; i++) {
+          const va = pa[i] || 0;
+          const vb = pb[i] || 0;
+          if (va < vb) return -1;
+          if (va > vb) return 1;
+        }
+        return 0;
+      }
+
+      function getInstalledApkVersion() {
+        if (!isNativeApk()) return null;
+        try {
+          if (typeof window.AndroidBridge.getAppVersion === 'function') {
+            return String(window.AndroidBridge.getAppVersion() || '').trim() || '1.0.0';
+          }
+        } catch (_) {}
+        return '1.0.0';
+      }
+
+      function dismissApkUpdateForSession() {
+        try {
+          sessionStorage.setItem('pe_apk_update_dismissed', LATEST_APK_VERSION);
+        } catch (_) {}
+      }
+
+      function checkApkUpdatePrompt() {
+        const installed = getInstalledApkVersion();
+        if (!installed || compareVersions(installed, LATEST_APK_VERSION) >= 0) return;
+        try {
+          if (sessionStorage.getItem('pe_apk_update_dismissed') === LATEST_APK_VERSION) return;
+        } catch (_) {}
+        if ($('identityModal') && $('identityModal').classList.contains('open')) return;
+        if ($('apkInstalledVerLabel')) $('apkInstalledVerLabel').textContent = 'v' + installed.replace(/^v/i, '');
+        if ($('apkLatestVerLabel')) $('apkLatestVerLabel').textContent = 'v' + LATEST_APK_VERSION.replace(/^v/i, '');
+        openModal('apkUpdateModal');
+      }
+
+      if ($('apkUpdateLaterBtn')) {
+        $('apkUpdateLaterBtn').onclick = () => closeModal('apkUpdateModal');
+      }
+
       window.addEventListener('pe-notif-updated', () => {
         updateNotifIndicator();
         if ($('notifModal') && $('notifModal').classList.contains('open')) {
@@ -8609,6 +8705,7 @@
       refreshInstallBanner();
       connectLiveStream();
       syncFromCloud(true);
+      setTimeout(checkApkUpdatePrompt, 450);
     })();
   </script>
 </body>
