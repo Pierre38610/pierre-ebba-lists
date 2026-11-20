@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pierre-ebba-v7';
+const CACHE_NAME = 'pierre-ebba-v8';
 const APP_SHELL = [
   './',
   './index.html',
@@ -44,8 +44,11 @@ self.addEventListener('fetch', (event) => {
   }
 
   // Network-First with Cache Fallback for App Shell & fonts
+  const isNav = event.request.mode === 'navigate' || url.pathname.endsWith('/') || url.pathname.endsWith('.html');
   event.respondWith(
-    fetch(event.request)
+    (isNav && url.origin === self.location.origin
+      ? fetch(url.href, { cache: 'no-cache' })
+      : fetch(event.request))
       .then((response) => {
         if (response && response.status === 200 && url.origin === self.location.origin) {
           const clone = response.clone();
