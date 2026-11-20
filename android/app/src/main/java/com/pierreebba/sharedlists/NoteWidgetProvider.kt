@@ -6,8 +6,11 @@ import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.os.Handler
+import android.os.Looper
 import android.text.format.DateUtils
 import android.widget.RemoteViews
+import android.widget.Toast
 import java.util.concurrent.Executors
 
 class NoteWidgetProvider : AppWidgetProvider() {
@@ -21,14 +24,54 @@ class NoteWidgetProvider : AppWidgetProvider() {
 
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
-        if (intent.action == ACTION_REFRESH_NOTE) {
-            refreshAsync(context)
+        val appCtx = context.applicationContext
+        when (intent.action) {
+            ACTION_REFRESH_NOTE -> {
+                val pending = goAsync()
+                executor.execute {
+                    try {
+                        NoteFetcher.refreshLatestNote(appCtx)
+                        updateAllWidgets(appCtx)
+                    } finally {
+                        pending.finish()
+                    }
+                }
+            }
+            ACTION_TOGGLE_LIKE -> {
+                val pending = goAsync()
+                executor.execute {
+                    try {
+                        val res = AppPrefs.toggleLikePartnerNote(appCtx)
+                        if (res == null) {
+                            val partner = AppPrefs.getPartnerName(appCtx)
+                            mainHandler.post {
+                                Toast.makeText(appCtx, "No note from $partner to like yet", Toast.LENGTH_SHORT).show()
+                            }
+                            return@execute
+                        }
+                        val (newState, detail) = res
+                        val (updatedPartnerNote, likedNow) = detail
+                        updateAllWidgets(appCtx)
+                        if (likedNow) {
+                            val partner = AppPrefs.getPartnerName(appCtx)
+                            mainHandler.post {
+                                Toast.makeText(appCtx, "Sent ♥ to $partner", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                        NoteFetcher.syncLikedPartnerNote(appCtx, newState, updatedPartnerNote, likedNow)
+                    } finally {
+                        pending.finish()
+                    }
+                }
+            }
         }
     }
 
     companion object {
         const val ACTION_REFRESH_NOTE = "com.pierreebba.sharedlists.ACTION_REFRESH_NOTE"
+        const val ACTION_TOGGLE_LIKE = "com.pierreebba.sharedlists.ACTION_TOGGLE_LIKE"
         private val executor = Executors.newSingleThreadExecutor()
+        private val mainHandler = Handler(Looper.getMainLooper())
 
         fun refreshAsync(context: Context) {
             val appCtx = context.applicationContext
@@ -50,12 +93,13 @@ class NoteWidgetProvider : AppWidgetProvider() {
         private fun bindWidget(context: Context, manager: AppWidgetManager, widgetId: Int) {
             val snap = AppPrefs.getPartnerNote(context)
             val partner = AppPrefs.getPartnerName(context)
+            val me = AppPrefs.getCurrentUser(context)
             val views = RemoteViews(context.packageName, R.layout.widget_note)
 
-            val authorUpper = snap.author.ifBlank { partner }.uppercase()
+            val authorUpper = (snap?.author?.ifBlank { partner } ?: partner).uppercase()
             views.setTextViewText(R.id.widgetHeader, "✦ NOTE FROM $authorUpper")
 
-            if (snap.text.isNotBlank()) {
+            if (snap != null && snap.text.isNotBlank()) {
                 views.setTextViewText(R.id.widgetNoteText, snap.text)
                 val rel = if (snap.updatedAt > 0L) {
                     DateUtils.getRelativeTimeSpanString(
@@ -70,11 +114,23 @@ class NoteWidgetProvider : AppWidgetProvider() {
             } else {
                 views.setTextViewText(
                     R.id.widgetNoteText,
-                    "No note from $partner yet — tap to send one ♥"
+                    "No note from $partner yet — tap ✎ Note to send one ♥"
                 )
                 views.setTextViewText(R.id.widgetMeta, "Pierre & Ebba")
             }
-            views.setTextViewText(R.id.widgetHearts, "♥ ${snap.hearts}")
+
+            val likedByMe = snap != null && snap.heartedBy.contains(me)
+            val heartsCount = snap?.hearts ?: 0
+            views.setTextViewText(R.id.widgetHearts, if (likedByMe) "♥ $heartsCount" else "♡ $heartsCount")
+            views.setInt(
+                R.id.widgetHearts,
+                "setBackgroundResource",
+                if (likedByMe) R.drawable.widget_pill_liked_bg else R.drawable.widget_pill_bg
+            )
+            views.setTextColor(
+                R.id.widgetHearts,
+                if (likedByMe) 0xFFFFB4A2.toInt() else 0xFFE09F87.toInt()
+            )
 
             val openIntent = Intent(context, MainActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
@@ -98,6 +154,28 @@ class NoteWidgetProvider : AppWidgetProvider() {
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
             views.setOnClickPendingIntent(R.id.widgetRefreshBtn, refreshPi)
+
+            val likeIntent = Intent(context, NoteWidgetProvider::class.java).apply {
+                action = ACTION_TOGGLE_LIKE
+            }
+            val likePi = PendingIntent.getBroadcast(
+                context,
+                12,
+                likeIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+            views.setOnClickPendingIntent(R.id.widgetHearts, likePi)
+
+            val writeIntent = Intent(context, QuickNoteActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            }
+            val writePi = PendingIntent.getActivity(
+                context,
+                13,
+                writeIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+            views.setOnClickPendingIntent(R.id.widgetWriteBtn, writePi)
 
             manager.updateAppWidget(widgetId, views)
         }

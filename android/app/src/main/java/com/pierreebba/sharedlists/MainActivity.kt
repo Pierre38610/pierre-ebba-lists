@@ -6,6 +6,7 @@ import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -14,6 +15,7 @@ import android.provider.Settings
 import android.webkit.JavascriptInterface
 import android.webkit.JsPromptResult
 import android.webkit.JsResult
+import android.webkit.PermissionRequest
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
@@ -26,12 +28,14 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var webView: WebView
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
     private var pendingTab: String? = null
+    private var pendingWebPermissionRequest: PermissionRequest? = null
 
     private val fileChooserLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -58,11 +62,31 @@ class MainActivity : AppCompatActivity() {
         ActivityResultContracts.RequestPermission()
     ) { granted ->
         if (granted) {
-            LiveNotificationService.startIfAllowed(this)
+            PartnerStreamManager.startIfAllowed(this)
             Toast.makeText(this, "Notifications enabled! 🔔", Toast.LENGTH_SHORT).show()
         }
         webView.post {
             webView.evaluateJavascript("window.dispatchEvent(new Event('pe-notif-updated'))", null)
+        }
+    }
+
+    private val audioPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        val req = pendingWebPermissionRequest
+        pendingWebPermissionRequest = null
+        if (req != null) {
+            try {
+                if (granted) {
+                    req.grant(arrayOf(PermissionRequest.RESOURCE_AUDIO_CAPTURE))
+                } else {
+                    req.deny()
+                }
+            } catch (_: Exception) {
+            }
+        }
+        if (!granted) {
+            Toast.makeText(this, "Microphone permission is needed to record pronunciation", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -116,6 +140,38 @@ class MainActivity : AppCompatActivity() {
         }
 
         webView.webChromeClient = object : WebChromeClient() {
+            override fun onPermissionRequest(request: PermissionRequest?) {
+                runOnUiThread {
+                    if (request == null) return@runOnUiThread
+                    val originHost = request.origin?.host.orEmpty()
+                    val wantsAudio = request.resources?.contains(PermissionRequest.RESOURCE_AUDIO_CAPTURE) == true
+                    if (originHost == "pierre38610.github.io" && wantsAudio) {
+                        val hasAudioPerm = ContextCompat.checkSelfPermission(
+                            this@MainActivity,
+                            Manifest.permission.RECORD_AUDIO
+                        ) == PackageManager.PERMISSION_GRANTED
+                        if (hasAudioPerm) {
+                            try {
+                                request.grant(arrayOf(PermissionRequest.RESOURCE_AUDIO_CAPTURE))
+                            } catch (_: Exception) {
+                            }
+                        } else {
+                            try { pendingWebPermissionRequest?.deny() } catch (_: Exception) {}
+                            pendingWebPermissionRequest = request
+                            audioPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                        }
+                    } else {
+                        try { request.deny() } catch (_: Exception) {}
+                    }
+                }
+            }
+
+            override fun onPermissionRequestCanceled(request: PermissionRequest?) {
+                if (pendingWebPermissionRequest == request) {
+                    pendingWebPermissionRequest = null
+                }
+            }
+
             override fun onShowFileChooser(
                 webView: WebView?,
                 filePathCallback: ValueCallback<Array<Uri>>?,
@@ -211,7 +267,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        LiveNotificationService.startIfAllowed(this)
+        PartnerStreamManager.startIfAllowed(this)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        webView.evaluateJavascript("window.__peRefreshFromCloud && window.__peRefreshFromCloud()", null)
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -248,7 +309,7 @@ class MainActivity : AppCompatActivity() {
         fun isNativeApp(): Boolean = true
 
         @JavascriptInterface
-        fun getAppVersion(): String = "1.0.0"
+        fun getAppVersion(): String = "1.1.0"
 
         @JavascriptInterface
         fun syncConfig(jsonStr: String) {
@@ -258,8 +319,7 @@ class MainActivity : AppCompatActivity() {
                 NoteWidgetProvider.updateAllWidgets(this@MainActivity)
                 val newUser = AppPrefs.getCurrentUser(this@MainActivity)
                 if (prevUser != newUser && AppPrefs.isLivePushEnabled(this@MainActivity)) {
-                    LiveNotificationService.stop(this@MainActivity)
-                    LiveNotificationService.startIfAllowed(this@MainActivity)
+                    PartnerStreamManager.restartIfAllowed(this@MainActivity)
                 }
             } catch (_: Exception) {
             }
@@ -310,9 +370,9 @@ class MainActivity : AppCompatActivity() {
         fun setLivePushEnabled(enabled: Boolean) {
             AppPrefs.setLivePushEnabled(this@MainActivity, enabled)
             if (enabled) {
-                LiveNotificationService.startIfAllowed(this@MainActivity)
+                PartnerStreamManager.startIfAllowed(this@MainActivity)
             } else {
-                LiveNotificationService.stop(this@MainActivity)
+                PartnerStreamManager.stop()
             }
         }
 

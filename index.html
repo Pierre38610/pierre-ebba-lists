@@ -2437,6 +2437,111 @@
 
     .speak-btn:active { transform: scale(0.9); }
     .speak-btn:hover { border-color: var(--gold); }
+    .speak-btn.has-voice {
+      border-color: rgba(200, 125, 101, 0.55);
+      background: var(--ebba-soft);
+      color: var(--ebba);
+    }
+    .speak-btn.playing {
+      border-color: var(--gold);
+      background: var(--gold-soft);
+    }
+
+    @keyframes recPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(1.22); }
+    }
+
+    .voice-recorder-box {
+      border: 1px solid var(--border);
+      background: var(--surface-soft);
+      border-radius: 14px;
+      padding: 11px 13px;
+    }
+
+    .voice-rec-btn {
+      width: 100%;
+      border: 1px dashed var(--border-strong);
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .voice-rec-btn:hover { border-color: var(--gold); }
+
+    .voice-rec-btn.recording {
+      border-style: solid;
+      border-color: var(--danger);
+      background: rgba(184, 74, 57, 0.12);
+      color: var(--danger);
+    }
+
+    .rec-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--danger);
+      animation: recPulse 1s infinite;
+    }
+
+    .voice-clip-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .voice-clip-meta {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .voice-clip-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .voice-play-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 12px;
+      margin: 4px 0 8px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(200, 125, 101, 0.45);
+      background: var(--ebba-soft);
+      color: var(--ebba);
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.14s ease, border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .voice-play-pill:active { transform: scale(0.95); }
+
+    .voice-play-pill.playing {
+      background: var(--gold-soft);
+      border-color: var(--gold);
+      color: var(--text);
+    }
+
+    .voice-play-pill.loading {
+      opacity: 0.65;
+    }
 
     .study-toggle-row {
       display: flex;
@@ -2952,7 +3057,7 @@
 
         <div class="section-summary">
           <span id="wordsSummaryText">0 words</span>
-          <span>Tap 🔊 to hear pronunciation</span>
+          <span>Tap 🎙 or 🔊 to hear pronunciation</span>
         </div>
 
         <main class="cards-grid" id="wordsGrid"></main>
@@ -3381,6 +3486,11 @@
       </div>
 
       <div class="field-group">
+        <label class="field-label">Voice pronunciation (optional)</label>
+        <div class="voice-recorder-box" id="wordVoiceRecorderBox"></div>
+      </div>
+
+      <div class="field-group">
         <label class="field-label" for="wordExampleInput">Example sentence (optional)</label>
         <input type="text" class="input-ctrl" id="wordExampleInput" placeholder="E.g., Kaffet är alldeles lagom varmt." maxlength="180" />
       </div>
@@ -3437,7 +3547,7 @@
       <div class="modal-header">
         <div>
           <h2 class="modal-title">Home Screen Widget</h2>
-          <p style="margin:2px 0 0;font-size:12px;color:var(--text-muted);">See your partner’s latest Note of the Day right on your phone</p>
+          <p style="margin:2px 0 0;font-size:12px;color:var(--text-muted);">See your partner’s note, like it ♥, or write yours right from your home screen</p>
         </div>
         <button class="close-btn" data-close="widgetModal">&times;</button>
       </div>
@@ -3449,9 +3559,12 @@
             <span style="font-size:12px;color:#9E9386;">↻</span>
           </div>
           <p style="font-family:var(--font-serif);font-style:italic;font-size:21px;line-height:1.35;margin:0 0 12px;color:#FAF7F2;" id="widgetPreviewQuote">Loading note...</p>
-          <div style="display:flex;align-items:center;justify-content:space-between;font-size:11.5px;color:#B4A899;">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11.5px;color:#B4A899;">
             <span id="widgetPreviewMeta">Pierre &amp; Ebba</span>
-            <span style="padding:3px 9px;border-radius:999px;background:rgba(224,159,135,0.16);color:#E09F87;font-weight:700;" id="widgetPreviewHearts">♥ 0</span>
+            <div style="display:inline-flex;align-items:center;gap:6px;">
+              <span style="padding:3px 9px;border-radius:999px;background:rgba(212,175,55,0.16);border:1px solid rgba(212,175,55,0.35);color:#E5C9A3;font-weight:700;">✎ Note</span>
+              <span style="padding:3px 9px;border-radius:999px;background:rgba(224,159,135,0.16);border:1px solid rgba(224,159,135,0.35);color:#E09F87;font-weight:700;" id="widgetPreviewHearts">♥ 0</span>
+            </div>
           </div>
         </div>
       </div>
@@ -3483,7 +3596,8 @@
         THEME: 'pe_theme_v1',
         BANNER_DISMISSED: 'pe_install_dismissed_v1',
         PANTRY: 'pe_pantry_ingredients_v1',
-        NOTIF_PREFS: 'pe_notif_prefs_v1'
+        NOTIF_PREFS: 'pe_notif_prefs_v1',
+        PENDING_AUDIO: 'pe_pending_audio_v1'
       };
 
       const TONES = [
@@ -3557,6 +3671,23 @@
       let syncState = 'connecting'; // connecting | ok | syncing | offline
       const seenActivityIds = new Set();
       const coalesceTimers = new Map();
+      let wordFormAudioId = '';
+      let wordFormAudioPayload = '';
+      let wordFormAudioDuration = 0;
+      let wordFormAudioBy = '';
+      let activeRecorder = null;
+      let activeRecordStream = null;
+      let recordChunks = [];
+      let recordStartTs = 0;
+      let recordTimerInt = null;
+      let isRecordingWord = false;
+      let recordElapsedSec = 0;
+      let recordStopPromise = null;
+      let activeAudioEl = null;
+      let activeAudioUrl = null;
+      let activePlayingKey = null;
+      const audioCache = new Map();
+      const audioInFlight = new Map();
 
       const $ = (id) => document.getElementById(id);
 
@@ -3851,6 +3982,9 @@
                 author: rem.author || cur.author || 'Pierre',
                 starred: !!rem.starred,
                 masteredBy: Array.isArray(rem.masteredBy) ? [...rem.masteredBy] : [],
+                audioId: rem.audioId || '',
+                audioDuration: Number(rem.audioDuration) || 0,
+                audioBy: rem.audioBy || '',
                 createdAt: rem.createdAt || cur.createdAt || rem.updatedAt,
                 updatedAt: rem.updatedAt,
                 deleted: !!rem.deleted
@@ -3994,12 +4128,210 @@
         sendPartnerPushPayload(payload);
       }
 
+      const AUDIO_PREFIX_TO_MIME = {
+        'W_': 'audio/webm;codecs=opus',
+        'B_': 'audio/webm',
+        'M_': 'audio/mp4',
+        'O_': 'audio/ogg;codecs=opus',
+        'A_': 'audio/mpeg'
+      };
+
+      async function blobToCompactAudioPayload(blob) {
+        const mime = String(blob.type || '').toLowerCase();
+        let prefix = 'B_';
+        if (mime.includes('mp4') || mime.includes('aac') || mime.includes('m4a')) prefix = 'M_';
+        else if (mime.includes('ogg')) prefix = 'O_';
+        else if (mime.includes('mpeg') || mime.includes('mp3')) prefix = 'A_';
+        else if (mime.includes('opus') && mime.includes('webm')) prefix = 'W_';
+        const buf = await blob.arrayBuffer();
+        return prefix + bytesToBase64Url(new Uint8Array(buf));
+      }
+
+      function compactAudioPayloadToBlob(payload) {
+        if (!payload || typeof payload !== 'string' || payload.length < 4) return null;
+        const prefix = payload.slice(0, 2);
+        const mime = AUDIO_PREFIX_TO_MIME[prefix] || 'audio/webm';
+        const bytes = base64UrlToBytes(payload.slice(2));
+        return new Blob([bytes], { type: mime });
+      }
+
+      let audioDbPromise = null;
+      function openAudioDb() {
+        if (audioDbPromise) return audioDbPromise;
+        audioDbPromise = new Promise((resolve) => {
+          if (!('indexedDB' in window)) { resolve(null); return; }
+          try {
+            const req = indexedDB.open('pe_audio_db', 1);
+            req.onupgradeneeded = () => {
+              const db = req.result;
+              if (!db.objectStoreNames.contains('clips')) {
+                db.createObjectStore('clips', { keyPath: 'id' });
+              }
+            };
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => resolve(null);
+          } catch (_) {
+            resolve(null);
+          }
+        });
+        return audioDbPromise;
+      }
+
+      async function idbPutAudio(id, payload) {
+        if (!id || !payload) return;
+        audioCache.set(id, payload);
+        try {
+          const db = await openAudioDb();
+          if (!db) return;
+          await new Promise((resolve) => {
+            const tx = db.transaction('clips', 'readwrite');
+            tx.objectStore('clips').put({ id, payload });
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => resolve();
+          });
+        } catch (_) {}
+      }
+
+      async function idbGetAudio(id) {
+        if (!id) return null;
+        try {
+          const db = await openAudioDb();
+          if (!db) return null;
+          return await new Promise((resolve) => {
+            const tx = db.transaction('clips', 'readonly');
+            const req = tx.objectStore('clips').get(id);
+            req.onsuccess = () => resolve(req.result ? req.result.payload : null);
+            req.onerror = () => resolve(null);
+          });
+        } catch (_) {
+          return null;
+        }
+      }
+
+      function loadPendingAudioQueue() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEYS.PENDING_AUDIO);
+          const arr = raw ? JSON.parse(raw) : [];
+          return Array.isArray(arr) ? arr : [];
+        } catch (_) {
+          return [];
+        }
+      }
+
+      function savePendingAudioQueue(list) {
+        try {
+          localStorage.setItem(STORAGE_KEYS.PENDING_AUDIO, JSON.stringify(list));
+        } catch (_) {}
+      }
+
+      function markAudioPending(id, pending) {
+        if (!id) return;
+        const list = loadPendingAudioQueue().filter((x) => x !== id);
+        if (pending) list.push(id);
+        savePendingAudioQueue(list);
+      }
+
+      async function uploadAudioToKv(audioId, payload) {
+        if (!audioId || !payload) return false;
+        const CHUNK_SIZE = 175;
+        const chunks = [];
+        for (let i = 0; i < payload.length; i += CHUNK_SIZE) {
+          chunks.push(payload.slice(i, i + CHUNK_SIZE));
+        }
+        if (!chunks.length || chunks.length > 500) return false;
+
+        try {
+          const BATCH = 6;
+          for (let start = 0; start < chunks.length; start += BATCH) {
+            const batch = [];
+            for (let i = start; i < Math.min(chunks.length, start + BATCH); i++) {
+              batch.push(kvPostWithRetry(`ebba_aud_${audioId}_${i}`, chunks[i], 3));
+            }
+            const res = await Promise.all(batch);
+            if (res.some((ok) => !ok)) {
+              markAudioPending(audioId, true);
+              return false;
+            }
+          }
+          const metaOk = await kvPostWithRetry(`ebba_aud_${audioId}_meta`, String(chunks.length), 3);
+          markAudioPending(audioId, !metaOk);
+          return metaOk;
+        } catch (_) {
+          markAudioPending(audioId, true);
+          return false;
+        }
+      }
+
+      async function downloadAudioFromKv(audioId) {
+        if (!audioId) return null;
+        try {
+          const metaRes = await fetch(`${KV_BASE}/GetValue/${KV_APP_KEY}/ebba_aud_${audioId}_meta`, { cache: 'no-store' });
+          if (!metaRes.ok) return null;
+          const rawCount = await metaRes.json();
+          const count = parseInt(String(rawCount || ''), 10);
+          if (!count || count < 1 || count > 500) return null;
+
+          const parts = new Array(count).fill('');
+          const BATCH = 8;
+          for (let start = 0; start < count; start += BATCH) {
+            const batch = [];
+            for (let i = start; i < Math.min(count, start + BATCH); i++) {
+              batch.push(
+                fetch(`${KV_BASE}/GetValue/${KV_APP_KEY}/ebba_aud_${audioId}_${i}`, { cache: 'no-store' })
+                  .then((r) => (r.ok ? r.json() : ''))
+                  .then((val) => { parts[i] = typeof val === 'string' ? val : ''; })
+                  .catch(() => { parts[i] = ''; })
+              );
+            }
+            await Promise.all(batch);
+          }
+          if (parts.some((p) => !p)) return null;
+          const joined = parts.join('');
+          await idbPutAudio(audioId, joined);
+          return joined;
+        } catch (_) {
+          return null;
+        }
+      }
+
+      function loadAudioPayload(audioId) {
+        if (!audioId) return Promise.resolve(null);
+        if (audioCache.has(audioId)) return Promise.resolve(audioCache.get(audioId));
+        if (audioInFlight.has(audioId)) return audioInFlight.get(audioId);
+        const p = (async () => {
+          const local = await idbGetAudio(audioId);
+          if (local) {
+            audioCache.set(audioId, local);
+            return local;
+          }
+          return await downloadAudioFromKv(audioId);
+        })().finally(() => {
+          audioInFlight.delete(audioId);
+        });
+        audioInFlight.set(audioId, p);
+        return p;
+      }
+
+      async function retryPendingAudioUploads() {
+        const pending = loadPendingAudioQueue();
+        if (!pending.length) return;
+        for (const id of pending) {
+          const payload = audioCache.get(id) || await idbGetAudio(id);
+          if (payload) {
+            await uploadAudioToKv(id, payload);
+          } else {
+            markAudioPending(id, false);
+          }
+        }
+      }
+
       function compactNote(note) {
         if (!note || !note.text) return null;
         return {
           text: String(note.text).slice(0, 240),
           author: note.author || '',
           hearts: Number(note.hearts) || 0,
+          heartedBy: Array.isArray(note.heartedBy) ? [...note.heartedBy] : [],
           updatedAt: Number(note.updatedAt) || 0
         };
       }
@@ -4098,7 +4430,7 @@
       }
 
       // Publish update to ntfy (real-time) and schedule KV snapshot (permanent)
-      async function broadcastState(actorName = '', activity = null) {
+      async function broadcastState(actorName = '', activity = null, extraEnvelope = null) {
         saveLocalState();
         syncNativeBridge();
         setSyncStatus('syncing', 'Syncing...');
@@ -4118,6 +4450,9 @@
           } : null,
           state
         };
+        if (extraEnvelope && typeof extraEnvelope === 'object') {
+          Object.assign(envelope, extraEnvelope);
+        }
 
         try {
           let bodyStr = JSON.stringify(envelope);
@@ -4221,6 +4556,37 @@
         }
       }
 
+      async function loadWidgetNotesFromKv() {
+        try {
+          const metaRes = await fetch(`${KV_BASE}/GetValue/${KV_APP_KEY}/ebba_v2_wn_meta`, { cache: 'no-store' });
+          if (!metaRes.ok) return null;
+          const rawMeta = await metaRes.json();
+          if (!rawMeta || typeof rawMeta !== 'string' || !rawMeta.includes('-')) return null;
+          const lastDash = rawMeta.lastIndexOf('-');
+          const gen = rawMeta.slice(0, lastDash);
+          const count = parseInt(rawMeta.slice(lastDash + 1), 10);
+          if (!gen || !count || count > 40) return null;
+
+          const parts = await Promise.all(
+            Array.from({ length: count }, (_, i) =>
+              fetch(`${KV_BASE}/GetValue/${KV_APP_KEY}/ebba_v2_wn_${gen}_${i}`, { cache: 'no-store' }).then((r) => (r.ok ? r.json() : ''))
+            )
+          );
+          if (parts.some((p) => !p)) return null;
+          const dec = await decodePayload(parts.join(''));
+          if (!dec || typeof dec !== 'object') return null;
+          return {
+            petitMot: dec.m || null,
+            partnerNotes: {
+              Pierre: dec.p || null,
+              Ebba: dec.e || null
+            }
+          };
+        } catch (_) {
+          return null;
+        }
+      }
+
       async function processIncomingMessage(rawMessage, attachmentUrl) {
         try {
           let text = rawMessage;
@@ -4231,6 +4597,10 @@
           if (!text) return;
           const payload = await decodePayload(text);
           if (!payload) return;
+
+          if (payload.audioClip && payload.audioClip.id && payload.audioClip.payload) {
+            await idbPutAudio(payload.audioClip.id, payload.audioClip.payload);
+          }
 
           if (payload.sender === CLIENT_ID) return;
 
@@ -4258,11 +4628,17 @@
         if (!silent) setSyncStatus('syncing', 'Refreshing...');
         let anyOk = false;
 
-        // 1. Load permanent snapshot from KV
-        const kvState = await loadFromKv();
+        // 1. Load permanent snapshots from KV (app state + latest widget notes)
+        const [kvState, widgetKvState] = await Promise.all([loadFromKv(), loadWidgetNotesFromKv()]);
         if (kvState) {
           anyOk = true;
           if (mergeStates(state, kvState)) {
+            saveLocalState();
+          }
+        }
+        if (widgetKvState) {
+          anyOk = true;
+          if (mergeStates(state, widgetKvState)) {
             saveLocalState();
           }
         }
@@ -4285,6 +4661,7 @@
           }
         } catch (_) {}
 
+        retryPendingAudioUploads();
         renderAll();
         syncNativeBridge();
         if (detailCardId) renderDetailModal();
@@ -4352,10 +4729,14 @@
       }
 
       function closeModal(id) {
+        if (id === 'wordFormModal' && typeof cleanupWordRecorder === 'function') {
+          cleanupWordRecorder();
+        }
         $(id).classList.remove('open');
       }
 
       function closeAllModals() {
+        if (typeof cleanupWordRecorder === 'function') cleanupWordRecorder();
         document.querySelectorAll('.modal-backdrop.open').forEach((m) => m.classList.remove('open'));
       }
 
@@ -4382,17 +4763,53 @@
         // Show partner's latest note strip if currentUser wrote the top note and partner also wrote one
         const strip = $('motPartnerStrip');
         if (strip) {
-          const partner = getPartnerName();
+          const me = currentUser || 'Pierre';
+          const partner = getPartnerName(me);
           const partnerNote = state.partnerNotes && state.partnerNotes[partner];
-          if (mot.author === (currentUser || 'Pierre') && partnerNote && partnerNote.text && partnerNote.text !== mot.text) {
+          if (mot.author === me && partnerNote && partnerNote.text && partnerNote.text !== mot.text) {
+            const pHeartedBy = Array.isArray(partnerNote.heartedBy) ? partnerNote.heartedBy : [];
+            const pLiked = pHeartedBy.includes(me);
             strip.innerHTML = `
               <div style="min-width:0;flex:1;">
                 <strong style="color:var(--gold);">Latest from ${escapeHtml(partner)}:</strong>
                 <span class="love-note-partner-quote">“${escapeHtml(partnerNote.text)}”</span>
+                <span style="font-size:11px;color:var(--text-soft);margin-left:4px;">(${formatRelTime(partnerNote.updatedAt)})</span>
               </div>
-              <span style="font-size:11px;color:var(--text-soft);white-space:nowrap;">${formatRelTime(partnerNote.updatedAt)}</span>
+              <button type="button" class="heart-react-btn ${pLiked ? 'active' : ''}" id="partnerStripHeartBtn" title="Like ${escapeHtml(partner)}’s note" style="flex-shrink:0;">
+                <span>${pLiked ? '♥' : '♡'}</span>
+                <span>${partnerNote.hearts || 0}</span>
+              </button>
             `;
             strip.classList.add('visible');
+            const pBtn = $('partnerStripHeartBtn');
+            if (pBtn) {
+              pBtn.onclick = () => {
+                const list = Array.isArray(partnerNote.heartedBy) ? [...partnerNote.heartedBy] : [];
+                const idx = list.indexOf(me);
+                let likedNow = false;
+                if (idx >= 0) {
+                  list.splice(idx, 1);
+                  partnerNote.hearts = Math.max(0, (partnerNote.hearts || 1) - 1);
+                } else {
+                  list.push(me);
+                  partnerNote.hearts = (partnerNote.hearts || 0) + 1;
+                  likedNow = true;
+                }
+                partnerNote.heartedBy = list;
+                partnerNote.updatedAt = nowMs();
+                vibrate(15);
+                renderPetitMot();
+                const act = likedNow ? {
+                  category: 'mot',
+                  title: `♥ ${me} liked your Note of the Day`,
+                  body: `"${partnerNote.text}"`,
+                  tab: 'lists'
+                } : null;
+                broadcastState(me, act);
+                if (likedNow) notifyPartner({ ...act, tags: ['heart'] });
+                publishWidgetNotesSnapshot();
+              };
+            }
           } else {
             strip.innerHTML = '';
             strip.classList.remove('visible');
@@ -5145,7 +5562,7 @@
 
       document.querySelectorAll('.modal-backdrop').forEach((bd) => {
         bd.onclick = (e) => {
-          if (e.target === bd) bd.classList.remove('open');
+          if (e.target === bd) closeModal(bd.id);
         };
       });
 
@@ -5172,6 +5589,7 @@
       window.addEventListener('online', () => {
         syncFromCloud(false);
         connectLiveStream();
+        retryPendingAudioUploads();
       });
 
       window.addEventListener('offline', () => {
@@ -5228,6 +5646,7 @@
       }
 
       window.__peOpenTab = (tab) => switchMainTab(tab);
+      window.__peRefreshFromCloud = () => syncFromCloud(true);
 
       function setDexSubMode(mode) {
         dexSubMode = mode === 'matcher' ? 'matcher' : 'collection';
@@ -6618,8 +7037,303 @@
         };
       }
 
+      let recordAborted = false;
+
+      function pickRecorderMimeType() {
+        if (typeof MediaRecorder === 'undefined' || typeof MediaRecorder.isTypeSupported !== 'function') {
+          return '';
+        }
+        const candidates = [
+          'audio/webm;codecs=opus',
+          'audio/webm',
+          'audio/mp4',
+          'audio/ogg;codecs=opus'
+        ];
+        for (const c of candidates) {
+          try {
+            if (MediaRecorder.isTypeSupported(c)) return c;
+          } catch (_) {}
+        }
+        return '';
+      }
+
+      function refreshPlayingButtons() {
+        document.querySelectorAll('[data-play-key]').forEach((btn) => {
+          const isPlaying = btn.dataset.playKey === activePlayingKey;
+          btn.classList.toggle('playing', isPlaying);
+          const icon = btn.querySelector('.vp-icon');
+          if (icon) icon.textContent = isPlaying ? '⏹' : '▶';
+        });
+      }
+
+      function stopActiveAudioPlayback() {
+        if (activeAudioEl) {
+          try {
+            activeAudioEl.onended = null;
+            activeAudioEl.onerror = null;
+            activeAudioEl.pause();
+          } catch (_) {}
+          activeAudioEl = null;
+        }
+        if (activeAudioUrl) {
+          try { URL.revokeObjectURL(activeAudioUrl); } catch (_) {}
+          activeAudioUrl = null;
+        }
+        activePlayingKey = null;
+        refreshPlayingButtons();
+      }
+
+      async function playVoiceClip(playKey, audioIdOrPayload, isRawPayload = false, fallbackWordObj = null) {
+        if (activePlayingKey === playKey) {
+          stopActiveAudioPlayback();
+          return;
+        }
+        stopActiveAudioPlayback();
+        try {
+          if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        } catch (_) {}
+
+        const matchingBtns = Array.from(document.querySelectorAll(`[data-play-key="${playKey}"]`));
+        const needsFetch = !isRawPayload && audioIdOrPayload && !audioCache.has(audioIdOrPayload);
+        if (needsFetch) {
+          matchingBtns.forEach((b) => b.classList.add('loading'));
+        }
+
+        let payload = isRawPayload ? audioIdOrPayload : await loadAudioPayload(audioIdOrPayload);
+        matchingBtns.forEach((b) => b.classList.remove('loading'));
+
+        if (!payload) {
+          if (fallbackWordObj && fallbackWordObj.word) {
+            showToast('Voice clip still syncing — playing synthesized voice');
+            speakWord(fallbackWordObj.word, fallbackWordObj.lang);
+          } else {
+            showToast('Audio clip unavailable');
+          }
+          return;
+        }
+
+        try {
+          const blob = compactAudioPayloadToBlob(payload);
+          if (!blob) throw new Error('Invalid audio');
+          const url = URL.createObjectURL(blob);
+          const audio = new Audio(url);
+          activeAudioEl = audio;
+          activeAudioUrl = url;
+          activePlayingKey = playKey;
+          refreshPlayingButtons();
+
+          audio.onended = () => stopActiveAudioPlayback();
+          audio.onerror = () => {
+            stopActiveAudioPlayback();
+            if (fallbackWordObj && fallbackWordObj.word) {
+              speakWord(fallbackWordObj.word, fallbackWordObj.lang);
+            } else {
+              showToast('Could not play voice clip');
+            }
+          };
+
+          await audio.play();
+        } catch (_) {
+          stopActiveAudioPlayback();
+          if (fallbackWordObj && fallbackWordObj.word) {
+            speakWord(fallbackWordObj.word, fallbackWordObj.lang);
+          } else {
+            showToast('Could not play voice clip');
+          }
+        }
+      }
+
+      async function startWordRecording() {
+        if (isRecordingWord) return;
+        if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === 'undefined') {
+          showToast('Voice recording is not supported on this browser');
+          return;
+        }
+        stopActiveAudioPlayback();
+
+        let stream;
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        } catch (_) {
+          showToast('Microphone permission denied or unavailable');
+          return;
+        }
+
+        const mimeType = pickRecorderMimeType();
+        let recorder;
+        try {
+          recorder = new MediaRecorder(stream, mimeType ? { mimeType, audioBitsPerSecond: 16000 } : { audioBitsPerSecond: 16000 });
+        } catch (_) {
+          try {
+            recorder = new MediaRecorder(stream);
+          } catch (_) {
+            stream.getTracks().forEach((t) => t.stop());
+            showToast('Could not initialize audio recorder');
+            return;
+          }
+        }
+
+        recordAborted = false;
+        activeRecordStream = stream;
+        activeRecorder = recorder;
+        recordChunks = [];
+        recordStartTs = Date.now();
+        recordElapsedSec = 0;
+        isRecordingWord = true;
+
+        recorder.ondataavailable = (ev) => {
+          if (ev.data && ev.data.size > 0) recordChunks.push(ev.data);
+        };
+
+        let resolveStop;
+        recordStopPromise = new Promise((res) => { resolveStop = res; });
+
+        recorder.onstop = async () => {
+          clearInterval(recordTimerInt);
+          recordTimerInt = null;
+          isRecordingWord = false;
+          try {
+            stream.getTracks().forEach((t) => t.stop());
+          } catch (_) {}
+          if (activeRecordStream === stream) activeRecordStream = null;
+          if (activeRecorder === recorder) activeRecorder = null;
+
+          if (!recordAborted && recordChunks.length > 0) {
+            const durSec = Math.max(0.5, Math.round(((Date.now() - recordStartTs) / 1000) * 10) / 10);
+            const blob = new Blob(recordChunks, { type: recorder.mimeType || mimeType || 'audio/webm' });
+            if (blob.size > 0) {
+              try {
+                const payload = await blobToCompactAudioPayload(blob);
+                wordFormAudioPayload = payload;
+                wordFormAudioId = 'a' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+                wordFormAudioDuration = durSec;
+                wordFormAudioBy = currentUser || 'Pierre';
+              } catch (_) {
+                showToast('Could not process audio clip');
+              }
+            }
+          }
+          recordChunks = [];
+          renderWordVoiceRecorderBox();
+          resolveStop();
+        };
+
+        try {
+          recorder.start(250);
+        } catch (_) {
+          isRecordingWord = false;
+          stream.getTracks().forEach((t) => t.stop());
+          activeRecordStream = null;
+          activeRecorder = null;
+          showToast('Could not start recording');
+          return;
+        }
+
+        recordTimerInt = setInterval(() => {
+          recordElapsedSec = (Date.now() - recordStartTs) / 1000;
+          const timerEl = $('voiceRecTimerText');
+          if (timerEl) {
+            timerEl.textContent = `Stop recording • ${recordElapsedSec.toFixed(1)}s / 12s`;
+          }
+          if (recordElapsedSec >= 12) {
+            stopWordRecording();
+          }
+        }, 200);
+
+        renderWordVoiceRecorderBox();
+      }
+
+      async function stopWordRecording() {
+        clearInterval(recordTimerInt);
+        recordTimerInt = null;
+        if (activeRecorder && activeRecorder.state !== 'inactive') {
+          try { activeRecorder.stop(); } catch (_) {}
+          if (recordStopPromise) await recordStopPromise;
+        }
+      }
+
+      function cleanupWordRecorder() {
+        recordAborted = true;
+        clearInterval(recordTimerInt);
+        recordTimerInt = null;
+        isRecordingWord = false;
+        if (activeRecorder && activeRecorder.state !== 'inactive') {
+          try { activeRecorder.stop(); } catch (_) {}
+        }
+        if (activeRecordStream) {
+          try { activeRecordStream.getTracks().forEach((t) => t.stop()); } catch (_) {}
+          activeRecordStream = null;
+        }
+        activeRecorder = null;
+        recordChunks = [];
+        if (activePlayingKey === 'form_preview') {
+          stopActiveAudioPlayback();
+        }
+      }
+
+      function renderWordVoiceRecorderBox() {
+        const box = $('wordVoiceRecorderBox');
+        if (!box) return;
+
+        if (isRecordingWord) {
+          box.innerHTML = `
+            <button type="button" class="voice-rec-btn recording" id="wordStopRecBtn">
+              <span class="rec-dot"></span>
+              <span id="voiceRecTimerText">Stop recording • ${recordElapsedSec.toFixed(1)}s / 12s</span>
+            </button>
+          `;
+          $('wordStopRecBtn').onclick = () => stopWordRecording();
+          return;
+        }
+
+        if (wordFormAudioPayload || wordFormAudioId) {
+          const isPreviewPlaying = activePlayingKey === 'form_preview';
+          const durLabel = wordFormAudioDuration ? `${Math.max(1, Math.round(wordFormAudioDuration))}s` : 'clip';
+          box.innerHTML = `
+            <div class="voice-clip-row">
+              <div class="voice-clip-meta">
+                <button type="button" class="btn-secondary" id="wordPreviewVoiceBtn" data-play-key="form_preview" style="padding:7px 13px;font-size:12.5px;">
+                  <span class="vp-icon">${isPreviewPlaying ? '⏹' : '▶'}</span>
+                  <span>Play (${durLabel})</span>
+                </button>
+              </div>
+              <div class="voice-clip-actions">
+                <button type="button" class="btn-secondary" id="wordRerecordBtn" style="padding:7px 11px;font-size:12px;">🎙 Re-record</button>
+                <button type="button" class="btn-danger-soft" id="wordRemoveVoiceBtn" style="padding:7px 10px;font-size:12px;">Remove</button>
+              </div>
+            </div>
+          `;
+          $('wordPreviewVoiceBtn').onclick = () => {
+            if (wordFormAudioPayload) {
+              playVoiceClip('form_preview', wordFormAudioPayload, true);
+            } else if (wordFormAudioId) {
+              playVoiceClip('form_preview', wordFormAudioId, false);
+            }
+          };
+          $('wordRerecordBtn').onclick = () => startWordRecording();
+          $('wordRemoveVoiceBtn').onclick = () => {
+            if (activePlayingKey === 'form_preview') stopActiveAudioPlayback();
+            wordFormAudioId = '';
+            wordFormAudioPayload = '';
+            wordFormAudioDuration = 0;
+            wordFormAudioBy = '';
+            renderWordVoiceRecorderBox();
+          };
+          return;
+        }
+
+        box.innerHTML = `
+          <button type="button" class="voice-rec-btn" id="wordStartRecBtn">
+            <span>🎙</span>
+            <span>Record pronunciation (optional, max 12s)</span>
+          </button>
+        `;
+        $('wordStartRecBtn').onclick = () => startWordRecording();
+      }
+
       function speakWord(text, lang) {
         if (!text) return;
+        stopActiveAudioPlayback();
         if (!('speechSynthesis' in window)) {
           showToast('Audio pronunciation unavailable on this device');
           return;
@@ -6707,18 +7421,21 @@
           const isSv = lang === 'sv';
           const slot = document.createElement('div');
           if (wordObj) {
+            const hasVoice = !!wordObj.audioId;
+            const playKey = 'slot_' + wordObj.id;
             slot.className = 'today-slot';
             slot.innerHTML = `
               <div class="today-slot-head">
                 <span>${isSv ? '🇸🇪 Today’s Swedish' : '🇫🇷 Today’s French'}</span>
-                <button type="button" class="speak-btn" title="Listen" aria-label="Listen">🔊</button>
+                <button type="button" class="speak-btn ${hasVoice ? 'has-voice' : ''} ${activePlayingKey === playKey ? 'playing' : ''}" ${hasVoice ? `data-play-key="${escapeHtml(playKey)}"` : ''} title="${hasVoice ? 'Play recorded voice' : 'Listen'}" aria-label="Listen">${hasVoice ? '🎙' : '🔊'}</button>
               </div>
               <div class="today-slot-word">${escapeHtml(wordObj.word)}</div>
               <div class="today-slot-meaning">${escapeHtml(wordObj.meaning)}</div>
             `;
             slot.querySelector('.speak-btn').onclick = (e) => {
               e.stopPropagation();
-              speakWord(wordObj.word, lang);
+              if (wordObj.audioId) playVoiceClip(playKey, wordObj.audioId, false, wordObj);
+              else speakWord(wordObj.word, lang);
             };
           } else {
             slot.className = 'today-slot empty';
@@ -6894,9 +7611,21 @@
 
         const body = document.createElement('div');
         body.style.cursor = studyMode ? 'pointer' : 'default';
+        const cardPlayKey = 'card_' + w.id;
+        const cardVoicePlaying = activePlayingKey === cardPlayKey;
+        const voiceAuthor = w.audioBy || w.author || (isSv ? 'Ebba' : 'Pierre');
+        const voiceDur = w.audioDuration ? ` (${Math.max(1, Math.round(w.audioDuration))}s)` : '';
         body.innerHTML = `
           <h3 class="word-term">${escapeHtml(w.word)}</h3>
           ${w.phonetic ? `<div class="word-phonetic">/${escapeHtml(w.phonetic)}/</div>` : ''}
+          ${w.audioId ? `
+            <div>
+              <button type="button" class="voice-play-pill ${cardVoicePlaying ? 'playing' : ''}" data-play-key="${escapeHtml(cardPlayKey)}">
+                <span class="vp-icon">${cardVoicePlaying ? '⏹' : '▶'}</span>
+                <span>🎙 ${escapeHtml(voiceAuthor)}’s voice${voiceDur}</span>
+              </button>
+            </div>
+          ` : ''}
           <div class="word-meaning">${escapeHtml(w.meaning)}</div>
           ${studyMode ? `<div class="study-hint-badge">${hiddenByStudy ? 'Tap card to reveal meaning' : 'Tap to hide again'}</div>` : ''}
           ${w.example ? `
@@ -6906,6 +7635,13 @@
             </div>
           ` : ''}
         `;
+        const voiceBtn = body.querySelector('.voice-play-pill');
+        if (voiceBtn) {
+          voiceBtn.onclick = (e) => {
+            e.stopPropagation();
+            playVoiceClip(cardPlayKey, w.audioId, false, w);
+          };
+        }
         if (studyMode) {
           body.onclick = () => {
             if (revealedWordIds.has(w.id)) revealedWordIds.delete(w.id);
@@ -6945,6 +7681,7 @@
       }
 
       function openWordFormModal(wordToEdit = null, presetLang = null) {
+        cleanupWordRecorder();
         editingWordId = wordToEdit ? wordToEdit.id : null;
         $('wordFormModalTitle').textContent = wordToEdit ? 'Edit word' : 'Teach a word';
         const defaultLang = presetLang || ((currentUser === 'Ebba') ? 'sv' : 'fr');
@@ -6957,79 +7694,112 @@
         $('wordExampleEnInput').value = wordToEdit ? (wordToEdit.exampleEn || '') : '';
         $('wordDateInput').value = (wordToEdit && wordToEdit.date) ? wordToEdit.date : getLocalDateKey();
 
+        wordFormAudioId = wordToEdit ? (wordToEdit.audioId || '') : '';
+        wordFormAudioPayload = '';
+        wordFormAudioDuration = wordToEdit ? (Number(wordToEdit.audioDuration) || 0) : 0;
+        wordFormAudioBy = wordToEdit ? (wordToEdit.audioBy || '') : '';
+        renderWordVoiceRecorderBox();
+
         openModal('wordFormModal');
         setTimeout(() => $('wordTermInput').focus(), 120);
       }
 
-      function saveWordForm() {
-        const word = $('wordTermInput').value.trim();
-        const meaning = $('wordMeaningInput').value.trim();
-        if (!word || !meaning) {
-          showToast('Please enter both the word and its meaning');
-          return;
-        }
-        const phonetic = $('wordPhoneticInput').value.trim();
-        const example = $('wordExampleInput').value.trim();
-        const exampleEn = $('wordExampleEnInput').value.trim();
-        const date = $('wordDateInput').value || getLocalDateKey();
-        const ts = nowMs();
-        const actor = currentUser || 'Pierre';
-
-        if (!Array.isArray(state.words)) state.words = [];
-
-        if (editingWordId) {
-          const w = state.words.find((x) => x.id === editingWordId);
-          if (w) {
-            w.word = word;
-            w.meaning = meaning;
-            w.lang = wordFormLang;
-            w.phonetic = phonetic;
-            w.example = example;
-            w.exampleEn = exampleEn;
-            w.date = date;
-            w.updatedAt = ts;
+      async function saveWordForm() {
+        const saveBtn = $('saveWordBtn');
+        if (saveBtn) saveBtn.disabled = true;
+        try {
+          if (isRecordingWord) {
+            await stopWordRecording();
           }
+          const word = $('wordTermInput').value.trim();
+          const meaning = $('wordMeaningInput').value.trim();
+          if (!word || !meaning) {
+            showToast('Please enter both the word and its meaning');
+            return;
+          }
+          const phonetic = $('wordPhoneticInput').value.trim();
+          const example = $('wordExampleInput').value.trim();
+          const exampleEn = $('wordExampleEnInput').value.trim();
+          const date = $('wordDateInput').value || getLocalDateKey();
+          const ts = nowMs();
+          const actor = currentUser || 'Pierre';
+
+          let extraEnvelope = null;
+          if (wordFormAudioId && wordFormAudioPayload) {
+            await idbPutAudio(wordFormAudioId, wordFormAudioPayload);
+            uploadAudioToKv(wordFormAudioId, wordFormAudioPayload);
+            if (wordFormAudioPayload.length <= 24000) {
+              extraEnvelope = {
+                audioClip: { id: wordFormAudioId, payload: wordFormAudioPayload }
+              };
+            }
+          }
+
+          if (!Array.isArray(state.words)) state.words = [];
+
+          if (editingWordId) {
+            const w = state.words.find((x) => x.id === editingWordId);
+            if (w) {
+              w.word = word;
+              w.meaning = meaning;
+              w.lang = wordFormLang;
+              w.phonetic = phonetic;
+              w.example = example;
+              w.exampleEn = exampleEn;
+              w.date = date;
+              w.audioId = wordFormAudioId || '';
+              w.audioDuration = wordFormAudioId ? (Number(wordFormAudioDuration) || 0) : 0;
+              w.audioBy = wordFormAudioId ? (wordFormAudioBy || actor) : '';
+              w.updatedAt = ts;
+            }
+            closeModal('wordFormModal');
+            renderWordsTab();
+            updateTabCounts();
+            broadcastState(actor, null, extraEnvelope);
+            showToast('Word updated');
+            return;
+          }
+
+          const newWord = {
+            id: uid('w'),
+            word,
+            meaning,
+            lang: wordFormLang,
+            phonetic,
+            example,
+            exampleEn,
+            date,
+            author: actor,
+            starred: false,
+            masteredBy: [],
+            audioId: wordFormAudioId || '',
+            audioDuration: wordFormAudioId ? (Number(wordFormAudioDuration) || 0) : 0,
+            audioBy: wordFormAudioId ? (wordFormAudioBy || actor) : '',
+            createdAt: ts,
+            updatedAt: ts,
+            deleted: false
+          };
+          state.words.unshift(newWord);
           closeModal('wordFormModal');
           renderWordsTab();
           updateTabCounts();
-          broadcastState(actor);
-          showToast('Word updated');
-          return;
+
+          const streakInfo = computeWordStreaks();
+          const flag = wordFormLang === 'sv' ? '🇸🇪' : '🇫🇷';
+          const langName = wordFormLang === 'sv' ? 'Swedish' : 'French';
+          const voicePrefix = newWord.audioId ? '🎙 ' : '';
+          const act = {
+            category: 'words',
+            title: `${flag} ${actor} shared today’s ${langName} word!`,
+            body: `${voicePrefix}"${word}" — ${meaning}${streakInfo.coupleStreak > 0 ? ` (🔥 ${streakInfo.coupleStreak}d streak)` : ''}`,
+            tab: 'words'
+          };
+          broadcastState(actor, act, extraEnvelope);
+          notifyPartner({ ...act, tags: [wordFormLang === 'sv' ? 'se' : 'fr'] });
+          showToast('Word saved & shared! 🔥');
+        } finally {
+          if (saveBtn) saveBtn.disabled = false;
         }
-
-        const newWord = {
-          id: uid('w'),
-          word,
-          meaning,
-          lang: wordFormLang,
-          phonetic,
-          example,
-          exampleEn,
-          date,
-          author: actor,
-          starred: false,
-          masteredBy: [],
-          createdAt: ts,
-          updatedAt: ts,
-          deleted: false
-        };
-        state.words.unshift(newWord);
-        closeModal('wordFormModal');
-        renderWordsTab();
-        updateTabCounts();
-
-        const streakInfo = computeWordStreaks();
-        const flag = wordFormLang === 'sv' ? '🇸🇪' : '🇫🇷';
-        const langName = wordFormLang === 'sv' ? 'Swedish' : 'French';
-        const act = {
-          category: 'words',
-          title: `${flag} ${actor} shared today’s ${langName} word!`,
-          body: `"${word}" — ${meaning}${streakInfo.coupleStreak > 0 ? ` (🔥 ${streakInfo.coupleStreak}d streak)` : ''}`,
-          tab: 'words'
-        };
-        broadcastState(actor, act);
-        notifyPartner({ ...act, tags: [wordFormLang === 'sv' ? 'se' : 'fr'] });
-        showToast('Word saved & shared! 🔥');
       }
 
       // ==========================================
@@ -7377,7 +8147,7 @@
           <div style="margin-bottom:6px;font-size:12.5px;color:var(--text-muted);font-weight:600;">${promptHint}</div>
           <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
             <div style="font-family:var(--font-serif);font-size:32px;font-weight:700;line-height:1.15;">${escapeHtml(q.prompt)}</div>
-            ${q.promptLang !== 'en' ? `<button type="button" class="speak-btn" id="quizSpeakBtn" title="Listen">🔊</button>` : ''}
+            ${q.promptLang !== 'en' ? `<button type="button" class="speak-btn ${q.wordObj && q.wordObj.audioId ? 'has-voice' : ''}" id="quizSpeakBtn" ${q.wordObj && q.wordObj.audioId ? `data-play-key="quiz_${escapeHtml(q.wordObj.id)}"` : ''} title="${q.wordObj && q.wordObj.audioId ? 'Play recorded voice' : 'Listen'}">${q.wordObj && q.wordObj.audioId ? '🎙' : '🔊'}</button>` : ''}
           </div>
 
           ${q.type === 'choice'
@@ -7409,7 +8179,13 @@
         };
 
         if ($('quizSpeakBtn')) {
-          $('quizSpeakBtn').onclick = () => speakWord(q.prompt, q.promptLang);
+          $('quizSpeakBtn').onclick = () => {
+            if (q.wordObj && q.wordObj.audioId) {
+              playVoiceClip('quiz_' + q.wordObj.id, q.wordObj.audioId, false, q.wordObj);
+            } else {
+              speakWord(q.prompt, q.promptLang);
+            }
+          };
         }
 
         if (q.type === 'choice') {
@@ -7568,11 +8344,13 @@
 
       function openWidgetModal() {
         const note = getPartnerLatestNoteForWidget();
+        const me = currentUser || 'Pierre';
         const who = (note.author || note.partner || 'Ebba').toUpperCase();
+        const likedByMe = Array.isArray(note.heartedBy) && note.heartedBy.includes(me);
         $('widgetPreviewKicker').textContent = `✦ NOTE FROM ${who}`;
         $('widgetPreviewQuote').textContent = note.text || `No note from ${note.partner} yet — ask them to write a Note of the Day!`;
         $('widgetPreviewMeta').textContent = note.updatedAt ? formatRelTime(note.updatedAt) : 'Pierre & Ebba';
-        $('widgetPreviewHearts').textContent = `♥ ${note.hearts || 0}`;
+        $('widgetPreviewHearts').textContent = `${likedByMe ? '♥' : '♡'} ${note.hearts || 0}`;
 
         const actions = $('widgetModalActions');
         if (isNativeApk()) {
@@ -7581,7 +8359,7 @@
               📌 Add Widget to Home Screen
             </button>
             <p style="font-size:12px;color:var(--text-muted);text-align:center;margin:0;">
-              Shows ${escapeHtml(note.partner)}’s latest Note of the Day and updates automatically!
+              Shows ${escapeHtml(note.partner)}’s latest Note of the Day — tap ♡ to like or ✎ Note to write right from your home screen!
             </p>
           `;
           $('pinWidgetNativeBtn').onclick = () => {
@@ -7644,7 +8422,7 @@
               </div>
               ${hasPerm ? '' : '<button type="button" class="btn-primary" id="reqNativeNotifBtn" style="margin-bottom:8px;">🔔 Enable Android Notifications</button>'}
               <label class="notif-pref-row" style="margin-bottom:8px;">
-                <span>⚡ Instant Background Push Service</span>
+                <span>🔔 Partner Action Notifications</span>
                 <input type="checkbox" id="nativeLivePushChk" ${liveEnabled ? 'checked' : ''} />
               </label>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
@@ -7664,7 +8442,7 @@
           $('nativeLivePushChk').onchange = (e) => {
             try { window.AndroidBridge.setLivePushEnabled(e.target.checked); } catch (_) {}
             updateNotifIndicator();
-            showToast(e.target.checked ? 'Live push service active ⚡' : 'Background polling only');
+            showToast(e.target.checked ? 'Partner alerts active 🔔' : 'Partner alerts paused');
           };
           $('nativeTestNotifBtn').onclick = () => {
             try {

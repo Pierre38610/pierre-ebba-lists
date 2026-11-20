@@ -6,9 +6,9 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_REMOTE_MESSAGING" />
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
     <application
         android:allowBackup="true"
@@ -30,6 +30,16 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".QuickNoteActivity"
+            android:exported="false"
+            android:theme="@style/Theme.PierreEbba.QuickNoteDialog"
+            android:taskAffinity="com.pierreebba.sharedlists.quicknote"
+            android:excludeFromRecents="true"
+            android:noHistory="true"
+            android:launchMode="singleInstance"
+            android:windowSoftInputMode="stateAlwaysVisible|adjustResize" />
+
         <receiver
             android:name=".NoteWidgetProvider"
             android:exported="true"
@@ -37,6 +47,7 @@
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="com.pierreebba.sharedlists.ACTION_REFRESH_NOTE" />
+                <action android:name="com.pierreebba.sharedlists.ACTION_TOGGLE_LIKE" />
             </intent-filter>
             <meta-data
                 android:name="android.appwidget.provider"
@@ -56,10 +67,6 @@
             </intent-filter>
         </receiver>
 
-        <service
-            android:name=".LiveNotificationService"
-            android:exported="false"
-            android:foregroundServiceType="remoteMessaging" />
     </application>
 
 </manifest>

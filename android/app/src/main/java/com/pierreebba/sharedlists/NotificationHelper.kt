@@ -15,8 +15,8 @@ import androidx.core.content.ContextCompat
 
 object NotificationHelper {
     const val CHANNEL_PARTNER_UPDATES = "partner_updates"
-    const val CHANNEL_LIVE_STATUS = "live_sync_status"
-    const val LIVE_STATUS_NOTIF_ID = 9001
+    private const val CHANNEL_LIVE_STATUS = "live_sync_status"
+    private const val LIVE_STATUS_NOTIF_ID = 9001
 
     fun ensureChannels(context: Context) {
         val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -34,18 +34,12 @@ object NotificationHelper {
         }
         nm.createNotificationChannel(updatesChannel)
 
-        val statusChannel = NotificationChannel(
-            CHANNEL_LIVE_STATUS,
-            "Live Push Connection",
-            NotificationManager.IMPORTANCE_MIN
-        ).apply {
-            description = "Keeps real-time alerts connected in the background."
-            setShowBadge(false)
-            enableLights(false)
-            enableVibration(false)
-            setSound(null, null)
+        // Clean up legacy foreground status notification & channel from v1.0.0
+        nm.cancel(LIVE_STATUS_NOTIF_ID)
+        try {
+            nm.deleteNotificationChannel(CHANNEL_LIVE_STATUS)
+        } catch (_: Exception) {
         }
-        nm.createNotificationChannel(statusChannel)
     }
 
     fun hasPostPermission(context: Context): Boolean {
@@ -55,29 +49,6 @@ object NotificationHelper {
         } else {
             NotificationManagerCompat.from(context).areNotificationsEnabled()
         }
-    }
-
-    fun buildLiveServiceNotification(context: Context): Notification {
-        ensureChannels(context)
-        val openIntent = Intent(context, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
-        }
-        val pi = PendingIntent.getActivity(
-            context,
-            100,
-            openIntent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-        return NotificationCompat.Builder(context, CHANNEL_LIVE_STATUS)
-            .setSmallIcon(R.drawable.ic_notif_small)
-            .setContentTitle("Pierre & Ebba")
-            .setContentText("Listening for instant updates from ${AppPrefs.getPartnerName(context)}")
-            .setPriority(NotificationCompat.PRIORITY_MIN)
-            .setOngoing(true)
-            .setSilent(true)
-            .setShowWhen(false)
-            .setContentIntent(pi)
-            .build()
     }
 
     fun showPartnerNotification(

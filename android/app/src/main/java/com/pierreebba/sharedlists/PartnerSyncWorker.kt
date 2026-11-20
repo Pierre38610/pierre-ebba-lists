@@ -20,7 +20,9 @@ class PartnerSyncWorker(
             if (NoteFetcher.refreshLatestNote(applicationContext)) {
                 NoteWidgetProvider.updateAllWidgets(applicationContext)
             }
-            NoteFetcher.pollMissedNotifications(applicationContext)
+            if (AppPrefs.isLivePushEnabled(applicationContext)) {
+                NoteFetcher.pollMissedNotifications(applicationContext)
+            }
             Result.success()
         } catch (_: Exception) {
             Result.retry()

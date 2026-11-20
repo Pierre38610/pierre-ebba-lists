@@ -76,15 +76,30 @@
             android:textSize="11.5sp" />
 
         <TextView
+            android:id="@+id/widgetWriteBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="6dp"
+            android:background="@drawable/widget_write_pill_bg"
+            android:paddingLeft="11dp"
+            android:paddingTop="5dp"
+            android:paddingRight="11dp"
+            android:paddingBottom="5dp"
+            android:text="✎ Note"
+            android:textColor="#E5C9A3"
+            android:textSize="11.5sp"
+            android:textStyle="bold" />
+
+        <TextView
             android:id="@+id/widgetHearts"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/widget_pill_bg"
-            android:paddingLeft="10dp"
-            android:paddingTop="3dp"
-            android:paddingRight="10dp"
-            android:paddingBottom="3dp"
-            android:text="♥ 0"
+            android:paddingLeft="11dp"
+            android:paddingTop="5dp"
+            android:paddingRight="11dp"
+            android:paddingBottom="5dp"
+            android:text="♡ 0"
             android:textColor="#E09F87"
             android:textSize="11.5sp"
             android:textStyle="bold" />

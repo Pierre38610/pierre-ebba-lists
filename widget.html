@@ -39,7 +39,6 @@
     .widget-card {
       position: relative;
       display: block;
-      text-decoration: none;
       color: inherit;
       background: linear-gradient(145deg, #241F1B 0%, #151311 100%);
       border: 1px solid rgba(212, 175, 55, 0.38);
@@ -47,10 +46,7 @@
       padding: 20px 22px;
       box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
       overflow: hidden;
-      transition: transform 0.18s ease, border-color 0.2s ease;
     }
-
-    .widget-card:active { transform: scale(0.985); }
 
     .widget-card::before {
       content: "";
@@ -110,26 +106,135 @@
 
     .widget-footer {
       position: relative;
-      z-index: 1;
+      z-index: 2;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
+      gap: 8px;
       font-size: 12px;
       color: #B4A899;
     }
+
+    .widget-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      flex-shrink: 0;
+    }
+
+    .widget-write-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 11px;
+      border-radius: 999px;
+      background: rgba(212, 175, 55, 0.16);
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      color: #E5C9A3;
+      font-weight: 700;
+      font-size: 12px;
+      cursor: pointer;
+      transition: transform 0.14s ease, background 0.18s ease;
+    }
+
+    .widget-write-btn:active { transform: scale(0.95); }
 
     .widget-hearts {
       display: inline-flex;
       align-items: center;
       gap: 5px;
-      padding: 4px 10px;
+      padding: 5px 11px;
       border-radius: 999px;
       background: rgba(224, 159, 135, 0.16);
       border: 1px solid rgba(224, 159, 135, 0.35);
       color: #E09F87;
       font-weight: 700;
       font-size: 12px;
+      cursor: pointer;
+      transition: transform 0.14s ease, background 0.18s ease;
+    }
+
+    .widget-hearts:active { transform: scale(0.93); }
+
+    .widget-hearts.liked {
+      background: rgba(224, 159, 135, 0.34);
+      border-color: rgba(224, 159, 135, 0.72);
+      color: #FFB4A2;
+    }
+
+    .widget-composer {
+      position: relative;
+      z-index: 2;
+      display: none;
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid rgba(212, 175, 55, 0.2);
+    }
+
+    .widget-composer.open {
+      display: block;
+    }
+
+    .widget-composer textarea {
+      width: 100%;
+      min-height: 76px;
+      resize: vertical;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(15, 13, 11, 0.7);
+      color: #FAF7F2;
+      padding: 10px 12px;
+      font-family: inherit;
+      font-size: 14px;
+      line-height: 1.45;
+      outline: none;
+    }
+
+    .widget-composer textarea:focus {
+      border-color: #D4AF37;
+    }
+
+    .widget-composer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 9px;
+    }
+
+    .widget-composer-btns {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .widget-btn-cancel {
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: rgba(255, 255, 255, 0.06);
+      color: #E7DFD3;
+      border-radius: 999px;
+      padding: 6px 13px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .widget-btn-send {
+      border: none;
+      background: linear-gradient(135deg, #E5C9A3 0%, #C88C6B 100%);
+      color: #1A1613;
+      border-radius: 999px;
+      padding: 6px 15px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .widget-status {
+      min-height: 16px;
+      font-size: 11.5px;
+      color: #D4AF37;
+      text-align: center;
     }
 
     .widget-bar {
@@ -162,7 +267,7 @@
 </head>
 <body>
   <div class="widget-wrap">
-    <a class="widget-card" href="./index.html?tab=lists" id="widgetCardLink">
+    <div class="widget-card" id="widgetCard">
       <div class="widget-top">
         <div class="widget-kicker" id="widgetKicker">✦ NOTE OF THE DAY</div>
         <button type="button" class="widget-refresh" id="refreshBtn" title="Refresh note" aria-label="Refresh">↻</button>
@@ -170,9 +275,25 @@
       <p class="widget-quote" id="widgetQuote">Loading your partner’s latest note...</p>
       <div class="widget-footer">
         <span id="widgetMeta">Pierre &amp; Ebba</span>
-        <span class="widget-hearts" id="widgetHearts">♥ 0</span>
+        <div class="widget-actions">
+          <button type="button" class="widget-write-btn" id="writeToggleBtn" title="Write a Note of the Day">✎ Note</button>
+          <button type="button" class="widget-hearts" id="widgetHearts" title="Like partner's note">♡ 0</button>
+        </div>
       </div>
-    </a>
+
+      <div class="widget-composer" id="widgetComposer">
+        <textarea id="widgetNoteInput" maxlength="240" placeholder="Write a sweet Note of the Day..."></textarea>
+        <div class="widget-composer-row">
+          <span id="widgetCharCount" style="font-size:11px;color:#9E9386;">0 / 240</span>
+          <div class="widget-composer-btns">
+            <button type="button" class="widget-btn-cancel" id="cancelComposeBtn">Cancel</button>
+            <button type="button" class="widget-btn-send" id="sendNoteBtn">Send ♥</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="widget-status" id="widgetStatus"></div>
 
     <div class="widget-bar">
       <button type="button" class="viewer-switch" id="viewerSwitchBtn">Viewing as Pierre</button>
@@ -183,9 +304,14 @@
   <script>
     (() => {
       'use strict';
+      const NTFY_STATE_TOPIC = 'pierre_ebba_shared_v2_907521e5';
+      const NTFY_NOTIF_PIERRE = 'pierre_ebba_notif_pierre_907521e5';
+      const NTFY_NOTIF_EBBA = 'pierre_ebba_notif_ebba_907521e5';
       const NTFY_WIDGET_TOPIC = 'pierre_ebba_widget_907521e5';
       const KV_APP_KEY = 'x0c969je';
       const KV_BASE = 'https://keyvalue.immanuel.co/api/KeyVal';
+      const APP_PUBLIC_URL = 'https://pierre38610.github.io/pierre-ebba-lists/';
+      const CLIENT_ID = 'wid_' + Math.random().toString(36).slice(2, 10);
 
       const params = new URLSearchParams(window.location.search);
       let viewer = params.get('user');
@@ -194,6 +320,21 @@
       }
 
       let snapshot = { p: null, e: null, m: null };
+
+      function setStatus(msg) {
+        const el = document.getElementById('widgetStatus');
+        el.textContent = msg || '';
+        clearTimeout(el._timer);
+        if (msg) {
+          el._timer = setTimeout(() => { el.textContent = ''; }, 2600);
+        }
+      }
+
+      function bytesToBase64Url(bytes) {
+        let bin = '';
+        for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+        return btoa(bin).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/g, '');
+      }
 
       function base64UrlToBytes(str) {
         const pad = str.length % 4 ? '='.repeat(4 - (str.length % 4)) : '';
@@ -232,6 +373,10 @@
         snapshot.p = mergeNote(snapshot.p, inc.p);
         snapshot.e = mergeNote(snapshot.e, inc.e);
         snapshot.m = mergeNote(snapshot.m, inc.m);
+        if (snapshot.m && snapshot.m.text) {
+          if (snapshot.m.author === 'Pierre') snapshot.p = mergeNote(snapshot.p, snapshot.m);
+          if (snapshot.m.author === 'Ebba') snapshot.e = mergeNote(snapshot.e, snapshot.m);
+        }
       }
 
       function loadLocalFallback() {
@@ -247,6 +392,14 @@
         } catch (_) {}
       }
 
+      function getPartnerOwnNote() {
+        const partner = viewer === 'Pierre' ? 'Ebba' : 'Pierre';
+        const slot = viewer === 'Pierre' ? snapshot.e : snapshot.p;
+        if (slot && slot.text) return slot;
+        if (snapshot.m && snapshot.m.text && snapshot.m.author === partner) return snapshot.m;
+        return null;
+      }
+
       function formatRelTime(ts) {
         if (!ts) return 'Just synced';
         const diff = Math.max(0, Math.floor((Date.now() - ts) / 1000));
@@ -259,22 +412,208 @@
       function render() {
         const partner = viewer === 'Pierre' ? 'Ebba' : 'Pierre';
         document.getElementById('viewerSwitchBtn').textContent = `Viewing as ${viewer} (tap to switch)`;
+        document.getElementById('widgetNoteInput').placeholder = `Write a note for ${partner} ♥...`;
 
-        const partnerNote = viewer === 'Pierre' ? snapshot.e : snapshot.p;
-        const chosen = (partnerNote && partnerNote.text) ? partnerNote : (snapshot.m && snapshot.m.text ? snapshot.m : null);
+        const partnerNote = getPartnerOwnNote();
+        const chosen = partnerNote || (snapshot.m && snapshot.m.text ? snapshot.m : null);
+        const heartsEl = document.getElementById('widgetHearts');
 
         if (chosen && chosen.text) {
           const who = chosen.author || partner;
+          const heartedBy = Array.isArray(chosen.heartedBy) ? chosen.heartedBy : [];
+          const liked = heartedBy.includes(viewer);
           document.getElementById('widgetKicker').textContent = `✦ NOTE FROM ${who.toUpperCase()}`;
           document.getElementById('widgetQuote').textContent = chosen.text;
           document.getElementById('widgetMeta').textContent = `${formatRelTime(chosen.updatedAt)}`;
-          document.getElementById('widgetHearts').textContent = `♥ ${chosen.hearts || 0}`;
+          heartsEl.textContent = `${liked ? '♥' : '♡'} ${chosen.hearts || 0}`;
+          heartsEl.classList.toggle('liked', liked);
         } else {
           document.getElementById('widgetKicker').textContent = `✦ NOTE FROM ${partner.toUpperCase()}`;
-          document.getElementById('widgetQuote').textContent = `No note from ${partner} yet — open the app to send one first!`;
+          document.getElementById('widgetQuote').textContent = `No note from ${partner} yet — tap ✎ Note to write one!`;
           document.getElementById('widgetMeta').textContent = 'Pierre & Ebba';
-          document.getElementById('widgetHearts').textContent = '♥ 0';
+          heartsEl.textContent = '♡ 0';
+          heartsEl.classList.remove('liked');
         }
+      }
+
+      async function kvPostWithRetry(key, val, retries = 2) {
+        const url = `${KV_BASE}/UpdateValue/${KV_APP_KEY}/${key}/${val}`;
+        for (let i = 0; i <= retries; i++) {
+          try {
+            const r = await fetch(url, { method: 'POST' });
+            if (r.ok) return true;
+          } catch (_) {}
+          if (i < retries) await new Promise((res) => setTimeout(res, 180 * (i + 1)));
+        }
+        return false;
+      }
+
+      function compactNote(note) {
+        if (!note || !note.text) return null;
+        return {
+          text: String(note.text).slice(0, 240),
+          author: note.author || '',
+          hearts: Number(note.hearts) || 0,
+          heartedBy: Array.isArray(note.heartedBy) ? [...note.heartedBy] : [],
+          updatedAt: Number(note.updatedAt) || 0
+        };
+      }
+
+      async function publishChanges(updatedOwner, updatedOwnerNote, petitMotToSend, activity, pushTag) {
+        const snap = {
+          p: compactNote(snapshot.p),
+          e: compactNote(snapshot.e),
+          m: compactNote(snapshot.m)
+        };
+
+        try {
+          await fetch('https://ntfy.sh/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              topic: NTFY_WIDGET_TOPIC,
+              message: JSON.stringify(snap)
+            })
+          });
+        } catch (_) {}
+
+        try {
+          const stObj = { partnerNotes: { [updatedOwner]: compactNote(updatedOwnerNote) } };
+          if (petitMotToSend) stObj.petitMot = compactNote(petitMotToSend);
+          await fetch('https://ntfy.sh/' + NTFY_STATE_TOPIC, {
+            method: 'POST',
+            body: JSON.stringify({
+              v: 1,
+              sender: CLIENT_ID,
+              actor: viewer,
+              ts: Date.now(),
+              activity: activity ? {
+                id: 'act_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 6),
+                actor: viewer,
+                category: 'mot',
+                title: activity.title,
+                body: activity.body,
+                tab: 'lists'
+              } : null,
+              state: stObj
+            })
+          });
+        } catch (_) {}
+
+        if (activity) {
+          const targetTopic = viewer === 'Ebba' ? NTFY_NOTIF_PIERRE : NTFY_NOTIF_EBBA;
+          try {
+            await fetch('https://ntfy.sh/', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                topic: targetTopic,
+                title: activity.title,
+                message: activity.body,
+                priority: 4,
+                tags: [pushTag || 'sparkles'],
+                click: APP_PUBLIC_URL + '?tab=lists',
+                icon: APP_PUBLIC_URL + 'icon-192.png'
+              })
+            });
+          } catch (_) {}
+        }
+
+        try {
+          const encoded = 'RAW_' + bytesToBase64Url(new TextEncoder().encode(JSON.stringify(snap)));
+          const chunks = [];
+          for (let i = 0; i < encoded.length; i += 175) chunks.push(encoded.slice(i, i + 175));
+          const gen = Date.now().toString(36);
+          for (let i = 0; i < chunks.length; i++) {
+            const ok = await kvPostWithRetry(`ebba_v2_wn_${gen}_${i}`, chunks[i]);
+            if (!ok) return;
+          }
+          await kvPostWithRetry('ebba_v2_wn_meta', `${gen}-${chunks.length}`);
+        } catch (_) {}
+      }
+
+      async function toggleLikePartnerNote() {
+        const partner = viewer === 'Pierre' ? 'Ebba' : 'Pierre';
+        const target = getPartnerOwnNote();
+        if (!target || !target.text) {
+          setStatus(`No note from ${partner} to like yet`);
+          return;
+        }
+        const list = Array.isArray(target.heartedBy) ? [...target.heartedBy] : [];
+        const idx = list.indexOf(viewer);
+        let likedNow = false;
+        let nextHearts = Number(target.hearts) || 0;
+        if (idx >= 0) {
+          list.splice(idx, 1);
+          nextHearts = Math.max(0, nextHearts - 1);
+        } else {
+          list.push(viewer);
+          nextHearts += 1;
+          likedNow = true;
+        }
+        const updated = {
+          ...target,
+          author: target.author || partner,
+          hearts: nextHearts,
+          heartedBy: list,
+          updatedAt: Date.now()
+        };
+        if (partner === 'Pierre') snapshot.p = updated;
+        else snapshot.e = updated;
+
+        let motToSend = null;
+        if (snapshot.m && snapshot.m.author === partner && snapshot.m.text === target.text) {
+          snapshot.m = updated;
+          motToSend = updated;
+        }
+        render();
+        setStatus(likedNow ? `Sent ♥ to ${partner}` : 'Removed like');
+
+        const activity = likedNow ? {
+          title: `♥ ${viewer} liked your Note of the Day`,
+          body: `"${updated.text}"`
+        } : null;
+        await publishChanges(partner, updated, motToSend, activity, 'heart');
+      }
+
+      async function sendMyNote() {
+        const input = document.getElementById('widgetNoteInput');
+        const text = input.value.trim();
+        if (!text) {
+          setStatus('Write a short note first ♥');
+          return;
+        }
+        const sendBtn = document.getElementById('sendNoteBtn');
+        sendBtn.disabled = true;
+        sendBtn.textContent = 'Sending...';
+
+        const partner = viewer === 'Pierre' ? 'Ebba' : 'Pierre';
+        const noteObj = {
+          text: text.slice(0, 240),
+          author: viewer,
+          hearts: 0,
+          heartedBy: [],
+          updatedAt: Date.now()
+        };
+        if (viewer === 'Pierre') snapshot.p = noteObj;
+        else snapshot.e = noteObj;
+        snapshot.m = noteObj;
+
+        input.value = '';
+        document.getElementById('widgetCharCount').textContent = '0 / 240';
+        document.getElementById('widgetComposer').classList.remove('open');
+        render();
+
+        await publishChanges(
+          viewer,
+          noteObj,
+          noteObj,
+          { title: `💌 New Note of the Day from ${viewer}`, body: noteObj.text },
+          'love_letter'
+        );
+        sendBtn.disabled = false;
+        sendBtn.textContent = 'Send ♥';
+        setStatus(`Note sent to ${partner} ♥`);
       }
 
       async function refresh() {
@@ -320,11 +659,31 @@
         render();
       }
 
-      document.getElementById('refreshBtn').onclick = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
+      document.getElementById('refreshBtn').onclick = () => {
         refresh();
+        setStatus('Refreshed');
       };
+
+      document.getElementById('widgetHearts').onclick = () => toggleLikePartnerNote();
+
+      document.getElementById('writeToggleBtn').onclick = () => {
+        const comp = document.getElementById('widgetComposer');
+        const opening = !comp.classList.contains('open');
+        comp.classList.toggle('open', opening);
+        if (opening) {
+          setTimeout(() => document.getElementById('widgetNoteInput').focus(), 40);
+        }
+      };
+
+      document.getElementById('cancelComposeBtn').onclick = () => {
+        document.getElementById('widgetComposer').classList.remove('open');
+      };
+
+      document.getElementById('widgetNoteInput').oninput = (e) => {
+        document.getElementById('widgetCharCount').textContent = `${e.target.value.length} / 240`;
+      };
+
+      document.getElementById('sendNoteBtn').onclick = sendMyNote;
 
       document.getElementById('viewerSwitchBtn').onclick = () => {
         viewer = viewer === 'Pierre' ? 'Ebba' : 'Pierre';

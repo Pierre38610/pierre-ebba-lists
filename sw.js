@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pierre-ebba-v5';
+const CACHE_NAME = 'pierre-ebba-v6';
 const APP_SHELL = [
   './',
   './index.html',
