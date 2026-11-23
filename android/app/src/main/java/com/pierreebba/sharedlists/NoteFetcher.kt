@@ -340,7 +340,7 @@ object NoteFetcher {
         if (clickUrl.isNullOrBlank()) return "lists"
         return try {
             val tab = Uri.parse(clickUrl).getQueryParameter("tab")
-            if (tab == "recipes" || tab == "words" || tab == "lists") tab else "lists"
+            if (tab == "recipes" || tab == "words" || tab == "lists" || tab == "quiz") tab else "lists"
         } catch (_: Exception) {
             "lists"
         }

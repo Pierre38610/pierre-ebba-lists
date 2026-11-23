@@ -3,6 +3,7 @@ package com.pierreebba.sharedlists
 import android.content.Context
 import org.json.JSONArray
 import org.json.JSONObject
+import java.util.Calendar
 
 data class NoteEntry(
     val text: String,
@@ -49,6 +50,16 @@ object AppPrefs {
     private const val KEY_NOTE_UPDATED = "partner_note_updated"
     private const val KEY_NOTES_STATE_JSON = "widget_notes_state_v2"
     private const val KEY_SEEN_IDS = "seen_notif_ids"
+    private const val KEY_WEEKLY_QUIZ_DONE_WEEK = "weekly_quiz_done_week_key"
+    private const val KEY_LAST_SUNDAY_QUIZ_NOTIF = "last_sunday_quiz_notif_date"
+
+    fun isNoteFromToday(note: NoteEntry?): Boolean {
+        if (note == null || note.text.isBlank() || note.updatedAt <= 0L) return false
+        val noteCal = Calendar.getInstance().apply { timeInMillis = note.updatedAt }
+        val nowCal = Calendar.getInstance()
+        return noteCal.get(Calendar.YEAR) == nowCal.get(Calendar.YEAR) &&
+            noteCal.get(Calendar.DAY_OF_YEAR) == nowCal.get(Calendar.DAY_OF_YEAR)
+    }
 
     private fun prefs(context: Context) =
         context.applicationContext.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
@@ -228,7 +239,11 @@ object AppPrefs {
     fun updateFromBridgeJson(context: Context, rawJson: String): Boolean {
         val obj = JSONObject(rawJson)
         val user = if (obj.optString("currentUser") == "Ebba") "Ebba" else "Pierre"
-        prefs(context).edit().putString(KEY_USER, user).apply()
+        val quizDoneWeekKey = obj.optString("weeklyQuizDoneWeekKey", "")
+        prefs(context).edit()
+            .putString(KEY_USER, user)
+            .putString(KEY_WEEKLY_QUIZ_DONE_WEEK, quizDoneWeekKey)
+            .apply()
 
         val partnerNotes = obj.optJSONObject("partnerNotes")
         val pNote = parseNoteEntry(partnerNotes?.optJSONObject("Pierre"))
@@ -240,12 +255,25 @@ object AppPrefs {
         return next.pierre != null || next.ebba != null || next.petitMot != null
     }
 
+    fun getWeeklyQuizDoneWeekKey(context: Context): String {
+        return prefs(context).getString(KEY_WEEKLY_QUIZ_DONE_WEEK, "") ?: ""
+    }
+
+    fun hasSentSundayQuizNotif(context: Context, dateKey: String): Boolean {
+        return prefs(context).getString(KEY_LAST_SUNDAY_QUIZ_NOTIF, "") == dateKey
+    }
+
+    fun markSundayQuizNotifSent(context: Context, dateKey: String) {
+        prefs(context).edit().putString(KEY_LAST_SUNDAY_QUIZ_NOTIF, dateKey).apply()
+    }
+
     @Synchronized
     fun toggleLikePartnerNote(context: Context): Pair<WidgetNotesState, Pair<NoteEntry, Boolean>>? {
         val me = getCurrentUser(context)
         val partner = getPartnerName(context)
         val cur = getNotesState(context)
         val target = getPartnerOwnNote(context) ?: return null
+        if (!isNoteFromToday(target)) return null
 
         val list = ArrayList(target.heartedBy)
         val likedNow: Boolean

@@ -767,6 +767,43 @@
       flex-direction: column;
       gap: 6px;
       margin-bottom: 10px;
+      max-height: 310px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding-right: 4px;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: thin;
+      scrollbar-color: var(--border-strong) transparent;
+    }
+
+    .items-list::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .items-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .items-list::-webkit-scrollbar-thumb {
+      background: var(--border-strong);
+      border-radius: 999px;
+    }
+
+    @keyframes checkPop {
+      0% { transform: scale(1); }
+      45% { transform: scale(1.26); }
+      100% { transform: scale(1); }
+    }
+
+    @keyframes itemSettle {
+      from {
+        opacity: 0.35;
+        transform: translateY(-6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .item-row {
@@ -775,11 +812,29 @@
       gap: 10px;
       padding: 6px 8px;
       border-radius: 12px;
-      transition: background 0.15s ease;
+      transition: background 0.2s ease, opacity 0.42s ease, transform 0.42s ease;
     }
 
     .item-row:hover {
       background: var(--surface-soft);
+    }
+
+    .item-row.checking-anim,
+    .detail-item-row.checking-anim {
+      opacity: 0.42;
+      transform: translateY(6px) scale(0.985);
+      background: var(--surface-soft);
+    }
+
+    .item-row.checking-anim .item-text,
+    .detail-item-row.checking-anim .item-text {
+      text-decoration: line-through;
+      color: var(--text-soft);
+    }
+
+    .item-row.just-settled,
+    .detail-item-row.just-settled {
+      animation: itemSettle 0.28s ease-out;
     }
 
     .check-btn {
@@ -802,6 +857,7 @@
       background: var(--pierre);
       border-color: var(--pierre);
       color: #fff;
+      animation: checkPop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     .item-body {
@@ -3626,8 +3682,8 @@
       const KV_BASE = 'https://keyvalue.immanuel.co/api/KeyVal';
       const APP_PUBLIC_URL = 'https://pierre38610.github.io/pierre-ebba-lists/';
       const APK_DOWNLOAD_URL = 'https://github.com/Pierre38610/pierre-ebba-lists/releases/download/android-latest/pierre-ebba.apk';
-      const LATEST_APK_VERSION = '1.2.0'; // Must match android/app/build.gradle.kts versionName
-      const WEB_BUILD_VERSION = '2026-11-20.3';
+      const LATEST_APK_VERSION = '1.3.0'; // Must match android/app/build.gradle.kts versionName
+      const WEB_BUILD_VERSION = '2026-11-23.1';
 
       const STORAGE_KEYS = {
         STATE: 'pe_shared_state_v2',
@@ -3688,6 +3744,10 @@
       let editingWordId = null;
       let wordFormLang = 'fr';
       let quizSession = null;
+      const pendingMoveToBottom = new Map();
+      const recentlySettledItems = new Set();
+      const cardScrollPositions = new Map();
+      let usingNativeRecorder = false;
       let matcherIngredients = loadPantryList();
       let notifPrefs = loadNotifPrefs();
       let state = loadLocalState();
@@ -4130,10 +4190,16 @@
       function syncNativeBridge() {
         try {
           if (window.AndroidBridge && typeof window.AndroidBridge.syncConfig === 'function') {
+            const curWeek = getIsoWeekInfo();
+            const me = currentUser || 'Pierre';
+            const doneThisWeek = (state.quizResults || []).some(
+              (q) => q && q.mode === 'weekly' && q.weekKey === curWeek.weekKey && q.player === me
+            );
             window.AndroidBridge.syncConfig(JSON.stringify({
-              currentUser: currentUser || 'Pierre',
+              currentUser: me,
               partnerNotes: state.partnerNotes || { Pierre: null, Ebba: null },
-              petitMot: state.petitMot || null
+              petitMot: state.petitMot || null,
+              weeklyQuizDoneWeekKey: doneThisWeek ? curWeek.weekKey : ''
             }));
           }
         } catch (_) {}
@@ -4816,33 +4882,50 @@
         document.querySelectorAll('.modal-backdrop.open').forEach((m) => m.classList.remove('open'));
       }
 
+      function isNoteFromToday(note) {
+        if (!note || !note.text || !note.updatedAt) return false;
+        return getLocalDateKey(new Date(note.updatedAt)) === getLocalDateKey();
+      }
+
       // Rendering
       function renderPetitMot() {
         seedPartnerNotesIfNeeded(state);
-        const mot = state.petitMot || { text: '', author: '', hearts: 0, heartedBy: [], updatedAt: 0 };
-        $('motText').textContent = mot.text || 'Write a little note for the two of us...';
-        const timeStr = formatRelTime(mot.updatedAt);
-        if (mot.author) {
-          $('motMeta').innerHTML = `
-            <span class="card-author-mini ${mot.author === 'Ebba' ? 'avatar-ebba' : 'avatar-pierre'}" style="width:18px;height:18px;font-size:10px;">${escapeHtml(mot.author[0])}</span>
-            <span>Written by <strong>${escapeHtml(mot.author)}</strong>${timeStr ? ' • ' + timeStr : ''}</span>
-          `;
+        const rawMot = state.petitMot || { text: '', author: '', hearts: 0, heartedBy: [], updatedAt: 0 };
+        const activeMot = isNoteFromToday(rawMot) ? rawMot : null;
+        const motEl = $('motText');
+        if (activeMot) {
+          motEl.textContent = activeMot.text;
+          motEl.style.opacity = '';
+          const timeStr = formatRelTime(activeMot.updatedAt);
+          if (activeMot.author) {
+            $('motMeta').innerHTML = `
+              <span class="card-author-mini ${activeMot.author === 'Ebba' ? 'avatar-ebba' : 'avatar-pierre'}" style="width:18px;height:18px;font-size:10px;">${escapeHtml(activeMot.author[0])}</span>
+              <span>Written by <strong>${escapeHtml(activeMot.author)}</strong>${timeStr ? ' • ' + timeStr : ''}</span>
+            `;
+          } else {
+            $('motMeta').textContent = 'Shared between Pierre & Ebba';
+          }
+          const heartedBy = Array.isArray(activeMot.heartedBy) ? activeMot.heartedBy : [];
+          const hasHeart = currentUser && heartedBy.includes(currentUser);
+          $('heartEmoji').textContent = hasHeart ? '♥' : '♡';
+          $('heartCount').textContent = activeMot.hearts || 0;
+          $('heartReactBtn').classList.toggle('active', !!hasHeart);
         } else {
-          $('motMeta').textContent = 'Shared between Pierre & Ebba';
+          motEl.textContent = 'No Note of the Day yet today — write a little note for the two of us ✨';
+          motEl.style.opacity = '0.78';
+          $('motMeta').textContent = 'New day • Tap Write to leave today’s note';
+          $('heartEmoji').textContent = '♡';
+          $('heartCount').textContent = 0;
+          $('heartReactBtn').classList.remove('active');
         }
-        const heartedBy = Array.isArray(mot.heartedBy) ? mot.heartedBy : [];
-        const hasHeart = currentUser && heartedBy.includes(currentUser);
-        $('heartEmoji').textContent = hasHeart ? '♥' : '♡';
-        $('heartCount').textContent = mot.hearts || 0;
-        $('heartReactBtn').classList.toggle('active', !!hasHeart);
 
-        // Show partner's latest note strip if currentUser wrote the top note and partner also wrote one
+        // Show partner's latest note strip if currentUser wrote the top note today and partner also wrote one today
         const strip = $('motPartnerStrip');
         if (strip) {
           const me = currentUser || 'Pierre';
           const partner = getPartnerName(me);
           const partnerNote = state.partnerNotes && state.partnerNotes[partner];
-          if (mot.author === me && partnerNote && partnerNote.text && partnerNote.text !== mot.text) {
+          if (activeMot && activeMot.author === me && isNoteFromToday(partnerNote) && partnerNote.text !== activeMot.text) {
             const pHeartedBy = Array.isArray(partnerNote.heartedBy) ? partnerNote.heartedBy : [];
             const pLiked = pHeartedBy.includes(me);
             strip.innerHTML = `
@@ -4893,11 +4976,15 @@
         }
       }
 
-      function sortItems(items) {
+      function sortItems(items, cardId = '') {
         return [...items]
           .filter((it) => !it.deleted)
           .sort((a, b) => {
-            if (!!a.done !== !!b.done) return a.done ? 1 : -1;
+            const aKey = cardId ? `${cardId}:${a.id}` : '';
+            const bKey = cardId ? `${cardId}:${b.id}` : '';
+            const aDone = !!a.done && !(aKey && pendingMoveToBottom.has(aKey));
+            const bDone = !!b.done && !(bKey && pendingMoveToBottom.has(bKey));
+            if (aDone !== bDone) return aDone ? 1 : -1;
             if (!!a.priority !== !!b.priority) return a.priority ? -1 : 1;
             return (a.updatedAt || 0) - (b.updatedAt || 0);
           });
@@ -4905,6 +4992,9 @@
 
       function renderCards() {
         const grid = $('cardsGrid');
+        grid.querySelectorAll('.items-list[data-card-id]').forEach((listEl) => {
+          cardScrollPositions.set(listEl.dataset.cardId, listEl.scrollTop);
+        });
         const q = searchQuery.trim().toLowerCase();
 
         const visible = state.cards
@@ -4950,6 +5040,12 @@
         for (const card of visible) {
           grid.appendChild(buildCardElement(card));
         }
+        grid.querySelectorAll('.items-list[data-card-id]').forEach((listEl) => {
+          const savedScroll = cardScrollPositions.get(listEl.dataset.cardId);
+          if (typeof savedScroll === 'number' && savedScroll > 0) {
+            listEl.scrollTop = savedScroll;
+          }
+        });
       }
 
       function buildCardElement(card) {
@@ -4958,7 +5054,7 @@
 
         const typeBadge = card.type === 'list' ? '☑ Checklist' : '✎ Note';
         const toneClass = 'tone-' + (card.tone || 'champagne');
-        const activeItems = card.type === 'list' ? sortItems(card.items || []) : [];
+        const activeItems = card.type === 'list' ? sortItems(card.items || [], card.id) : [];
         const doneCount = activeItems.filter((i) => i.done).length;
         const totalCount = activeItems.length;
         const pct = totalCount ? Math.round((doneCount / totalCount) * 100) : 0;
@@ -5009,10 +5105,17 @@
 
           const itemsWrap = document.createElement('div');
           itemsWrap.className = 'items-list';
-          const previewItems = activeItems.slice(0, 7);
-          for (const item of previewItems) {
+          itemsWrap.dataset.cardId = card.id;
+          for (const item of activeItems) {
+            const animKey = `${card.id}:${item.id}`;
+            const isCheckingAnim = pendingMoveToBottom.has(animKey);
+            const isJustSettled = recentlySettledItems.has(animKey);
             const row = document.createElement('div');
-            row.className = 'item-row' + (item.done ? ' done' : '');
+            row.className = 'item-row'
+              + (item.done && !isCheckingAnim ? ' done' : '')
+              + (isCheckingAnim ? ' checking-anim' : '')
+              + (isJustSettled ? ' just-settled' : '');
+            row.dataset.itemId = item.id;
             const subInfo = item.done && item.checkedBy
               ? `Checked by ${item.checkedBy}`
               : (item.author ? `Added by ${item.author}` : '');
@@ -5031,16 +5134,6 @@
             };
             row.querySelector('.item-body').onclick = () => openDetailModal(card.id);
             itemsWrap.appendChild(row);
-          }
-
-          if (activeItems.length > 7) {
-            const more = document.createElement('button');
-            more.className = 'open-card-link';
-            more.style.textAlign = 'left';
-            more.style.padding = '4px 8px';
-            more.textContent = `+ View ${activeItems.length - 7} more item${activeItems.length - 7 > 1 ? 's' : ''}...`;
-            more.onclick = () => openDetailModal(card.id);
-            itemsWrap.appendChild(more);
           }
 
           el.appendChild(itemsWrap);
@@ -5119,11 +5212,30 @@
 
       function toggleItemDone(card, item) {
         const ts = nowMs();
+        const animKey = `${card.id}:${item.id}`;
         item.done = !item.done;
         item.checkedBy = item.done ? (currentUser || 'Pierre') : '';
         item.updatedAt = ts;
         card.updatedAt = ts;
         vibrate(14);
+
+        const prevTimer = pendingMoveToBottom.get(animKey);
+        if (prevTimer) {
+          clearTimeout(prevTimer);
+          pendingMoveToBottom.delete(animKey);
+        }
+
+        if (item.done) {
+          const timer = setTimeout(() => {
+            pendingMoveToBottom.delete(animKey);
+            recentlySettledItems.add(animKey);
+            setTimeout(() => recentlySettledItems.delete(animKey), 320);
+            renderCards();
+            if (detailCardId === card.id) renderDetailModal();
+          }, 480);
+          pendingMoveToBottom.set(animKey, timer);
+        }
+
         renderCards();
         if (detailCardId === card.id) renderDetailModal();
         const actor = currentUser || 'Pierre';
@@ -5276,7 +5388,7 @@
           $('detailChecklistView').style.display = 'block';
           $('detailNoteView').style.display = 'none';
 
-          const items = sortItems(card.items || []);
+          const items = sortItems(card.items || [], card.id);
           const doneCount = items.filter((i) => i.done).length;
           const totalCount = items.length;
           const pct = totalCount ? Math.round((doneCount / totalCount) * 100) : 0;
@@ -5290,8 +5402,14 @@
             wrap.innerHTML = `<p style="text-align:center;color:var(--text-soft);font-size:13px;padding:18px 0;">No items yet.</p>`;
           } else {
             for (const item of items) {
+              const animKey = `${card.id}:${item.id}`;
+              const isCheckingAnim = pendingMoveToBottom.has(animKey);
+              const isJustSettled = recentlySettledItems.has(animKey);
               const row = document.createElement('div');
-              row.className = 'detail-item-row' + (item.done ? ' done' : '');
+              row.className = 'detail-item-row'
+                + (item.done && !isCheckingAnim ? ' done' : '')
+                + (isCheckingAnim ? ' checking-anim' : '')
+                + (isJustSettled ? ' just-settled' : '');
               const meta = item.done && item.checkedBy
                 ? `Checked by ${item.checkedBy} • ${formatRelTime(item.updatedAt)}`
                 : `By ${item.author || 'Pierre'} • ${formatRelTime(item.updatedAt)}`;
@@ -5491,7 +5609,7 @@
       };
 
       $('editMotBtn').onclick = () => {
-        $('motInput').value = (state.petitMot && state.petitMot.text) || '';
+        $('motInput').value = isNoteFromToday(state.petitMot) ? (state.petitMot.text || '') : '';
         openModal('motModal');
         setTimeout(() => $('motInput').focus(), 100);
       };
@@ -5529,7 +5647,10 @@
       };
 
       $('heartReactBtn').onclick = () => {
-        if (!state.petitMot) return;
+        if (!isNoteFromToday(state.petitMot)) {
+          showToast('Write today’s note first ✨');
+          return;
+        }
         const who = currentUser || 'Pierre';
         const list = Array.isArray(state.petitMot.heartedBy) ? [...state.petitMot.heartedBy] : [];
         const idx = list.indexOf(who);
@@ -5731,7 +5852,11 @@
       }
 
       function switchMainTab(tab) {
-        activeTab = (tab === 'recipes' || tab === 'words') ? tab : 'lists';
+        const openQuizDirectly = tab === 'quiz';
+        activeTab = (tab === 'recipes' || tab === 'words' || openQuizDirectly) ? (openQuizDirectly ? 'words' : tab) : 'lists';
+        if (openQuizDirectly) {
+          wordsSubMode = 'quiz';
+        }
         const isLists = activeTab === 'lists';
         const isRecipes = activeTab === 'recipes';
         const isWords = activeTab === 'words';
@@ -5751,6 +5876,9 @@
           renderRecipes();
           renderMatcher();
         } else if (isWords) {
+          if (openQuizDirectly) {
+            setWordsSubMode('quiz');
+          }
           renderWordsTab();
         } else {
           renderCards();
@@ -7255,19 +7383,101 @@
         }
       }
 
+      function requestNativeAudioPermAsync() {
+        return new Promise((resolve) => {
+          let done = false;
+          const finish = (res) => {
+            if (done) return;
+            done = true;
+            window.removeEventListener('pe-audio-perm', onPerm);
+            clearTimeout(timer);
+            resolve(res);
+          };
+          const onPerm = (ev) => finish(ev && ev.detail ? ev.detail : { granted: false, permanentlyDenied: false });
+          const timer = setTimeout(() => finish({ granted: false, permanentlyDenied: false }), 30000);
+          window.addEventListener('pe-audio-perm', onPerm);
+          try {
+            window.AndroidBridge.requestAudioPermission();
+          } catch (_) {
+            finish({ granted: false, permanentlyDenied: false });
+          }
+        });
+      }
+
+      function startRecordTimer() {
+        clearInterval(recordTimerInt);
+        recordStartTs = Date.now();
+        recordElapsedSec = 0;
+        recordTimerInt = setInterval(() => {
+          recordElapsedSec = (Date.now() - recordStartTs) / 1000;
+          const timerEl = $('voiceRecTimerText');
+          if (timerEl) {
+            timerEl.textContent = `Stop recording • ${recordElapsedSec.toFixed(1)}s / 12s`;
+          }
+          if (recordElapsedSec >= 12) {
+            stopWordRecording();
+          }
+        }, 200);
+      }
+
       async function startWordRecording() {
         if (isRecordingWord) return;
+        stopActiveAudioPlayback();
+
+        if (isNativeApk()) {
+          const bridge = window.AndroidBridge;
+          const hasPermApi = bridge && typeof bridge.hasAudioPermission === 'function';
+          if (hasPermApi) {
+            if (!bridge.hasAudioPermission()) {
+              const permRes = await requestNativeAudioPermAsync();
+              if (!permRes.granted) {
+                if (permRes.permanentlyDenied && typeof bridge.openAppSettings === 'function') {
+                  if (confirm('Microphone permission is disabled in Android settings. Open App Settings to enable it?')) {
+                    bridge.openAppSettings();
+                  }
+                } else {
+                  showToast('Microphone permission is needed to record');
+                }
+                return;
+              }
+            }
+            if (typeof bridge.startNativeAudioRecording === 'function' && bridge.startNativeAudioRecording()) {
+              recordAborted = false;
+              usingNativeRecorder = true;
+              isRecordingWord = true;
+              startRecordTimer();
+              renderWordVoiceRecorderBox();
+              return;
+            }
+          }
+        }
+
         if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || typeof MediaRecorder === 'undefined') {
-          showToast('Voice recording is not supported on this browser');
+          if (isNativeApk()) {
+            showToast('Update the Android app to v1.3.0 to fix microphone recording');
+            checkApkUpdatePrompt();
+          } else {
+            showToast('Voice recording is not supported on this browser');
+          }
           return;
         }
-        stopActiveAudioPlayback();
 
         let stream;
         try {
           stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        } catch (_) {
-          showToast('Microphone permission denied or unavailable');
+        } catch (err) {
+          if (isNativeApk() && !(window.AndroidBridge && typeof window.AndroidBridge.hasAudioPermission === 'function')) {
+            showToast('Update the Android app to v1.3.0 to fix microphone recording');
+            checkApkUpdatePrompt();
+          } else if (err && err.name === 'NotAllowedError') {
+            showToast('Microphone permission denied — allow mic access in settings');
+          } else if (err && err.name === 'NotFoundError') {
+            showToast('No microphone found on this device');
+          } else if (err && err.name === 'NotReadableError') {
+            showToast('Microphone is busy in another app');
+          } else {
+            showToast('Microphone permission denied or unavailable');
+          }
           return;
         }
 
@@ -7286,11 +7496,10 @@
         }
 
         recordAborted = false;
+        usingNativeRecorder = false;
         activeRecordStream = stream;
         activeRecorder = recorder;
         recordChunks = [];
-        recordStartTs = Date.now();
-        recordElapsedSec = 0;
         isRecordingWord = true;
 
         recorder.ondataavailable = (ev) => {
@@ -7341,23 +7550,33 @@
           return;
         }
 
-        recordTimerInt = setInterval(() => {
-          recordElapsedSec = (Date.now() - recordStartTs) / 1000;
-          const timerEl = $('voiceRecTimerText');
-          if (timerEl) {
-            timerEl.textContent = `Stop recording • ${recordElapsedSec.toFixed(1)}s / 12s`;
-          }
-          if (recordElapsedSec >= 12) {
-            stopWordRecording();
-          }
-        }, 200);
-
+        startRecordTimer();
         renderWordVoiceRecorderBox();
       }
 
       async function stopWordRecording() {
         clearInterval(recordTimerInt);
         recordTimerInt = null;
+        if (usingNativeRecorder) {
+          usingNativeRecorder = false;
+          isRecordingWord = false;
+          const durSec = Math.max(0.5, Math.round(((Date.now() - recordStartTs) / 1000) * 10) / 10);
+          try {
+            const payload = window.AndroidBridge.stopNativeAudioRecording();
+            if (!recordAborted && payload) {
+              wordFormAudioPayload = payload;
+              wordFormAudioId = 'a' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+              wordFormAudioDuration = durSec;
+              wordFormAudioBy = currentUser || 'Pierre';
+            } else if (!recordAborted) {
+              showToast('Could not capture audio clip');
+            }
+          } catch (_) {
+            showToast('Could not process audio clip');
+          }
+          renderWordVoiceRecorderBox();
+          return;
+        }
         if (activeRecorder && activeRecorder.state !== 'inactive') {
           try { activeRecorder.stop(); } catch (_) {}
           if (recordStopPromise) await recordStopPromise;
@@ -7369,6 +7588,14 @@
         clearInterval(recordTimerInt);
         recordTimerInt = null;
         isRecordingWord = false;
+        if (usingNativeRecorder) {
+          usingNativeRecorder = false;
+          try {
+            if (window.AndroidBridge && typeof window.AndroidBridge.cancelNativeAudioRecording === 'function') {
+              window.AndroidBridge.cancelNativeAudioRecording();
+            }
+          } catch (_) {}
+        }
         if (activeRecorder && activeRecorder.state !== 'inactive') {
           try { activeRecorder.stop(); } catch (_) {}
         }
@@ -7581,7 +7808,7 @@
         );
         const readyBadge = $('weeklyQuizReadyBadge');
         if (readyBadge) {
-          readyBadge.style.display = (!doneThisWeek && partnerWordCount > 0) ? 'inline-flex' : 'none';
+          readyBadge.style.display = (isSundayToday() && !doneThisWeek && partnerWordCount > 0) ? 'inline-flex' : 'none';
         }
       }
 
@@ -8020,7 +8247,43 @@
         });
       }
 
+      function isSundayToday(date = new Date()) {
+        return date.getDay() === 0;
+      }
+
+      function getDaysUntilSunday(date = new Date()) {
+        const day = date.getDay();
+        return day === 0 ? 0 : 7 - day;
+      }
+
+      function maybeNotifySundayQuizWeb() {
+        if (!isSundayToday() || isNativeApk()) return;
+        const curWeek = getIsoWeekInfo();
+        const me = currentUser || 'Pierre';
+        const doneThisWeek = (state.quizResults || []).some(
+          (q) => q && q.mode === 'weekly' && q.weekKey === curWeek.weekKey && q.player === me
+        );
+        if (doneThisWeek) return;
+        const todayKey = getLocalDateKey();
+        try {
+          if (localStorage.getItem('pe_sunday_quiz_notif_v1') === todayKey) return;
+          localStorage.setItem('pe_sunday_quiz_notif_v1', todayKey);
+        } catch (_) {}
+        maybeShowWebNotification({
+          id: 'sunday_quiz_' + todayKey,
+          title: '🏆 Sunday Quiz Day!',
+          body: 'Your Weekly Language Quiz is open all day! Test what your partner taught you.',
+          tab: 'quiz',
+          category: 'words',
+          force: true
+        });
+      }
+
       function startQuiz(mode, targetLang = null) {
+        if (!isSundayToday()) {
+          showToast('The quiz is only available on Sundays! 🏆');
+          return;
+        }
         const me = currentUser || 'Pierre';
         const resolvedLang = mode === 'weekly'
           ? (me === 'Ebba' ? 'fr' : 'sv')
@@ -8145,13 +8408,19 @@
         const pierreRes = results.find((r) => r.player === 'Pierre');
         const ebbaRes = results.find((r) => r.player === 'Ebba');
         const myRes = me === 'Ebba' ? ebbaRes : pierreRes;
+        const sundayOpen = isSundayToday();
+        const daysUntil = getDaysUntilSunday();
 
         banner.innerHTML = `
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
             <div>
               <div class="dex-kicker"><span>🏆</span> Week ${weekInfo.weekNum} Official Match</div>
               <h3 style="font-family:var(--font-serif);font-size:23px;font-weight:600;margin:0;">Weekly Language Quiz</h3>
-              <p style="font-size:12.5px;color:var(--text-muted);margin:3px 0 0;">${escapeHtml(weekInfo.rangeLabel)} • Test what ${escapeHtml(partner)} taught you</p>
+              <p style="font-size:12.5px;color:var(--text-muted);margin:3px 0 0;">
+                ${sundayOpen
+                  ? `🎉 It’s Sunday! You have all day to take Week ${weekInfo.weekNum}’s quiz`
+                  : `${escapeHtml(weekInfo.rangeLabel)} • Opens every Sunday (all day long)`}
+              </p>
             </div>
             <span class="card-cat-tag">${escapeHtml(weekInfo.weekKey)}</span>
           </div>
@@ -8171,25 +8440,39 @@
             </div>
           </div>
 
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-            ${myRes
-              ? `<span class="match-score-pill perfect">✓ Completed this week (${myRes.score}/${myRes.total})</span>`
-              : `<button type="button" class="btn-primary" id="startOfficialQuizBtn" style="width:auto;padding:11px 18px;" ${myPoolCount === 0 ? 'disabled' : ''}>
-                  🎯 Take Week ${weekInfo.weekNum} Official Quiz
-                </button>`}
-            <button type="button" class="btn-secondary" id="practiceSvBtn" style="font-size:12.5px;padding:9px 13px;" ${svCount === 0 ? 'disabled' : ''}>🇸🇪 Practice Swedish</button>
-            <button type="button" class="btn-secondary" id="practiceFrBtn" style="font-size:12.5px;padding:9px 13px;" ${frCount === 0 ? 'disabled' : ''}>🇫🇷 Practice French</button>
-            <button type="button" class="btn-secondary" id="practiceBothBtn" style="font-size:12.5px;padding:9px 13px;" ${allWords.length === 0 ? 'disabled' : ''}>🌍 Mixed Practice</button>
-          </div>
-          ${!myRes && myPoolCount === 0 ? `<p style="font-size:12px;color:var(--text-soft);margin:8px 0 0;">Waiting for ${escapeHtml(partner)} to add at least 1 ${myTargetLang === 'sv' ? 'Swedish' : 'French'} word before you can take your official quiz.</p>` : ''}
+          ${sundayOpen ? `
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+              ${myRes
+                ? `<span class="match-score-pill perfect">✓ Completed this week (${myRes.score}/${myRes.total})</span>`
+                : `<button type="button" class="btn-primary" id="startOfficialQuizBtn" style="width:auto;padding:11px 18px;" ${myPoolCount === 0 ? 'disabled' : ''}>
+                    🎯 Take Week ${weekInfo.weekNum} Official Quiz
+                  </button>`}
+              <button type="button" class="btn-secondary" id="practiceSvBtn" style="font-size:12.5px;padding:9px 13px;" ${svCount === 0 ? 'disabled' : ''}>🇸🇪 Practice Swedish</button>
+              <button type="button" class="btn-secondary" id="practiceFrBtn" style="font-size:12.5px;padding:9px 13px;" ${frCount === 0 ? 'disabled' : ''}>🇫🇷 Practice French</button>
+              <button type="button" class="btn-secondary" id="practiceBothBtn" style="font-size:12.5px;padding:9px 13px;" ${allWords.length === 0 ? 'disabled' : ''}>🌍 Mixed Practice</button>
+            </div>
+            ${!myRes && myPoolCount === 0 ? `<p style="font-size:12px;color:var(--text-soft);margin:8px 0 0;">Waiting for ${escapeHtml(partner)} to add at least 1 ${myTargetLang === 'sv' ? 'Swedish' : 'French'} word before you can take your official quiz.</p>` : ''}
+          ` : `
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 14px;border-radius:14px;background:var(--surface-soft);border:1px solid var(--border);">
+              <div>
+                <div style="font-size:13.5px;font-weight:700;">🗓 Sunday Quiz Ritual</div>
+                <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">The Weekly Quiz opens every Sunday (all day long)! Keep adding daily words until then.</div>
+              </div>
+              <span class="card-cat-tag" style="background:rgba(212,175,55,0.16);color:var(--gold);border-color:rgba(212,175,55,0.35);">
+                ${daysUntil === 1 ? 'Opens tomorrow (Sunday)!' : `Opens in ${daysUntil} days — this Sunday`}
+              </span>
+            </div>
+          `}
         `;
 
-        if ($('startOfficialQuizBtn')) {
-          $('startOfficialQuizBtn').onclick = () => startQuiz('weekly');
+        if (sundayOpen) {
+          if ($('startOfficialQuizBtn')) {
+            $('startOfficialQuizBtn').onclick = () => startQuiz('weekly');
+          }
+          $('practiceSvBtn').onclick = () => startQuiz('practice', 'sv');
+          $('practiceFrBtn').onclick = () => startQuiz('practice', 'fr');
+          $('practiceBothBtn').onclick = () => startQuiz('practice', 'both');
         }
-        $('practiceSvBtn').onclick = () => startQuiz('practice', 'sv');
-        $('practiceFrBtn').onclick = () => startQuiz('practice', 'fr');
-        $('practiceBothBtn').onclick = () => startQuiz('practice', 'both');
 
         if (!quizSession) {
           runner.style.display = 'none';
@@ -8838,8 +9121,35 @@
         setTimeout(() => openModal('identityModal'), 250);
       }
 
+      function refreshDayBoundUi() {
+        renderPetitMot();
+        renderWordsHero();
+        if (wordsSubMode === 'quiz') {
+          renderQuizSection();
+        }
+        maybeNotifySundayQuizWeb();
+      }
+
+      let midnightRefreshTimer = null;
+      function scheduleMidnightRefresh() {
+        if (midnightRefreshTimer) clearTimeout(midnightRefreshTimer);
+        const now = new Date();
+        const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 1, 0);
+        const delay = Math.max(1000, nextMidnight.getTime() - now.getTime());
+        midnightRefreshTimer = setTimeout(() => {
+          refreshDayBoundUi();
+          scheduleMidnightRefresh();
+        }, delay);
+      }
+
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+          refreshDayBoundUi();
+        }
+      });
+
       const initialTabParam = new URLSearchParams(window.location.search).get('tab');
-      if (initialTabParam === 'recipes' || initialTabParam === 'words' || initialTabParam === 'lists') {
+      if (initialTabParam === 'recipes' || initialTabParam === 'words' || initialTabParam === 'lists' || initialTabParam === 'quiz') {
         switchMainTab(initialTabParam);
       }
 
@@ -8849,6 +9159,8 @@
       refreshInstallBanner();
       connectLiveStream();
       syncFromCloud(true);
+      scheduleMidnightRefresh();
+      maybeNotifySundayQuizWeb();
       setTimeout(checkApkUpdatePrompt, 450);
     })();
   </script>

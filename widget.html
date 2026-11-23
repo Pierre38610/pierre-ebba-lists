@@ -392,6 +392,18 @@
         } catch (_) {}
       }
 
+      function getLocalDateKey(date = new Date()) {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      }
+
+      function isNoteFromToday(note) {
+        if (!note || !note.text || !note.updatedAt) return false;
+        return getLocalDateKey(new Date(note.updatedAt)) === getLocalDateKey();
+      }
+
       function getPartnerOwnNote() {
         const partner = viewer === 'Pierre' ? 'Ebba' : 'Pierre';
         const slot = viewer === 'Pierre' ? snapshot.e : snapshot.p;
@@ -415,7 +427,8 @@
         document.getElementById('widgetNoteInput').placeholder = `Write a note for ${partner} ♥...`;
 
         const partnerNote = getPartnerOwnNote();
-        const chosen = partnerNote || (snapshot.m && snapshot.m.text ? snapshot.m : null);
+        const candidate = partnerNote || (snapshot.m && snapshot.m.text ? snapshot.m : null);
+        const chosen = isNoteFromToday(candidate) ? candidate : null;
         const heartsEl = document.getElementById('widgetHearts');
 
         if (chosen && chosen.text) {
@@ -428,9 +441,9 @@
           heartsEl.textContent = `${liked ? '♥' : '♡'} ${chosen.hearts || 0}`;
           heartsEl.classList.toggle('liked', liked);
         } else {
-          document.getElementById('widgetKicker').textContent = `✦ NOTE FROM ${partner.toUpperCase()}`;
-          document.getElementById('widgetQuote').textContent = `No note from ${partner} yet — tap ✎ Note to write one!`;
-          document.getElementById('widgetMeta').textContent = 'Pierre & Ebba';
+          document.getElementById('widgetKicker').textContent = '✦ NOTE OF THE DAY';
+          document.getElementById('widgetQuote').textContent = 'New day! Write today’s Note of the Day ✨';
+          document.getElementById('widgetMeta').textContent = 'Tap ✎ Note to write';
           heartsEl.textContent = '♡ 0';
           heartsEl.classList.remove('liked');
         }
@@ -535,8 +548,8 @@
       async function toggleLikePartnerNote() {
         const partner = viewer === 'Pierre' ? 'Ebba' : 'Pierre';
         const target = getPartnerOwnNote();
-        if (!target || !target.text) {
-          setStatus(`No note from ${partner} to like yet`);
+        if (!isNoteFromToday(target)) {
+          setStatus(`No note from ${partner} today yet`);
           return;
         }
         const list = Array.isArray(target.heartedBy) ? [...target.heartedBy] : [];

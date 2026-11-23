@@ -1,12 +1,12 @@
 {
-  "apkVersion": "1.2.0",
-  "apkVersionCode": 3,
-  "webVersion": "2026-11-20.3",
+  "apkVersion": "1.3.0",
+  "apkVersionCode": 4,
+  "webVersion": "2026-11-23.1",
   "downloadUrl": "https://github.com/Pierre38610/pierre-ebba-lists/releases/download/android-latest/pierre-ebba.apk",
   "notes": [
-    "Voice pronunciation recording & playback in Daily Words",
-    "Interactive Home Screen Widget (like & write notes directly)",
-    "Removed permanent \"Listening for updates\" notification",
-    "Built-in APK update checker & automatic cloud backup before updates"
+    "Note of the Day now resets at local midnight with a fresh morning prompt",
+    "Scrollable shared lists without 'View more' & smooth check-off animation",
+    "Weekly Quiz is now a Sunday-only ritual with a Sunday reminder notification",
+    "Fixed microphone permission & voice pronunciation recording on Android"
   ]
 }

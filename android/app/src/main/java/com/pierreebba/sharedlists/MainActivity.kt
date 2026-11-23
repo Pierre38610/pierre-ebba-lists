@@ -7,11 +7,13 @@ import android.appwidget.AppWidgetManager
 import android.content.ComponentName
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.MediaRecorder
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import android.provider.Settings
+import android.util.Base64
 import android.webkit.JavascriptInterface
 import android.webkit.JsPromptResult
 import android.webkit.JsResult
@@ -28,8 +30,10 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import org.json.JSONObject
+import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
 
@@ -39,6 +43,8 @@ class MainActivity : AppCompatActivity() {
     private var filePathCallback: ValueCallback<Array<Uri>>? = null
     private var pendingTab: String? = null
     private var pendingWebPermissionRequest: PermissionRequest? = null
+    private var nativeMediaRecorder: MediaRecorder? = null
+    private var nativeAudioFile: File? = null
 
     @Volatile
     private var webUpdateCheckerActive = false
@@ -93,6 +99,16 @@ class MainActivity : AppCompatActivity() {
         }
         if (!granted) {
             Toast.makeText(this, "Microphone permission is needed to record pronunciation", Toast.LENGTH_SHORT).show()
+        }
+        val permDenied = !granted && !ActivityCompat.shouldShowRequestPermissionRationale(
+            this,
+            Manifest.permission.RECORD_AUDIO
+        )
+        webView.post {
+            webView.evaluateJavascript(
+                "window.dispatchEvent(new CustomEvent('pe-audio-perm', { detail: { granted: $granted, permanentlyDenied: $permDenied } }))",
+                null
+            )
         }
     }
 
@@ -151,7 +167,7 @@ class MainActivity : AppCompatActivity() {
                     if (request == null) return@runOnUiThread
                     val originHost = request.origin?.host.orEmpty()
                     val wantsAudio = request.resources?.contains(PermissionRequest.RESOURCE_AUDIO_CAPTURE) == true
-                    if (originHost == "pierre38610.github.io" && wantsAudio) {
+                    if (originHost.equals("pierre38610.github.io", ignoreCase = true) && wantsAudio) {
                         val hasAudioPerm = ContextCompat.checkSelfPermission(
                             this@MainActivity,
                             Manifest.permission.RECORD_AUDIO
@@ -281,6 +297,12 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         PartnerStreamManager.startIfAllowed(this)
+        PartnerSyncWorker.checkSundayQuizReminder(this)
+    }
+
+    override fun onDestroy() {
+        cleanupNativeRecorder()
+        super.onDestroy()
     }
 
     override fun onResume() {
@@ -305,8 +327,26 @@ class MainActivity : AppCompatActivity() {
         return when (raw) {
             "recipes" -> "recipes"
             "words" -> "words"
+            "quiz" -> "quiz"
             else -> "lists"
         }
+    }
+
+    private fun cleanupNativeRecorder() {
+        try {
+            nativeMediaRecorder?.apply {
+                try { stop() } catch (_: Exception) {}
+                try { reset() } catch (_: Exception) {}
+                try { release() } catch (_: Exception) {}
+            }
+        } catch (_: Exception) {
+        }
+        nativeMediaRecorder = null
+        try {
+            nativeAudioFile?.delete()
+        } catch (_: Exception) {
+        }
+        nativeAudioFile = null
     }
 
     private fun openExternalUrlInternal(url: String) {
@@ -385,7 +425,102 @@ class MainActivity : AppCompatActivity() {
         fun isNativeApp(): Boolean = true
 
         @JavascriptInterface
-        fun getAppVersion(): String = "1.2.0"
+        fun getAppVersion(): String = "1.3.0"
+
+        @JavascriptInterface
+        fun hasAudioPermission(): Boolean {
+            return ContextCompat.checkSelfPermission(
+                this@MainActivity,
+                Manifest.permission.RECORD_AUDIO
+            ) == PackageManager.PERMISSION_GRANTED
+        }
+
+        @JavascriptInterface
+        fun requestAudioPermission() {
+            runOnUiThread {
+                if (hasAudioPermission()) {
+                    webView.evaluateJavascript(
+                        "window.dispatchEvent(new CustomEvent('pe-audio-perm', { detail: { granted: true, permanentlyDenied: false } }))",
+                        null
+                    )
+                } else {
+                    audioPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                }
+            }
+        }
+
+        @JavascriptInterface
+        fun openAppSettings() {
+            runOnUiThread {
+                try {
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = Uri.parse("package:$packageName")
+                    }
+                    startActivity(intent)
+                } catch (_: Exception) {
+                }
+            }
+        }
+
+        @JavascriptInterface
+        fun startNativeAudioRecording(): Boolean {
+            if (!hasAudioPermission()) return false
+            cleanupNativeRecorder()
+            return try {
+                val outFile = File(cacheDir, "pe_voice_rec.m4a")
+                if (outFile.exists()) outFile.delete()
+                val rec = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    MediaRecorder(this@MainActivity)
+                } else {
+                    @Suppress("DEPRECATION")
+                    MediaRecorder()
+                }
+                rec.setAudioSource(MediaRecorder.AudioSource.MIC)
+                rec.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+                rec.setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
+                rec.setAudioSamplingRate(16000)
+                rec.setAudioEncodingBitRate(24000)
+                rec.setOutputFile(outFile.absolutePath)
+                rec.prepare()
+                rec.start()
+                nativeMediaRecorder = rec
+                nativeAudioFile = outFile
+                true
+            } catch (_: Exception) {
+                cleanupNativeRecorder()
+                false
+            }
+        }
+
+        @JavascriptInterface
+        fun stopNativeAudioRecording(): String {
+            val rec = nativeMediaRecorder
+            val file = nativeAudioFile
+            nativeMediaRecorder = null
+            nativeAudioFile = null
+            if (rec != null) {
+                try { rec.stop() } catch (_: Exception) {}
+                try { rec.reset() } catch (_: Exception) {}
+                try { rec.release() } catch (_: Exception) {}
+            }
+            if (file == null || !file.exists()) return ""
+            return try {
+                val bytes = file.readBytes()
+                file.delete()
+                if (bytes.isEmpty()) "" else "M_" + Base64.encodeToString(
+                    bytes,
+                    Base64.URL_SAFE or Base64.NO_WRAP or Base64.NO_PADDING
+                )
+            } catch (_: Exception) {
+                try { file.delete() } catch (_: Exception) {}
+                ""
+            }
+        }
+
+        @JavascriptInterface
+        fun cancelNativeAudioRecording() {
+            cleanupNativeRecorder()
+        }
 
         @JavascriptInterface
         fun openExternalUrl(url: String) {
@@ -500,6 +635,6 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_TAB = "extra_tab"
-        private const val CURRENT_VERSION_CODE = 3
+        private const val CURRENT_VERSION_CODE = 4
     }
 }

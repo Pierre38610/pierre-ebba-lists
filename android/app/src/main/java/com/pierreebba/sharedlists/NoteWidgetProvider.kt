@@ -92,18 +92,18 @@ class NoteWidgetProvider : AppWidgetProvider() {
 
         private fun bindWidget(context: Context, manager: AppWidgetManager, widgetId: Int) {
             val snap = AppPrefs.getPartnerNote(context)
+            val activeSnap = if (AppPrefs.isNoteFromToday(snap)) snap else null
             val partner = AppPrefs.getPartnerName(context)
             val me = AppPrefs.getCurrentUser(context)
             val views = RemoteViews(context.packageName, R.layout.widget_note)
 
-            val authorUpper = (snap?.author?.ifBlank { partner } ?: partner).uppercase()
-            views.setTextViewText(R.id.widgetHeader, "✦ NOTE FROM $authorUpper")
-
-            if (snap != null && snap.text.isNotBlank()) {
-                views.setTextViewText(R.id.widgetNoteText, snap.text)
-                val rel = if (snap.updatedAt > 0L) {
+            if (activeSnap != null && activeSnap.text.isNotBlank()) {
+                val authorUpper = activeSnap.author.ifBlank { partner }.uppercase()
+                views.setTextViewText(R.id.widgetHeader, "✦ NOTE FROM $authorUpper")
+                views.setTextViewText(R.id.widgetNoteText, activeSnap.text)
+                val rel = if (activeSnap.updatedAt > 0L) {
                     DateUtils.getRelativeTimeSpanString(
-                        snap.updatedAt,
+                        activeSnap.updatedAt,
                         System.currentTimeMillis(),
                         DateUtils.MINUTE_IN_MILLIS
                     ).toString()
@@ -112,15 +112,16 @@ class NoteWidgetProvider : AppWidgetProvider() {
                 }
                 views.setTextViewText(R.id.widgetMeta, rel)
             } else {
+                views.setTextViewText(R.id.widgetHeader, "✦ NOTE OF THE DAY")
                 views.setTextViewText(
                     R.id.widgetNoteText,
-                    "No note from $partner yet — tap ✎ Note to send one ♥"
+                    "New day! Write today’s Note of the Day ✨"
                 )
-                views.setTextViewText(R.id.widgetMeta, "Pierre & Ebba")
+                views.setTextViewText(R.id.widgetMeta, "Tap ✎ Note to write")
             }
 
-            val likedByMe = snap != null && snap.heartedBy.contains(me)
-            val heartsCount = snap?.hearts ?: 0
+            val likedByMe = activeSnap != null && activeSnap.heartedBy.contains(me)
+            val heartsCount = activeSnap?.hearts ?: 0
             views.setTextViewText(R.id.widgetHearts, if (likedByMe) "♥ $heartsCount" else "♡ $heartsCount")
             views.setInt(
                 R.id.widgetHearts,
