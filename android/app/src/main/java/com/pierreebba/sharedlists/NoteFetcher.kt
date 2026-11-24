@@ -374,4 +374,45 @@ object NoteFetcher {
             }
         }
     }
+
+    /**
+     * Checks Supabase for whether the current user has already posted their Word of the Day
+     * for [todayKey] (Pierre -> "fr", Ebba -> "sv").
+     * Returns true if found, false if confirmed absent, or null on network/API error.
+     */
+    fun hasTodayWordInCloud(context: Context, todayKey: String): Boolean? {
+        val myLang = if (AppPrefs.getCurrentUser(context) == "Ebba") "sv" else "fr"
+        var conn: HttpURLConnection? = null
+        return try {
+            val url = URL("${AppPrefs.SUPABASE_URL}/rest/v1/shared_entities?kind=eq.word&deleted=eq.false&select=payload")
+            conn = (url.openConnection() as HttpURLConnection).apply {
+                connectTimeout = 8000
+                readTimeout = 8000
+                requestMethod = "GET"
+                setRequestProperty("apikey", AppPrefs.SUPABASE_ANON_KEY)
+                setRequestProperty("Authorization", "Bearer ${AppPrefs.SUPABASE_ANON_KEY}")
+                setRequestProperty("Cache-Control", "no-store")
+            }
+            if (conn.responseCode !in 200..299) {
+                return null
+            }
+            val raw = conn.inputStream.bufferedReader(Charsets.UTF_8).use { it.readText() }
+            val arr = JSONArray(raw)
+            for (i in 0 until arr.length()) {
+                val row = arr.optJSONObject(i) ?: continue
+                val payload = row.optJSONObject("payload") ?: continue
+                if (payload.optBoolean("deleted", false)) continue
+                val lang = if (payload.optString("lang") == "sv") "sv" else "fr"
+                val date = payload.optString("date", "")
+                if (lang == myLang && date == todayKey) {
+                    return true
+                }
+            }
+            false
+        } catch (_: Exception) {
+            null
+        } finally {
+            conn?.disconnect()
+        }
+    }
 }

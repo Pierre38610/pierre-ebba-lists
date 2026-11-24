@@ -16,6 +16,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
       --bg: #FAF7F2;
@@ -2859,6 +2860,232 @@
       accent-color: var(--gold);
       cursor: pointer;
     }
+
+    /* Sync Pill Refresh Icon & Tactile Feedback */
+    .sync-pill {
+      padding: 3px 8px 3px 6px;
+      border-radius: 999px;
+      border: 1px solid transparent;
+      transition: background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .sync-pill:hover,
+    .sync-pill:active {
+      background: var(--bg-elevated);
+      border-color: var(--border);
+    }
+
+    .sync-refresh-icon {
+      width: 12px;
+      height: 12px;
+      color: var(--text-soft);
+      flex-shrink: 0;
+      transition: transform 0.2s ease, color 0.2s ease;
+    }
+
+    .sync-pill.syncing .sync-refresh-icon {
+      color: var(--gold);
+      animation: spin360 0.9s linear infinite;
+    }
+
+    @keyframes spin360 {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Photo Size Badge on Thumbnail */
+    .photo-thumb-size {
+      position: absolute;
+      left: 4px;
+      top: 4px;
+      font-size: 9.5px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      padding: 2px 5px;
+      border-radius: 6px;
+      background: rgba(20, 18, 16, 0.72);
+      color: #FAF7F2;
+      pointer-events: none;
+    }
+
+    /* AI Auto-Fill Box (Anti-Slop Tactile) */
+    .ai-autofill-box {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface-soft);
+      padding: 12px 14px;
+      margin-bottom: 16px;
+    }
+
+    .ai-autofill-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .ai-autofill-meta {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .ai-autofill-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0;
+    }
+
+    .ai-autofill-sub {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin: 2px 0 0;
+      line-height: 1.35;
+    }
+
+    .btn-ai-fill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 40px;
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: 1px solid var(--pierre);
+      background: var(--pierre);
+      color: #FFFFFF;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.1s cubic-bezier(0.2, 0, 0, 1), opacity 0.15s ease, background 0.15s ease;
+      flex-shrink: 0;
+    }
+
+    .btn-ai-fill:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+
+    .btn-ai-fill:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .ai-status-msg {
+      margin-top: 10px;
+      padding: 9px 11px;
+      border-radius: 10px;
+      font-size: 12px;
+      line-height: 1.4;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text-muted);
+      display: none;
+    }
+
+    .ai-status-msg.visible { display: block; }
+    .ai-status-msg.error {
+      border-color: rgba(184, 74, 57, 0.35);
+      background: rgba(184, 74, 57, 0.08);
+      color: var(--danger);
+    }
+    .ai-status-msg.ok {
+      border-color: rgba(74, 107, 93, 0.35);
+      background: var(--pierre-soft);
+      color: var(--pierre);
+    }
+
+    .ai-quick-key-row {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .ai-quick-key-row.visible {
+      display: flex;
+    }
+
+    /* Recipe Save Progress / Error Bar */
+    .save-status-bar {
+      display: none;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 12.5px;
+      font-weight: 500;
+      margin-bottom: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface-soft);
+      color: var(--text);
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .save-status-bar.visible { display: flex; }
+    .save-status-bar.error {
+      border-color: rgba(184, 74, 57, 0.4);
+      background: rgba(184, 74, 57, 0.08);
+      color: var(--danger);
+    }
+    .save-status-bar.ok {
+      border-color: rgba(74, 107, 93, 0.4);
+      background: var(--pierre-soft);
+      color: var(--pierre);
+    }
+
+    /* Settings Modal Controls */
+    .settings-section {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: var(--surface-soft);
+      padding: 14px;
+      margin-bottom: 12px;
+    }
+
+    .settings-section-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text);
+      margin: 0 0 4px;
+    }
+
+    .settings-section-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin: 0 0 10px;
+      line-height: 1.4;
+    }
+
+    .key-input-wrap {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .key-input-wrap .input-ctrl {
+      flex: 1;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 12.5px;
+    }
+
+    .settings-kv-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 12.5px;
+      padding: 5px 0;
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .settings-kv-row strong {
+      color: var(--text);
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
@@ -2869,9 +3096,13 @@
         <div class="brand-monogram" aria-hidden="true">P<span>&amp;</span>E</div>
         <div class="brand-text">
           <h1 class="brand-title">Pierre <em>&amp;</em> Ebba</h1>
-          <div class="sync-pill" id="syncPill" title="Tap to force sync">
+          <div class="sync-pill" id="syncPill" title="Tap to force sync" role="button" tabindex="0">
             <span class="sync-dot" id="syncDot"></span>
             <span id="syncText">Syncing...</span>
+            <svg class="sync-refresh-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 12a9 9 0 1 1-2.64-6.36"/>
+              <polyline points="21 3 21 9 15 9"/>
+            </svg>
           </div>
         </div>
       </div>
@@ -2887,6 +3118,12 @@
             <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
           </svg>
           <span class="notif-status-dot" id="notifStatusDot"></span>
+        </button>
+        <button class="icon-btn" id="settingsBtn" title="Settings &amp; AI Key" aria-label="Settings">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.77 1 1.42 1.07H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
         </button>
         <button class="icon-btn" id="themeBtn" title="Switch theme (Light / Dark)" aria-label="Theme">
           <svg id="themeIcon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -3365,8 +3602,8 @@
         <label class="field-label">Photos (optional, one or more)</label>
         <input type="file" id="recipePhotoInput" class="hidden-input" accept="image/*" multiple />
         <div class="photo-upload-zone" id="recipePhotoDropzone" role="button" tabindex="0">
-          <p class="photo-upload-title">📷 Add dish photos</p>
-          <p class="photo-upload-sub">Select one or multiple photos — automatically compressed for fast sync</p>
+          <p class="photo-upload-title">Add dish photos</p>
+          <p class="photo-upload-sub">Select one or more photos — original resolution preserved in cloud storage</p>
         </div>
         <div class="photo-thumbs-grid" id="recipePhotoThumbs"></div>
       </div>
@@ -3374,6 +3611,34 @@
       <div class="field-group">
         <label class="field-label" for="recipeTitleInput">Dish Title (optional)</label>
         <input type="text" class="input-ctrl" id="recipeTitleInput" placeholder="E.g., Creamy Truffle Pasta, Sunday Pancakes..." maxlength="100" />
+      </div>
+
+      <div class="field-group">
+        <label class="field-label" for="recipeAiHintsInput">Quick details for AI (optional)</label>
+        <input type="text" class="input-ctrl" id="recipeAiHintsInput" placeholder="E.g., for 4 people, soy sauce, no cream" maxlength="160" />
+      </div>
+
+      <div class="ai-autofill-box" id="recipeAiBox">
+        <div class="ai-autofill-top">
+          <div class="ai-autofill-meta">
+            <p class="ai-autofill-title">AI Recipe Auto-Fill</p>
+            <p class="ai-autofill-sub">Add a photo and dish title to pre-fill ingredients, steps, and timings for review.</p>
+          </div>
+          <button type="button" class="btn-ai-fill" id="recipeAiFillBtn" disabled>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 3l1.9 5.8L20 10.7l-5.8 1.9L12 19l-1.9-6.4L4 10.7l6.1-1.9L12 3z"/>
+            </svg>
+            <span id="recipeAiFillBtnLabel">Auto-fill with AI</span>
+          </button>
+        </div>
+        <div class="ai-status-msg" id="recipeAiStatus"></div>
+        <div class="ai-quick-key-row" id="recipeAiQuickKeyRow">
+          <div style="font-size:12px;color:var(--text-muted);">Paste your Gemini Free Tier API key (stored locally on this phone only):</div>
+          <div class="key-input-wrap">
+            <input type="password" class="input-ctrl" id="recipeAiQuickKeyInput" placeholder="AIza... or AQ..." autocomplete="off" />
+            <button type="button" class="btn-secondary" id="recipeAiQuickKeySaveBtn" style="padding:8px 12px;font-size:12px;white-space:nowrap;">Save &amp; Run</button>
+          </div>
+        </div>
       </div>
 
       <div class="form-row-2">
@@ -3437,6 +3702,10 @@
         </label>
       </div>
 
+      <div class="save-status-bar" id="recipeSaveStatusBar">
+        <span id="recipeSaveStatusText"></span>
+        <button type="button" class="btn-secondary" id="recipeSaveRetryBtn" style="display:none;padding:6px 12px;font-size:12px;">Retry</button>
+      </div>
       <button class="btn-primary" id="saveRecipeBtn">Save to Recipe Dex</button>
     </div>
   </div>
@@ -3666,6 +3935,56 @@
     </div>
   </div>
 
+  <!-- Modal 12: Settings (Gemini AI Key & Cloud Sync) -->
+  <div class="modal-backdrop" id="settingsModal" style="z-index:115;">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <div>
+          <h2 class="modal-title">Settings</h2>
+          <p style="margin:2px 0 0;font-size:12px;color:var(--text-muted);">Local AI key &amp; real-time cloud synchronization</p>
+        </div>
+        <button class="close-btn" data-close="settingsModal">&times;</button>
+      </div>
+
+      <div class="settings-section">
+        <h3 class="settings-section-title">Gemini AI (Free Tier)</h3>
+        <p class="settings-section-sub">
+          Stored only in this device’s browser storage (<code>localStorage</code>), never committed or synced. Active model: <code id="settingsGeminiModelLabel">gemini-3.6-flash</code>.
+        </p>
+        <div class="field-group" style="margin-bottom:10px;">
+          <label class="field-label" for="geminiApiKeyInput">Gemini API Key</label>
+          <div class="key-input-wrap">
+            <input type="password" class="input-ctrl" id="geminiApiKeyInput" placeholder="Paste your Google AI Studio Free Tier key" autocomplete="off" />
+            <button type="button" class="btn-secondary" id="toggleGeminiKeyBtn" style="padding:8px 12px;font-size:12px;">Show</button>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+          <button type="button" class="btn-primary" id="saveGeminiKeyBtn" style="flex:1;min-width:120px;">Save Key</button>
+          <button type="button" class="btn-secondary" id="testGeminiKeyBtn" style="flex:1;min-width:130px;">Test Connection</button>
+        </div>
+        <div class="ai-status-msg" id="settingsGeminiStatus"></div>
+      </div>
+
+      <div class="settings-section" style="margin-bottom:0;">
+        <h3 class="settings-section-title">Cloud Sync (Supabase Realtime)</h3>
+        <p class="settings-section-sub">Per-item sync with full-resolution photo storage and automatic foreground refresh.</p>
+        <div class="settings-kv-row">
+          <span>Realtime connection</span>
+          <strong id="settingsSyncStatusVal">Connecting...</strong>
+        </div>
+        <div class="settings-kv-row">
+          <span>Last sync</span>
+          <strong id="settingsLastSyncVal">Never</strong>
+        </div>
+        <div class="settings-kv-row" style="margin-bottom:10px;">
+          <span>Pending offline queue</span>
+          <strong id="settingsPendingQueueVal">0</strong>
+        </div>
+        <button type="button" class="btn-secondary" id="settingsForceSyncBtn" style="width:100%;">Sync Now</button>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 
   <script>
@@ -3680,10 +3999,15 @@
       const NTFY_WIDGET_TOPIC = 'pierre_ebba_widget_907521e5';
       const KV_APP_KEY = 'x0c969je';
       const KV_BASE = 'https://keyvalue.immanuel.co/api/KeyVal';
+      const SUPABASE_URL = 'https://dorbjxgkvscmnkgtcspy.supabase.co';
+      const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRvcmJqeGdrdnNjbW5rZ3Rjc3B5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU1NDAzODEsImV4cCI6MjExMTExNjM4MX0.26_AdkilSwylnjSkAfSPQqQIc0eftTjCucopHdPlgh8';
+      const SUPABASE_RECIPE_BUCKET = 'recipe-images';
+      const GEMINI_MODEL_ID = 'gemini-3.6-flash';
+      const GEMINI_FALLBACK_MODEL_ID = 'gemini-3.5-flash';
       const APP_PUBLIC_URL = 'https://pierre38610.github.io/pierre-ebba-lists/';
       const APK_DOWNLOAD_URL = 'https://github.com/Pierre38610/pierre-ebba-lists/releases/download/android-latest/pierre-ebba.apk';
-      const LATEST_APK_VERSION = '1.3.0'; // Must match android/app/build.gradle.kts versionName
-      const WEB_BUILD_VERSION = '2026-11-23.1';
+      const LATEST_APK_VERSION = '1.4.0'; // Must match android/app/build.gradle.kts versionName
+      const WEB_BUILD_VERSION = '2026-11-24.1';
 
       const STORAGE_KEYS = {
         STATE: 'pe_shared_state_v2',
@@ -3692,8 +4016,21 @@
         BANNER_DISMISSED: 'pe_install_dismissed_v1',
         PANTRY: 'pe_pantry_ingredients_v1',
         NOTIF_PREFS: 'pe_notif_prefs_v1',
-        PENDING_AUDIO: 'pe_pending_audio_v1'
+        PENDING_AUDIO: 'pe_pending_audio_v1',
+        GEMINI_KEY: 'gemini_api_key',
+        PENDING_SYNC: 'pe_pending_sync_v1'
       };
+
+      const sbClient = (window.supabase && typeof window.supabase.createClient === 'function')
+        ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+            global: {
+              fetch: (input, init = {}) => fetch(input, { ...init, cache: 'no-store' })
+            },
+            realtime: {
+              params: { eventsPerSecond: 10 }
+            }
+          })
+        : null;
 
       const TONES = [
         { id: 'champagne', label: 'Champagne', hex: '#C29B6B' },
@@ -3777,6 +4114,15 @@
       let kvSaving = false;
       let kvDirty = false;
       let syncState = 'connecting'; // connecting | ok | syncing | offline
+      let lastSyncAt = 0;
+      let sbRealtimeChannel = null;
+      let sbRealtimeStatus = 'connecting';
+      let isSyncingFromCloud = false;
+      let lastSyncedEntityTs = new Map();
+      let foregroundResyncTimer = null;
+      let lastForegroundSyncAt = 0;
+      let recipeAiAbortCtrl = null;
+      let isRecipeSaving = false;
       const seenActivityIds = new Set();
       const coalesceTimers = new Map();
       let wordFormAudioId = '';
@@ -3848,7 +4194,21 @@
         } catch (_) {}
       }
 
+      function newUuid() {
+        if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+          return crypto.randomUUID();
+        }
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+          const r = (Math.random() * 16) | 0;
+          const v = c === 'x' ? r : (r & 0x3) | 0x8;
+          return v.toString(16);
+        });
+      }
+
       function uid(prefix = 'id') {
+        if (prefix === 'rec' || prefix === 'card' || prefix === 'w' || prefix === 'q') {
+          return newUuid();
+        }
         return prefix + '_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 7);
       }
 
@@ -4178,12 +4538,27 @@
       // Sync UI status
       function setSyncStatus(mode, text) {
         syncState = mode;
+        const pill = $('syncPill');
         const dot = $('syncDot');
         const label = $('syncText');
-        dot.classList.remove('syncing', 'offline');
-        if (mode === 'syncing' || mode === 'connecting') dot.classList.add('syncing');
-        if (mode === 'offline') dot.classList.add('offline');
-        label.textContent = text;
+        if (pill) pill.classList.toggle('syncing', mode === 'syncing' || mode === 'connecting');
+        if (dot) {
+          dot.classList.remove('syncing', 'offline');
+          if (mode === 'syncing' || mode === 'connecting') dot.classList.add('syncing');
+          if (mode === 'offline') dot.classList.add('offline');
+        }
+        if (label) label.textContent = text;
+        if ($('settingsSyncStatusVal')) {
+          $('settingsSyncStatusVal').textContent = sbRealtimeStatus === 'SUBSCRIBED' ? 'Live (Realtime)' : (navigator.onLine ? text : 'Offline');
+        }
+        if ($('settingsLastSyncVal')) {
+          $('settingsLastSyncVal').textContent = lastSyncAt
+            ? new Date(lastSyncAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })
+            : 'Never';
+        }
+        if ($('settingsPendingQueueVal')) {
+          $('settingsPendingQueueVal').textContent = String(loadPendingSyncQueue().length);
+        }
       }
 
       // Native Android Bridge & Partner Notification System
@@ -4195,11 +4570,15 @@
             const doneThisWeek = (state.quizResults || []).some(
               (q) => q && q.mode === 'weekly' && q.weekKey === curWeek.weekKey && q.player === me
             );
+            const streakInfo = computeWordStreaks();
+            const myWordToday = me === 'Ebba' ? streakInfo.todaySv : streakInfo.todayFr;
             window.AndroidBridge.syncConfig(JSON.stringify({
               currentUser: me,
               partnerNotes: state.partnerNotes || { Pierre: null, Ebba: null },
               petitMot: state.petitMot || null,
-              weeklyQuizDoneWeekKey: doneThisWeek ? curWeek.weekKey : ''
+              weeklyQuizDoneWeekKey: doneThisWeek ? curWeek.weekKey : '',
+              myWordDoneDateKey: myWordToday ? streakInfo.todayKey : '',
+              currentWordStreak: streakInfo.coupleStreak || 0
             }));
           }
         } catch (_) {}
@@ -4543,12 +4922,246 @@
         dot.classList.toggle('active', active);
       }
 
-      // Publish update to ntfy (real-time) and schedule KV snapshot (permanent)
+      // ==========================================
+      // SUPABASE PER-UUID SYNC & REALTIME ENGINE
+      // ==========================================
+
+      function loadPendingSyncQueue() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEYS.PENDING_SYNC);
+          const parsed = raw ? JSON.parse(raw) : [];
+          return Array.isArray(parsed) ? parsed : [];
+        } catch (_) {
+          return [];
+        }
+      }
+
+      function savePendingSyncQueue(queue) {
+        try {
+          localStorage.setItem(STORAGE_KEYS.PENDING_SYNC, JSON.stringify(queue));
+        } catch (_) {}
+      }
+
+      function enqueuePendingSync(item) {
+        if (!item || !item.kind || !item.id) return;
+        const queue = loadPendingSyncQueue().filter((x) => !(x.kind === item.kind && x.id === item.id));
+        queue.push(item);
+        savePendingSyncQueue(queue);
+      }
+
+      function recipeToRow(rec) {
+        const photos = Array.isArray(rec.photos) ? rec.photos.filter((u) => typeof u === 'string' && u.length > 0 && !u.startsWith('data:')) : [];
+        return {
+          id: String(rec.id),
+          title: rec.title || '',
+          category: rec.category || '',
+          prep_time: rec.prepTime || '',
+          servings: rec.servings || '',
+          description: rec.description || '',
+          ingredients: Array.isArray(rec.ingredients) ? rec.ingredients : [],
+          instructions: rec.instructions || '',
+          rating: Number(rec.rating) || 0,
+          tone: rec.tone || 'terracotta',
+          pinned: !!rec.pinned,
+          cooked_count: Math.max(1, Number(rec.cookedCount) || 1),
+          image_url: photos[0] || '',
+          photos,
+          author: rec.author || 'Pierre',
+          created_at: Number(rec.createdAt) || 0,
+          updated_at: Number(rec.updatedAt) || 0,
+          deleted: !!rec.deleted
+        };
+      }
+
+      function rowToRecipe(row) {
+        const photos = Array.isArray(row.photos) ? row.photos.filter((u) => typeof u === 'string' && u.length > 0) : [];
+        if (!photos.length && row.image_url) photos.push(row.image_url);
+        return {
+          id: String(row.id),
+          title: row.title || '',
+          category: row.category || '',
+          prepTime: row.prep_time || '',
+          servings: row.servings || '',
+          description: row.description || '',
+          ingredients: Array.isArray(row.ingredients) ? row.ingredients : [],
+          instructions: row.instructions || '',
+          rating: Number(row.rating) || 0,
+          tone: row.tone || 'terracotta',
+          pinned: !!row.pinned,
+          cookedCount: Math.max(1, Number(row.cooked_count) || 1),
+          photos,
+          photosStripped: false,
+          author: row.author || 'Pierre',
+          createdAt: Number(row.created_at) || 0,
+          updatedAt: Number(row.updated_at) || 0,
+          deleted: !!row.deleted
+        };
+      }
+
+      function extFromMimeOrName(file) {
+        const name = (file && file.name) || '';
+        const dotIdx = name.lastIndexOf('.');
+        if (dotIdx > 0 && dotIdx < name.length - 1) {
+          const ext = name.slice(dotIdx + 1).toLowerCase().replace(/[^a-z0-9]/g, '');
+          if (ext && ext.length <= 5) return ext;
+        }
+        const mime = ((file && file.type) || '').toLowerCase();
+        if (mime.includes('png')) return 'png';
+        if (mime.includes('webp')) return 'webp';
+        if (mime.includes('heic')) return 'heic';
+        if (mime.includes('heif')) return 'heif';
+        if (mime.includes('gif')) return 'gif';
+        return 'jpg';
+      }
+
+      async function uploadOriginalRecipePhoto(recipeId, fileOrBlob) {
+        if (!sbClient) throw new Error('Supabase client not initialized');
+        if (!fileOrBlob) throw new Error('Missing photo file');
+        const ext = extFromMimeOrName(fileOrBlob);
+        const path = `${recipeId}/${newUuid()}.${ext}`;
+        const contentType = fileOrBlob.type || 'image/jpeg';
+        const { error } = await sbClient.storage
+          .from(SUPABASE_RECIPE_BUCKET)
+          .upload(path, fileOrBlob, {
+            cacheControl: '31536000',
+            contentType,
+            upsert: true
+          });
+        if (error) {
+          throw new Error(error.message || 'Photo upload failed');
+        }
+        const { data } = sbClient.storage.from(SUPABASE_RECIPE_BUCKET).getPublicUrl(path);
+        if (!data || !data.publicUrl) {
+          throw new Error('Could not resolve public photo URL');
+        }
+        return data.publicUrl;
+      }
+
+      async function dataUrlToBlob(dataUrl) {
+        const res = await fetch(dataUrl);
+        return await res.blob();
+      }
+
+      async function upsertRecipeToSupabase(rec) {
+        if (!sbClient) throw new Error('Supabase client not initialized');
+        const row = recipeToRow(rec);
+        const { error } = await sbClient
+          .from('recipes')
+          .upsert(row, { onConflict: 'id' });
+        if (error) {
+          throw new Error(error.message || 'Database save failed');
+        }
+        lastSyncedEntityTs.set(`recipe:${rec.id}`, Number(rec.updatedAt) || 0);
+        return true;
+      }
+
+      async function upsertEntityToSupabase(kind, id, payload, updatedAt, deleted = false) {
+        if (!sbClient) {
+          enqueuePendingSync({ kind, id, payload, updatedAt, deleted });
+          return false;
+        }
+        try {
+          const { error } = await sbClient
+            .from('shared_entities')
+            .upsert({
+              kind,
+              id: String(id),
+              payload,
+              updated_at: Number(updatedAt) || 0,
+              deleted: !!deleted
+            }, { onConflict: 'kind,id' });
+          if (error) throw error;
+          lastSyncedEntityTs.set(`${kind}:${id}`, Number(updatedAt) || 0);
+          return true;
+        } catch (_) {
+          enqueuePendingSync({ kind, id, payload, updatedAt, deleted });
+          return false;
+        }
+      }
+
+      async function flushPendingSyncQueue() {
+        const queue = loadPendingSyncQueue();
+        if (!queue.length || !sbClient) return true;
+        const remaining = [];
+        for (const item of queue) {
+          try {
+            if (item.kind === 'recipe') {
+              await upsertRecipeToSupabase(item.payload);
+            } else {
+              const { error } = await sbClient
+                .from('shared_entities')
+                .upsert({
+                  kind: item.kind,
+                  id: String(item.id),
+                  payload: item.payload,
+                  updated_at: Number(item.updatedAt) || 0,
+                  deleted: !!item.deleted
+                }, { onConflict: 'kind,id' });
+              if (error) throw error;
+              lastSyncedEntityTs.set(`${item.kind}:${item.id}`, Number(item.updatedAt) || 0);
+            }
+          } catch (_) {
+            remaining.push(item);
+          }
+        }
+        savePendingSyncQueue(remaining);
+        return remaining.length === 0;
+      }
+
+      async function syncDirtyEntitiesToSupabase() {
+        if (!sbClient) return false;
+        const ops = [];
+        const checkAndPush = (kind, id, payload, updatedAt, deleted) => {
+          const key = `${kind}:${id}`;
+          const ts = Number(updatedAt) || 0;
+          if ((lastSyncedEntityTs.get(key) || -1) < ts) {
+            ops.push(upsertEntityToSupabase(kind, id, payload, ts, deleted));
+          }
+        };
+
+        for (const c of (state.cards || [])) {
+          if (c && c.id) checkAndPush('card', c.id, c, c.updatedAt || 0, !!c.deleted);
+        }
+        for (const w of (state.words || [])) {
+          if (w && w.id) checkAndPush('word', w.id, w, w.updatedAt || 0, !!w.deleted);
+        }
+        for (const q of (state.quizResults || [])) {
+          if (q && q.id) checkAndPush('quiz', q.id, q, q.updatedAt || 0, !!q.deleted);
+        }
+        if (state.petitMot && state.petitMot.updatedAt) {
+          checkAndPush('note', 'petitMot', state.petitMot, state.petitMot.updatedAt, false);
+        }
+        if (state.partnerNotes) {
+          for (const who of ['Pierre', 'Ebba']) {
+            const pn = state.partnerNotes[who];
+            if (pn && pn.updatedAt) {
+              checkAndPush('note', `partner_${who}`, pn, pn.updatedAt, false);
+            }
+          }
+        }
+
+        if (!ops.length) return true;
+        const results = await Promise.all(ops);
+        return results.every(Boolean);
+      }
+
+      function markAllCurrentEntitiesSynced(remoteRowsMeta) {
+        if (remoteRowsMeta && remoteRowsMeta instanceof Map) {
+          for (const [k, ts] of remoteRowsMeta.entries()) {
+            lastSyncedEntityTs.set(k, ts);
+          }
+        }
+      }
+
+      // Publish update to Supabase (row-level) + ntfy (partner activity & widget)
       async function broadcastState(actorName = '', activity = null, extraEnvelope = null) {
         saveLocalState();
         syncNativeBridge();
         setSyncStatus('syncing', 'Syncing...');
         const actor = actorName || currentUser || 'Pierre';
+
+        const sbOkPromise = syncDirtyEntitiesToSupabase();
+
         const envelope = {
           v: 1,
           sender: CLIENT_ID,
@@ -4562,29 +5175,44 @@
             body: activity.body || '',
             tab: activity.tab || 'lists'
           } : null,
-          state
+          state: {
+            petitMot: state.petitMot,
+            partnerNotes: state.partnerNotes,
+            cards: state.cards,
+            words: state.words,
+            quizResults: state.quizResults
+          }
         };
         if (extraEnvelope && typeof extraEnvelope === 'object') {
           Object.assign(envelope, extraEnvelope);
         }
 
+        let ntfyOk = false;
         try {
           let bodyStr = JSON.stringify(envelope);
           if (bodyStr.length > 3400) {
-            const encoded = await encodePayload(envelope);
-            bodyStr = encoded;
+            bodyStr = await encodePayload(envelope);
           }
           const res = await fetch(NTFY_BASE, {
             method: 'POST',
             body: bodyStr
           });
-          if (res.ok) {
-            setSyncStatus('ok', 'Synced • live');
-            $('lastSyncInfo').textContent = 'Saved at ' + new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-          } else {
-            setSyncStatus('offline', 'Saved locally');
-          }
-        } catch (_) {
+          ntfyOk = res.ok;
+        } catch (_) {}
+
+        const sbOk = await sbOkPromise;
+        const pendingCount = loadPendingSyncQueue().length;
+        if (sbOk && pendingCount === 0) {
+          lastSyncAt = Date.now();
+          const hhmm = new Date(lastSyncAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+          setSyncStatus('ok', `Synced ${hhmm}`);
+          $('lastSyncInfo').textContent = 'Saved at ' + hhmm;
+        } else if (pendingCount > 0) {
+          setSyncStatus('offline', `Pending sync (${pendingCount})`);
+        } else if (ntfyOk) {
+          lastSyncAt = Date.now();
+          setSyncStatus('ok', 'Synced • live');
+        } else {
           setSyncStatus('offline', 'Offline • local');
         }
 
@@ -4762,67 +5390,239 @@
         } catch (_) {}
       }
 
-      async function syncFromCloud(silent = false) {
-        if (!silent) setSyncStatus('syncing', 'Refreshing...');
-        let anyOk = false;
-
-        // 1. Load permanent snapshots from KV (app state + latest widget notes)
-        const [kvState, widgetKvState] = await Promise.all([loadFromKv(), loadWidgetNotesFromKv()]);
-        if (kvState) {
-          anyOk = true;
-          if (mergeStates(state, kvState)) {
-            saveLocalState();
-          }
-        }
-        if (widgetKvState) {
-          anyOk = true;
-          if (mergeStates(state, widgetKvState)) {
-            saveLocalState();
-          }
-        }
-
-        // 2. Replay recent real-time messages from ntfy
+      async function fetchSupabaseState() {
+        if (!sbClient) return null;
         try {
-          const r = await fetch(`${NTFY_BASE}/json?poll=1&since=all`, { cache: 'no-store' });
-          if (r.ok) {
-            anyOk = true;
-            const txt = await r.text();
-            const lines = txt.split('\n').filter(Boolean);
-            for (const line of lines) {
-              try {
-                const evt = JSON.parse(line);
-                if (evt.event === 'message') {
-                  await processIncomingMessage(evt.message, evt.attachment && evt.attachment.url);
-                }
-              } catch (_) {}
+          const [recipesRes, entitiesRes] = await Promise.all([
+            sbClient.from('recipes').select('*'),
+            sbClient.from('shared_entities').select('*')
+          ]);
+          if (recipesRes.error || entitiesRes.error) return null;
+
+          const remoteTsMap = new Map();
+          const out = {
+            petitMot: null,
+            partnerNotes: { Pierre: null, Ebba: null },
+            cards: [],
+            recipes: [],
+            words: [],
+            quizResults: []
+          };
+
+          for (const row of (recipesRes.data || [])) {
+            const rec = rowToRecipe(row);
+            out.recipes.push(rec);
+            remoteTsMap.set(`recipe:${rec.id}`, rec.updatedAt || 0);
+          }
+
+          for (const row of (entitiesRes.data || [])) {
+            const p = row.payload || {};
+            const ts = Number(row.updated_at) || Number(p.updatedAt) || 0;
+            remoteTsMap.set(`${row.kind}:${row.id}`, ts);
+            if (row.kind === 'card') {
+              out.cards.push({ ...p, id: row.id, deleted: !!row.deleted, updatedAt: ts });
+            } else if (row.kind === 'word') {
+              out.words.push({ ...p, id: row.id, deleted: !!row.deleted, updatedAt: ts });
+            } else if (row.kind === 'quiz') {
+              out.quizResults.push({ ...p, id: row.id, deleted: !!row.deleted, updatedAt: ts });
+            } else if (row.kind === 'note') {
+              if (row.id === 'petitMot') out.petitMot = p;
+              else if (row.id === 'partner_Pierre') out.partnerNotes.Pierre = p;
+              else if (row.id === 'partner_Ebba') out.partnerNotes.Ebba = p;
             }
           }
-        } catch (_) {}
 
-        retryPendingAudioUploads();
-        renderAll();
-        syncNativeBridge();
-        if (detailCardId) renderDetailModal();
-        if (detailRecipeId) renderRecipeDetailModal();
-
-        if (anyOk) {
-          initialCloudSyncDone = true;
-          setSyncStatus('ok', 'Synced • live');
-          $('lastSyncInfo').textContent = 'Synced at ' + new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-        } else {
-          setSyncStatus(navigator.onLine ? 'ok' : 'offline', navigator.onLine ? 'Ready' : 'Offline • local');
+          return { remoteState: out, remoteTsMap };
+        } catch (_) {
+          return null;
         }
       }
 
+      async function migrateLegacyRecipesAndEntitiesToSupabase(remoteTsMap) {
+        if (!sbClient) return;
+        for (const rec of (state.recipes || [])) {
+          if (!rec || !rec.id) continue;
+          const remTs = remoteTsMap.get(`recipe:${rec.id}`);
+          if (remTs === undefined || (rec.updatedAt || 0) > remTs) {
+            try {
+              const nextPhotos = [];
+              let upgradedPhoto = false;
+              for (const p of (rec.photos || [])) {
+                if (typeof p === 'string' && p.startsWith('data:image/')) {
+                  const blob = await dataUrlToBlob(p);
+                  const url = await uploadOriginalRecipePhoto(rec.id, blob);
+                  nextPhotos.push(url);
+                  upgradedPhoto = true;
+                } else if (typeof p === 'string' && p.length > 0) {
+                  nextPhotos.push(p);
+                }
+              }
+              if (upgradedPhoto) {
+                rec.photos = nextPhotos;
+                rec.photosStripped = false;
+                saveLocalState();
+              }
+              await upsertRecipeToSupabase(rec);
+            } catch (_) {}
+          }
+        }
+        await syncDirtyEntitiesToSupabase();
+      }
+
+      async function syncFromCloud(silent = false) {
+        if (isSyncingFromCloud) return;
+        isSyncingFromCloud = true;
+        if (!silent) setSyncStatus('syncing', 'Refreshing...');
+        let anyOk = false;
+
+        try {
+          await flushPendingSyncQueue();
+
+          // 1. Primary source: Supabase Postgres
+          const sbData = await fetchSupabaseState();
+          if (sbData) {
+            anyOk = true;
+            markAllCurrentEntitiesSynced(sbData.remoteTsMap);
+            if (mergeStates(state, sbData.remoteState)) {
+              saveLocalState();
+            }
+          }
+
+          // 2. Legacy KV migration fallback on initial boot or if Supabase is empty
+          if (!initialCloudSyncDone) {
+            const [kvState, widgetKvState] = await Promise.all([loadFromKv(), loadWidgetNotesFromKv()]);
+            if (kvState) {
+              anyOk = true;
+              if (mergeStates(state, kvState)) {
+                saveLocalState();
+              }
+            }
+            if (widgetKvState) {
+              anyOk = true;
+              if (mergeStates(state, widgetKvState)) {
+                saveLocalState();
+              }
+            }
+            if (sbData) {
+              await migrateLegacyRecipesAndEntitiesToSupabase(sbData.remoteTsMap);
+            }
+          }
+
+          // 3. Replay recent real-time messages from ntfy (for notes/audio clips)
+          try {
+            const r = await fetch(`${NTFY_BASE}/json?poll=1&since=all`, { cache: 'no-store' });
+            if (r.ok) {
+              anyOk = true;
+              const txt = await r.text();
+              const lines = txt.split('\n').filter(Boolean);
+              for (const line of lines) {
+                try {
+                  const evt = JSON.parse(line);
+                  if (evt.event === 'message') {
+                    await processIncomingMessage(evt.message, evt.attachment && evt.attachment.url);
+                  }
+                } catch (_) {}
+              }
+            }
+          } catch (_) {}
+
+          retryPendingAudioUploads();
+          renderAll();
+          syncNativeBridge();
+          if (detailCardId) renderDetailModal();
+          if (detailRecipeId) renderRecipeDetailModal();
+
+          const pendingCount = loadPendingSyncQueue().length;
+          if (pendingCount > 0) {
+            setSyncStatus('offline', `Pending sync (${pendingCount})`);
+          } else if (anyOk) {
+            initialCloudSyncDone = true;
+            lastSyncAt = Date.now();
+            const hhmm = new Date(lastSyncAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+            setSyncStatus('ok', `Synced ${hhmm}`);
+            $('lastSyncInfo').textContent = 'Synced at ' + hhmm;
+          } else {
+            setSyncStatus(navigator.onLine ? 'ok' : 'offline', navigator.onLine ? 'Ready' : 'Offline • local');
+          }
+        } finally {
+          isSyncingFromCloud = false;
+        }
+      }
+
+      function handleSupabaseRealtimePayload(table, payload) {
+        try {
+          const row = payload && (payload.new || payload.record);
+          if (!row) return;
+          let incoming = null;
+          if (table === 'recipes') {
+            const rec = rowToRecipe(row);
+            lastSyncedEntityTs.set(`recipe:${rec.id}`, rec.updatedAt || 0);
+            incoming = { recipes: [rec] };
+          } else if (table === 'shared_entities') {
+            const p = row.payload || {};
+            const ts = Number(row.updated_at) || Number(p.updatedAt) || 0;
+            lastSyncedEntityTs.set(`${row.kind}:${row.id}`, ts);
+            if (row.kind === 'card') {
+              incoming = { cards: [{ ...p, id: row.id, deleted: !!row.deleted, updatedAt: ts }] };
+            } else if (row.kind === 'word') {
+              incoming = { words: [{ ...p, id: row.id, deleted: !!row.deleted, updatedAt: ts }] };
+            } else if (row.kind === 'quiz') {
+              incoming = { quizResults: [{ ...p, id: row.id, deleted: !!row.deleted, updatedAt: ts }] };
+            } else if (row.kind === 'note') {
+              if (row.id === 'petitMot') incoming = { petitMot: p };
+              else if (row.id === 'partner_Pierre') incoming = { partnerNotes: { Pierre: p } };
+              else if (row.id === 'partner_Ebba') incoming = { partnerNotes: { Ebba: p } };
+            }
+          }
+          if (incoming && mergeStates(state, incoming)) {
+            saveLocalState();
+            syncNativeBridge();
+            renderAll();
+            if (detailCardId) renderDetailModal();
+            if (detailRecipeId) renderRecipeDetailModal();
+            lastSyncAt = Date.now();
+            const hhmm = new Date(lastSyncAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+            setSyncStatus('ok', `Synced ${hhmm}`);
+          }
+        } catch (_) {}
+      }
+
+      function ensureSupabaseRealtime() {
+        if (!sbClient) return;
+        if (sbRealtimeChannel && (sbRealtimeStatus === 'SUBSCRIBED' || sbRealtimeStatus === 'joining')) return;
+        if (sbRealtimeChannel) {
+          try { sbClient.removeChannel(sbRealtimeChannel); } catch (_) {}
+          sbRealtimeChannel = null;
+        }
+        sbRealtimeStatus = 'joining';
+        sbRealtimeChannel = sbClient
+          .channel('pe-realtime-sync')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'recipes' }, (payload) => {
+            handleSupabaseRealtimePayload('recipes', payload);
+          })
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'shared_entities' }, (payload) => {
+            handleSupabaseRealtimePayload('shared_entities', payload);
+          })
+          .subscribe((status) => {
+            sbRealtimeStatus = status;
+            if (status === 'SUBSCRIBED') {
+              const hhmm = lastSyncAt
+                ? new Date(lastSyncAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
+                : 'live';
+              setSyncStatus('ok', `Synced ${hhmm}`);
+            } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+              setSyncStatus(navigator.onLine ? 'syncing' : 'offline', navigator.onLine ? 'Reconnecting...' : 'Offline • local');
+            }
+          });
+      }
+
       function connectLiveStream() {
+        ensureSupabaseRealtime();
         if (eventSource) {
           try { eventSource.close(); } catch (_) {}
         }
         try {
           eventSource = new EventSource(`${NTFY_BASE}/sse`);
-          eventSource.onopen = () => {
-            setSyncStatus('ok', 'Synced • live');
-          };
           eventSource.onmessage = (e) => {
             try {
               const evt = JSON.parse(e.data);
@@ -4831,10 +5631,20 @@
               }
             } catch (_) {}
           };
-          eventSource.onerror = () => {
-            setSyncStatus(navigator.onLine ? 'syncing' : 'offline', navigator.onLine ? 'Reconnecting...' : 'Offline • local');
-          };
         } catch (_) {}
+      }
+
+      function onAppForegrounded() {
+        const now = Date.now();
+        if (now - lastForegroundSyncAt < 1200) return;
+        lastForegroundSyncAt = now;
+        clearTimeout(foregroundResyncTimer);
+        foregroundResyncTimer = setTimeout(() => {
+          refreshDayBoundUi();
+          syncFromCloud(true);
+          connectLiveStream();
+          checkApkUpdatePrompt();
+        }, 120);
       }
 
       // Theme & Identity
@@ -4870,6 +5680,13 @@
       function closeModal(id) {
         if (id === 'wordFormModal' && typeof cleanupWordRecorder === 'function') {
           cleanupWordRecorder();
+        }
+        if (id === 'recipeFormModal') {
+          revokeRecipeFormObjectUrls();
+          if (recipeAiAbortCtrl) {
+            try { recipeAiAbortCtrl.abort(); } catch (_) {}
+            recipeAiAbortCtrl = null;
+          }
         }
         if (id === 'apkUpdateModal' && typeof dismissApkUpdateForSession === 'function') {
           dismissApkUpdateForSession();
@@ -5616,6 +6433,13 @@
 
       $('openWidgetBtn').onclick = () => openWidgetModal();
       $('notifBtn').onclick = () => openNotifModal();
+      $('settingsBtn').onclick = () => openSettingsModal();
+      $('syncPill').onkeydown = (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          syncFromCloud(false);
+        }
+      };
 
       $('saveMotBtn').onclick = () => {
         const text = $('motInput').value.trim();
@@ -5813,10 +6637,12 @@
 
       document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible') {
-          syncFromCloud(true);
-          connectLiveStream();
-          checkApkUpdatePrompt();
+          onAppForegrounded();
         }
+      });
+
+      window.addEventListener('focus', () => {
+        onAppForegrounded();
       });
 
       window.addEventListener('online', () => {
@@ -5941,47 +6767,73 @@
         return out;
       }
 
-      // Client-side image resize & JPEG compression
-      function compressImageFile(file, maxDim = 680, quality = 0.72) {
+      // Pipeline B (AI API Only): in-memory JPEG resize (maxWidth: 1024px, quality: 0.75)
+      // Releases canvas memory and temporary ObjectURL immediately after extraction.
+      function compressImageForAiOnly(photoItem, maxDim = 1024, quality = 0.75) {
         return new Promise((resolve, reject) => {
-          if (!file || !file.type || !file.type.startsWith('image/')) {
-            reject(new Error('Not an image file'));
+          let tempUrl = null;
+          let srcUrl = '';
+          if (photoItem.kind === 'local-file' && photoItem.file) {
+            tempUrl = URL.createObjectURL(photoItem.file);
+            srcUrl = tempUrl;
+          } else if (photoItem.remoteUrl || photoItem.previewUrl) {
+            srcUrl = photoItem.remoteUrl || photoItem.previewUrl;
+          }
+          if (!srcUrl) {
+            reject(new Error('No image source available for AI'));
             return;
           }
-          const url = URL.createObjectURL(file);
           const img = new Image();
+          if (srcUrl.startsWith('http')) img.crossOrigin = 'anonymous';
           img.onload = () => {
+            const canvas = document.createElement('canvas');
             try {
               let w = img.naturalWidth || img.width;
               let h = img.naturalHeight || img.height;
               if (w > maxDim || h > maxDim) {
                 if (w >= h) {
-                  h = Math.round((h * maxDim) / w);
+                  h = Math.max(1, Math.round((h * maxDim) / w));
                   w = maxDim;
                 } else {
-                  w = Math.round((w * maxDim) / h);
+                  w = Math.max(1, Math.round((w * maxDim) / h));
                   h = maxDim;
                 }
               }
-              const canvas = document.createElement('canvas');
               canvas.width = Math.max(1, w);
               canvas.height = Math.max(1, h);
               const ctx = canvas.getContext('2d');
               ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
               const dataUrl = canvas.toDataURL('image/jpeg', quality);
-              URL.revokeObjectURL(url);
-              resolve(dataUrl);
+              const base64 = dataUrl.split(',')[1] || '';
+              resolve({ mimeType: 'image/jpeg', base64 });
             } catch (err) {
-              URL.revokeObjectURL(url);
               reject(err);
+            } finally {
+              canvas.width = 0;
+              canvas.height = 0;
+              if (tempUrl) URL.revokeObjectURL(tempUrl);
             }
           };
           img.onerror = () => {
-            URL.revokeObjectURL(url);
-            reject(new Error('Image load failed'));
+            if (tempUrl) URL.revokeObjectURL(tempUrl);
+            reject(new Error('Could not decode image for AI analysis'));
           };
-          img.src = url;
+          img.src = srcUrl;
         });
+      }
+
+      function formatFileSizeMb(bytes) {
+        if (!bytes || bytes <= 0) return '';
+        if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+        return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+      }
+
+      function revokeRecipeFormObjectUrls() {
+        for (const p of recipeFormPhotos) {
+          if (p && p.kind === 'local-file' && p.previewUrl && p.previewUrl.startsWith('blob:')) {
+            try { URL.revokeObjectURL(p.previewUrl); } catch (_) {}
+          }
+        }
       }
 
       function renderRecipeCategoryPills() {
@@ -6104,12 +6956,21 @@
             ${recipe.pinned ? '★' : '☆'}
           </button>
         `;
-        overlay.querySelector('.recipe-card-pin-btn').onclick = (e) => {
+        overlay.querySelector('.recipe-card-pin-btn').onclick = async (e) => {
           e.stopPropagation();
+          const prevPinned = recipe.pinned;
+          const prevTs = recipe.updatedAt;
           recipe.pinned = !recipe.pinned;
           recipe.updatedAt = nowMs();
           vibrate(10);
           renderRecipes();
+          saveLocalState();
+          try {
+            await upsertRecipeToSupabase(recipe);
+          } catch (_) {
+            enqueuePendingSync({ kind: 'recipe', id: recipe.id, payload: recipe, updatedAt: recipe.updatedAt, deleted: !!recipe.deleted });
+            setSyncStatus('offline', `Pending sync (${loadPendingSyncQueue().length})`);
+          }
           broadcastState();
         };
         coverWrap.appendChild(overlay);
@@ -6228,22 +7089,54 @@
         }
       }
 
+      function updateRecipeAiButtonState() {
+        const btn = $('recipeAiFillBtn');
+        if (!btn) return;
+        const hasPhoto = recipeFormPhotos.length > 0;
+        const hasTitle = ($('recipeTitleInput').value || '').trim().length > 0;
+        btn.disabled = !(hasPhoto && hasTitle);
+      }
+
+      function setRecipeAiStatus(type, msg) {
+        const el = $('recipeAiStatus');
+        if (!el) return;
+        el.className = 'ai-status-msg' + (msg ? ' visible' : '') + (type ? ' ' + type : '');
+        el.textContent = msg || '';
+      }
+
+      function setRecipeSaveStatus(type, msg, showRetry = false) {
+        const bar = $('recipeSaveStatusBar');
+        const txt = $('recipeSaveStatusText');
+        const retry = $('recipeSaveRetryBtn');
+        if (!bar || !txt) return;
+        bar.className = 'save-status-bar' + (msg ? ' visible' : '') + (type ? ' ' + type : '');
+        txt.textContent = msg || '';
+        if (retry) retry.style.display = showRetry ? 'inline-flex' : 'none';
+      }
+
       function renderRecipeFormPhotoThumbs() {
         const wrap = $('recipePhotoThumbs');
         wrap.innerHTML = '';
-        recipeFormPhotos.forEach((src, idx) => {
+        recipeFormPhotos.forEach((p, idx) => {
+          const src = p.previewUrl || p.remoteUrl || '';
+          const sizeTxt = p.sizeBytes ? formatFileSizeMb(p.sizeBytes) : '';
           const item = document.createElement('div');
           item.className = 'photo-thumb-item';
           item.innerHTML = `
             <img src="${src}" alt="Recipe photo ${idx + 1}" />
+            ${sizeTxt ? `<span class="photo-thumb-size">${escapeHtml(sizeTxt)}</span>` : ''}
             <button type="button" class="photo-thumb-del" title="Remove photo">&times;</button>
             <button type="button" class="photo-thumb-cover ${idx === 0 ? 'is-cover' : ''}" title="${idx === 0 ? 'Cover photo' : 'Make cover photo'}">
               ${idx === 0 ? 'Cover' : 'Set cover'}
             </button>
           `;
           item.querySelector('.photo-thumb-del').onclick = () => {
-            recipeFormPhotos.splice(idx, 1);
+            const [removed] = recipeFormPhotos.splice(idx, 1);
+            if (removed && removed.kind === 'local-file' && removed.previewUrl && removed.previewUrl.startsWith('blob:')) {
+              try { URL.revokeObjectURL(removed.previewUrl); } catch (_) {}
+            }
             renderRecipeFormPhotoThumbs();
+            updateRecipeAiButtonState();
           };
           item.querySelector('.photo-thumb-cover').onclick = () => {
             if (idx === 0) return;
@@ -6253,6 +7146,7 @@
           };
           wrap.appendChild(item);
         });
+        updateRecipeAiButtonState();
       }
 
       function renderRecipeIngPreview() {
@@ -6268,15 +7162,32 @@
       }
 
       function openRecipeFormModal(recipeToEdit = null) {
+        revokeRecipeFormObjectUrls();
+        if (recipeAiAbortCtrl) {
+          try { recipeAiAbortCtrl.abort(); } catch (_) {}
+          recipeAiAbortCtrl = null;
+        }
         editingRecipeId = recipeToEdit ? recipeToEdit.id : null;
         $('recipeFormModalTitle').textContent = recipeToEdit ? 'Edit Recipe' : 'Log a cooked recipe';
         $('saveRecipeBtn').textContent = recipeToEdit ? 'Save changes' : 'Save to Recipe Dex';
+        $('saveRecipeBtn').disabled = false;
 
-        recipeFormPhotos = recipeToEdit && Array.isArray(recipeToEdit.photos) ? [...recipeToEdit.photos] : [];
+        const existingPhotos = recipeToEdit && Array.isArray(recipeToEdit.photos) ? recipeToEdit.photos : [];
+        recipeFormPhotos = existingPhotos
+          .filter((src) => typeof src === 'string' && src.length > 0)
+          .map((src) => ({
+            id: newUuid(),
+            kind: src.startsWith('data:') ? 'legacy-dataurl' : 'remote',
+            file: null,
+            previewUrl: src,
+            remoteUrl: src.startsWith('data:') ? '' : src,
+            sizeBytes: 0
+          }));
         recipeFormRating = recipeToEdit ? (Number(recipeToEdit.rating) || 0) : 0;
         recipeFormTone = recipeToEdit ? (recipeToEdit.tone || 'terracotta') : 'terracotta';
 
         $('recipeTitleInput').value = recipeToEdit ? (recipeToEdit.title || '') : '';
+        $('recipeAiHintsInput').value = '';
         $('recipeCategorySelect').value = recipeToEdit ? (recipeToEdit.category || '') : '';
         $('recipeTimeInput').value = recipeToEdit ? (recipeToEdit.prepTime || '') : '';
         $('recipeServingsInput').value = recipeToEdit ? (recipeToEdit.servings || '') : '';
@@ -6287,96 +7198,160 @@
         $('recipeInstructionsInput').value = recipeToEdit ? (recipeToEdit.instructions || '') : '';
         $('recipePinnedInput').checked = recipeToEdit ? !!recipeToEdit.pinned : false;
         $('recipePhotoInput').value = '';
+        setRecipeAiStatus('', '');
+        setRecipeSaveStatus('', '', false);
+        if ($('recipeAiQuickKeyRow')) $('recipeAiQuickKeyRow').classList.remove('visible');
 
         renderRecipeFormPhotoThumbs();
         renderRecipeRatingPicker();
         renderRecipeFormTonePicker();
         renderRecipeIngPreview();
+        updateRecipeAiButtonState();
         openModal('recipeFormModal');
       }
 
-      function saveRecipeForm() {
-        const ts = nowMs();
-        const title = $('recipeTitleInput').value.trim();
-        const category = $('recipeCategorySelect').value;
-        const prepTime = $('recipeTimeInput').value.trim();
-        const servings = $('recipeServingsInput').value.trim();
-        const description = $('recipeDescInput').value.trim();
-        const ingredients = parseIngredientsInput($('recipeIngredientsInput').value);
-        const instructions = $('recipeInstructionsInput').value.trim();
-        const pinned = $('recipePinnedInput').checked;
+      async function saveRecipeForm() {
+        if (isRecipeSaving) return;
+        isRecipeSaving = true;
+        const saveBtn = $('saveRecipeBtn');
+        saveBtn.disabled = true;
 
-        if (!Array.isArray(state.recipes)) state.recipes = [];
+        try {
+          const ts = nowMs();
+          const targetId = editingRecipeId || newUuid();
+          const title = $('recipeTitleInput').value.trim();
+          const category = $('recipeCategorySelect').value;
+          const prepTime = $('recipeTimeInput').value.trim();
+          const servings = $('recipeServingsInput').value.trim();
+          const description = $('recipeDescInput').value.trim();
+          const ingredients = parseIngredientsInput($('recipeIngredientsInput').value);
+          const instructions = $('recipeInstructionsInput').value.trim();
+          const pinned = $('recipePinnedInput').checked;
 
-        if (editingRecipeId) {
-          const rec = state.recipes.find((r) => r.id === editingRecipeId);
-          if (rec) {
-            rec.title = title;
-            rec.category = category;
-            rec.prepTime = prepTime;
-            rec.servings = servings;
-            rec.description = description;
-            rec.ingredients = ingredients;
-            rec.instructions = instructions;
-            rec.rating = recipeFormRating;
-            rec.tone = recipeFormTone;
-            rec.pinned = pinned;
-            rec.photos = [...recipeFormPhotos];
-            rec.photosStripped = false;
-            rec.updatedAt = ts;
+          // Step 1: Upload untouched original photos (Pipeline A) to Supabase Storage
+          const finalPhotoUrls = [];
+          const pendingUploads = recipeFormPhotos.filter((p) => p.kind !== 'remote');
+          let uploadIdx = 0;
+
+          for (const item of recipeFormPhotos) {
+            if (item.kind === 'remote' && item.remoteUrl) {
+              finalPhotoUrls.push(item.remoteUrl);
+              continue;
+            }
+            uploadIdx++;
+            const sizeStr = item.sizeBytes ? ` (${formatFileSizeMb(item.sizeBytes)})` : '';
+            setRecipeSaveStatus('', `Uploading original photo ${uploadIdx}/${pendingUploads.length}${sizeStr}...`, false);
+
+            let fileToUpload = item.file;
+            if (!fileToUpload && item.kind === 'legacy-dataurl' && item.previewUrl) {
+              fileToUpload = await dataUrlToBlob(item.previewUrl);
+            }
+            const publicUrl = await uploadOriginalRecipePhoto(targetId, fileToUpload);
+
+            // Cache success immediately so a retry skips already-uploaded photos
+            if (item.kind === 'local-file' && item.previewUrl && item.previewUrl.startsWith('blob:')) {
+              try { URL.revokeObjectURL(item.previewUrl); } catch (_) {}
+            }
+            item.kind = 'remote';
+            item.remoteUrl = publicUrl;
+            item.previewUrl = publicUrl;
+            item.file = null;
+            finalPhotoUrls.push(publicUrl);
           }
+
+          // Step 2: Upsert single recipe row by UUID in Supabase
+          setRecipeSaveStatus('', 'Saving recipe to cloud...', false);
+          if (!Array.isArray(state.recipes)) state.recipes = [];
+
+          const actor = currentUser || 'Pierre';
+          let savedRecipe;
+          let act;
+
+          if (editingRecipeId) {
+            const existing = state.recipes.find((r) => r.id === editingRecipeId);
+            savedRecipe = existing ? { ...existing } : {
+              id: targetId,
+              cookedCount: 1,
+              author: actor,
+              createdAt: ts,
+              deleted: false
+            };
+            Object.assign(savedRecipe, {
+              title,
+              category,
+              prepTime,
+              servings,
+              description,
+              ingredients,
+              instructions,
+              rating: recipeFormRating,
+              tone: recipeFormTone,
+              pinned,
+              photos: finalPhotoUrls,
+              photosStripped: false,
+              updatedAt: ts
+            });
+            await upsertRecipeToSupabase(savedRecipe);
+            if (existing) Object.assign(existing, savedRecipe);
+            else state.recipes.unshift(savedRecipe);
+            act = {
+              category: 'recipes',
+              title: `${actor} updated a recipe`,
+              body: title || 'Untitled Dish',
+              tab: 'recipes'
+            };
+          } else {
+            savedRecipe = {
+              id: targetId,
+              title,
+              category,
+              prepTime,
+              servings,
+              description,
+              ingredients,
+              instructions,
+              rating: recipeFormRating,
+              tone: recipeFormTone,
+              pinned,
+              cookedCount: 1,
+              photos: finalPhotoUrls,
+              photosStripped: false,
+              author: actor,
+              createdAt: ts,
+              updatedAt: ts,
+              deleted: false
+            };
+            await upsertRecipeToSupabase(savedRecipe);
+            state.recipes.unshift(savedRecipe);
+            act = {
+              category: 'recipes',
+              title: `${actor} added a recipe to the Dex`,
+              body: title || 'New cooked dish',
+              tab: 'recipes'
+            };
+          }
+
+          // Step 3: Update local cache, UI & notify partner
+          saveLocalState();
+          lastSyncAt = Date.now();
+          const hhmm = new Date(lastSyncAt).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+          setSyncStatus('ok', `Synced ${hhmm}`);
+          setRecipeSaveStatus('ok', 'Synced', false);
+
           closeModal('recipeFormModal');
           renderRecipes();
           renderMatcher();
-          if (detailRecipeId === editingRecipeId) renderRecipeDetailModal();
-          const actor = currentUser || 'Pierre';
-          const act = {
-            category: 'recipes',
-            title: `${actor} updated a recipe`,
-            body: title || 'Untitled Dish',
-            tab: 'recipes'
-          };
-          broadcastState(actor, act);
-          notifyPartner({ ...act, tags: ['cook'] });
-          showToast('Recipe updated');
-          return;
+          if (detailRecipeId === targetId) renderRecipeDetailModal();
+          notifyPartner({ ...act, tags: ['fork_and_knife'] });
+          showToast(editingRecipeId ? 'Recipe updated & synced' : 'Saved & synced to Recipe Dex');
+        } catch (err) {
+          const msg = (err && err.message) ? err.message : 'Network or storage error';
+          setRecipeSaveStatus('error', `Save failed: ${msg}. Your entries were kept.`, true);
+          showToast('Save failed — tap Retry');
+        } finally {
+          isRecipeSaving = false;
+          saveBtn.disabled = false;
         }
-
-        const newRecipe = {
-          id: uid('rec'),
-          title,
-          category,
-          prepTime,
-          servings,
-          description,
-          ingredients,
-          instructions,
-          rating: recipeFormRating,
-          tone: recipeFormTone,
-          pinned,
-          cookedCount: 1,
-          photos: [...recipeFormPhotos],
-          photosStripped: false,
-          author: currentUser || 'Pierre',
-          createdAt: ts,
-          updatedAt: ts,
-          deleted: false
-        };
-
-        state.recipes.unshift(newRecipe);
-        closeModal('recipeFormModal');
-        renderRecipes();
-        renderMatcher();
-        const actor = currentUser || 'Pierre';
-        const act = {
-          category: 'recipes',
-          title: `🍳 ${actor} added a recipe to the Dex`,
-          body: title || 'New cooked dish',
-          tab: 'recipes'
-        };
-        broadcastState(actor, act);
-        notifyPartner({ ...act, tags: ['fork_and_knife'] });
-        showToast('Saved to Recipe Dex!');
       }
 
       // Recipe Detail Modal (Pokédex Card View)
@@ -7039,28 +8014,217 @@
         }
       };
 
-      $('recipePhotoInput').onchange = async (e) => {
+      // Pipeline A (Display & Save): store raw untouched File/Blob for preview & full-res Storage upload
+      $('recipePhotoInput').onchange = (e) => {
         const files = Array.from(e.target.files || []);
         if (!files.length) return;
         let added = 0;
         for (const f of files) {
-          try {
-            const compressed = await compressImageFile(f, 680, 0.72);
-            recipeFormPhotos.push(compressed);
-            added++;
-          } catch (_) {}
+          if (!f || !f.type || !f.type.startsWith('image/')) continue;
+          recipeFormPhotos.push({
+            id: newUuid(),
+            kind: 'local-file',
+            file: f,
+            previewUrl: URL.createObjectURL(f),
+            remoteUrl: '',
+            sizeBytes: f.size || 0
+          });
+          added++;
         }
         $('recipePhotoInput').value = '';
         renderRecipeFormPhotoThumbs();
+        updateRecipeAiButtonState();
         if (added > 0) {
-          showToast(`Added ${added} photo${added > 1 ? 's' : ''}`);
+          showToast(`Added ${added} original photo${added > 1 ? 's' : ''}`);
         } else {
           showToast('Could not read selected image');
         }
       };
 
+      $('recipeTitleInput').addEventListener('input', updateRecipeAiButtonState);
+
+      async function callGeminiRecipeEndpoint(apiKey, modelId, promptParts, signal) {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(modelId)}:generateContent?key=${encodeURIComponent(apiKey)}`;
+        const body = {
+          systemInstruction: {
+            parts: [{
+              text: "Tu es un chef cuisinier précis. À partir du nom du plat, des indices visuels visibles sur la photo (ingrédients, garnitures, cuisson, texture, légumes, herbes) et des détails optionnels fournis, déduis la recette complète réaliste en français avec des quantités en unités métriques (g, ml, c. à s., c. à c., pièce). Retourne uniquement un JSON conforme au schéma."
+            }]
+          },
+          contents: [{
+            role: 'user',
+            parts: promptParts
+          }],
+          generationConfig: {
+            temperature: 0.3,
+            responseMimeType: 'application/json',
+            responseSchema: {
+              type: 'OBJECT',
+              properties: {
+                title: { type: 'STRING' },
+                category: {
+                  type: 'STRING',
+                  enum: ['pasta', 'meat', 'seafood', 'veggie', 'soup', 'dessert', 'breakfast', 'other']
+                },
+                prepTime: { type: 'STRING' },
+                cookTime: { type: 'STRING' },
+                servings: { type: 'STRING' },
+                description: { type: 'STRING' },
+                ingredients: {
+                  type: 'ARRAY',
+                  items: {
+                    type: 'OBJECT',
+                    properties: {
+                      quantity: { type: 'STRING' },
+                      unit: { type: 'STRING' },
+                      name: { type: 'STRING' }
+                    },
+                    required: ['quantity', 'unit', 'name']
+                  }
+                },
+                steps: {
+                  type: 'ARRAY',
+                  items: { type: 'STRING' }
+                }
+              },
+              required: ['title', 'category', 'prepTime', 'servings', 'description', 'ingredients', 'steps']
+            }
+          }
+        };
+        return fetch(url, {
+          method: 'POST',
+          cache: 'no-store',
+          signal,
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+      }
+
+      async function runRecipeAiAutofill() {
+        const title = ($('recipeTitleInput').value || '').trim();
+        if (!recipeFormPhotos.length || !title) {
+          setRecipeAiStatus('error', 'Please add at least one photo and a dish title first.');
+          return;
+        }
+        const apiKey = (localStorage.getItem(STORAGE_KEYS.GEMINI_KEY) || '').trim();
+        if (!apiKey) {
+          setRecipeAiStatus('error', 'Gemini API key not configured yet. Paste it below or in Settings.');
+          $('recipeAiQuickKeyRow').classList.add('visible');
+          $('recipeAiQuickKeyInput').focus();
+          return;
+        }
+        if (!navigator.onLine) {
+          setRecipeAiStatus('error', 'You appear to be offline. Reconnect to use AI auto-fill.');
+          return;
+        }
+
+        $('recipeAiQuickKeyRow').classList.remove('visible');
+        const btn = $('recipeAiFillBtn');
+        const lbl = $('recipeAiFillBtnLabel');
+        btn.disabled = true;
+        lbl.textContent = 'Analyzing photo...';
+        setRecipeAiStatus('', 'Compressing preview for AI and analyzing dish...');
+
+        if (recipeAiAbortCtrl) {
+          try { recipeAiAbortCtrl.abort(); } catch (_) {}
+        }
+        recipeAiAbortCtrl = new AbortController();
+
+        try {
+          // Pipeline B: compress in-memory only for Gemini API
+          const { mimeType, base64 } = await compressImageForAiOnly(recipeFormPhotos[0], 1024, 0.75);
+          const hints = ($('recipeAiHintsInput').value || '').trim();
+          const userText = `Nom de la recette : ${title}${hints ? `\nDétails rapides : ${hints}` : ''}`;
+          const promptParts = [
+            { text: userText },
+            { inlineData: { mimeType, data: base64 } }
+          ];
+
+          let res = await callGeminiRecipeEndpoint(apiKey, GEMINI_MODEL_ID, promptParts, recipeAiAbortCtrl.signal);
+          if (res.status === 503 && GEMINI_FALLBACK_MODEL_ID) {
+            res = await callGeminiRecipeEndpoint(apiKey, GEMINI_FALLBACK_MODEL_ID, promptParts, recipeAiAbortCtrl.signal);
+          }
+
+          if (!res.ok) {
+            if (res.status === 429) {
+              throw new Error('Free Tier rate limit reached (HTTP 429). Wait a moment and try again.');
+            }
+            if (res.status === 401 || res.status === 403) {
+              throw new Error('Invalid or unauthorized Gemini API key. Check your key in Settings.');
+            }
+            const errJson = await res.json().catch(() => ({}));
+            throw new Error((errJson.error && errJson.error.message) || `Gemini API error (${res.status})`);
+          }
+
+          const payload = await res.json();
+          const rawText = payload &&
+            payload.candidates &&
+            payload.candidates[0] &&
+            payload.candidates[0].content &&
+            payload.candidates[0].content.parts &&
+            payload.candidates[0].content.parts[0] &&
+            payload.candidates[0].content.parts[0].text;
+
+          if (!rawText) throw new Error('Empty response from Gemini');
+          const parsed = JSON.parse(rawText);
+
+          // Pre-fill form fields WITHOUT auto-saving
+          if (parsed.title) $('recipeTitleInput').value = parsed.title;
+          if (parsed.category) $('recipeCategorySelect').value = parsed.category;
+          const timeParts = [parsed.prepTime, parsed.cookTime].filter((x) => typeof x === 'string' && x.trim());
+          if (timeParts.length === 2 && parsed.prepTime !== parsed.cookTime) {
+            $('recipeTimeInput').value = `Prép ${parsed.prepTime} • Cuisson ${parsed.cookTime}`;
+          } else if (timeParts.length) {
+            $('recipeTimeInput').value = timeParts[0];
+          }
+          if (parsed.servings) $('recipeServingsInput').value = String(parsed.servings);
+          if (parsed.description) $('recipeDescInput').value = parsed.description;
+
+          if (Array.isArray(parsed.ingredients) && parsed.ingredients.length) {
+            const lines = parsed.ingredients
+              .map((ing) => [ing.quantity, ing.unit, ing.name].map((x) => String(x || '').trim()).filter(Boolean).join(' '))
+              .filter(Boolean);
+            $('recipeIngredientsInput').value = lines.join('\n');
+            renderRecipeIngPreview();
+          }
+
+          if (Array.isArray(parsed.steps) && parsed.steps.length) {
+            const formattedSteps = parsed.steps
+              .map((s, idx) => {
+                const clean = String(s || '').trim().replace(/^\d+[.)]\s*/, '');
+                return clean ? `${idx + 1}. ${clean}` : '';
+              })
+              .filter(Boolean)
+              .join('\n');
+            $('recipeInstructionsInput').value = formattedSteps;
+          }
+
+          setRecipeAiStatus('ok', 'Form pre-filled. Review or adjust any field below, then tap Save to Recipe Dex.');
+        } catch (err) {
+          if (err && err.name === 'AbortError') return;
+          setRecipeAiStatus('error', (err && err.message) ? err.message : 'AI analysis failed.');
+        } finally {
+          lbl.textContent = 'Auto-fill with AI';
+          updateRecipeAiButtonState();
+        }
+      }
+
+      $('recipeAiFillBtn').onclick = runRecipeAiAutofill;
+      $('recipeAiQuickKeySaveBtn').onclick = () => {
+        const key = ($('recipeAiQuickKeyInput').value || '').trim();
+        if (!key) {
+          showToast('Paste a Gemini API key first');
+          return;
+        }
+        localStorage.setItem(STORAGE_KEYS.GEMINI_KEY, key);
+        $('recipeAiQuickKeyInput').value = '';
+        $('recipeAiQuickKeyRow').classList.remove('visible');
+        runRecipeAiAutofill();
+      };
+
       $('recipeIngredientsInput').oninput = renderRecipeIngPreview;
       $('saveRecipeBtn').onclick = saveRecipeForm;
+      $('recipeSaveRetryBtn').onclick = saveRecipeForm;
 
       $('carouselPrevBtn').onclick = () => {
         const rec = getActiveRecipes().find((r) => r.id === detailRecipeId);
@@ -7076,7 +8240,7 @@
         renderCarousel(rec.photos);
       };
 
-      $('recipeCookedAgainBtn').onclick = () => {
+      $('recipeCookedAgainBtn').onclick = async () => {
         const rec = getActiveRecipes().find((r) => r.id === detailRecipeId);
         if (!rec) return;
         rec.cookedCount = (Number(rec.cookedCount) || 1) + 1;
@@ -7084,6 +8248,13 @@
         vibrate(14);
         renderRecipes();
         renderRecipeDetailModal();
+        saveLocalState();
+        try {
+          await upsertRecipeToSupabase(rec);
+        } catch (_) {
+          enqueuePendingSync({ kind: 'recipe', id: rec.id, payload: rec, updatedAt: rec.updatedAt, deleted: !!rec.deleted });
+          setSyncStatus('offline', `Pending sync (${loadPendingSyncQueue().length})`);
+        }
         const actor = currentUser || 'Pierre';
         const act = {
           category: 'recipes',
@@ -7107,7 +8278,7 @@
         if (rec) openRecipeFormModal(rec);
       };
 
-      $('deleteRecipeBtn').onclick = () => {
+      $('deleteRecipeBtn').onclick = async () => {
         const rec = getActiveRecipes().find((r) => r.id === detailRecipeId);
         if (!rec) return;
         if (!confirm(`Delete "${rec.title || 'Untitled Dish'}" from your Recipe Dex?`)) return;
@@ -7117,6 +8288,13 @@
         closeModal('recipeDetailModal');
         renderRecipes();
         renderMatcher();
+        saveLocalState();
+        try {
+          await upsertRecipeToSupabase(rec);
+        } catch (_) {
+          enqueuePendingSync({ kind: 'recipe', id: rec.id, payload: rec, updatedAt: rec.updatedAt, deleted: true });
+          setSyncStatus('offline', `Pending sync (${loadPendingSyncQueue().length})`);
+        }
         broadcastState();
         showToast('Recipe deleted');
       };
@@ -9121,6 +10299,121 @@
         setTimeout(() => openModal('identityModal'), 250);
       }
 
+      function setSettingsGeminiStatus(type, msg) {
+        const el = $('settingsGeminiStatus');
+        if (!el) return;
+        el.className = 'ai-status-msg' + (msg ? ' visible' : '') + (type ? ' ' + type : '');
+        el.textContent = msg || '';
+      }
+
+      function openSettingsModal() {
+        const storedKey = localStorage.getItem(STORAGE_KEYS.GEMINI_KEY) || '';
+        $('geminiApiKeyInput').value = storedKey;
+        $('geminiApiKeyInput').type = 'password';
+        $('toggleGeminiKeyBtn').textContent = 'Show';
+        $('settingsGeminiModelLabel').textContent = GEMINI_MODEL_ID;
+        setSettingsGeminiStatus('', '');
+        setSyncStatus(syncState, $('syncText').textContent);
+        openModal('settingsModal');
+      }
+
+      $('toggleGeminiKeyBtn').onclick = () => {
+        const inp = $('geminiApiKeyInput');
+        const show = inp.type === 'password';
+        inp.type = show ? 'text' : 'password';
+        $('toggleGeminiKeyBtn').textContent = show ? 'Hide' : 'Show';
+      };
+
+      $('saveGeminiKeyBtn').onclick = () => {
+        const val = ($('geminiApiKeyInput').value || '').trim();
+        if (!val) {
+          localStorage.removeItem(STORAGE_KEYS.GEMINI_KEY);
+          setSettingsGeminiStatus('', 'Gemini API key cleared from this device.');
+          return;
+        }
+        localStorage.setItem(STORAGE_KEYS.GEMINI_KEY, val);
+        setSettingsGeminiStatus('ok', 'API key saved locally on this device.');
+      };
+
+      $('testGeminiKeyBtn').onclick = async () => {
+        const val = ($('geminiApiKeyInput').value || '').trim();
+        if (!val) {
+          setSettingsGeminiStatus('error', 'Paste your Gemini API key first.');
+          return;
+        }
+        setSettingsGeminiStatus('', 'Testing connection to Google AI...');
+        $('testGeminiKeyBtn').disabled = true;
+        try {
+          const res = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(GEMINI_MODEL_ID)}?key=${encodeURIComponent(val)}`,
+            { cache: 'no-store' }
+          );
+          if (res.ok) {
+            localStorage.setItem(STORAGE_KEYS.GEMINI_KEY, val);
+            setSettingsGeminiStatus('ok', `Connected to ${GEMINI_MODEL_ID} (200 OK). Key saved locally.`);
+          } else if (res.status === 429) {
+            setSettingsGeminiStatus('error', 'Rate limit reached (429). Key is valid, try again shortly.');
+          } else if (res.status === 400 || res.status === 401 || res.status === 403) {
+            setSettingsGeminiStatus('error', `Invalid or unauthorized key (HTTP ${res.status}).`);
+          } else {
+            setSettingsGeminiStatus('error', `Connection check failed (HTTP ${res.status}).`);
+          }
+        } catch (_) {
+          setSettingsGeminiStatus('error', 'Network error while testing Gemini connection.');
+        } finally {
+          $('testGeminiKeyBtn').disabled = false;
+        }
+      };
+
+      $('settingsForceSyncBtn').onclick = async () => {
+        $('settingsForceSyncBtn').disabled = true;
+        await syncFromCloud(false);
+        $('settingsForceSyncBtn').disabled = false;
+      };
+
+      function maybeNotifyDailyWordWeb() {
+        if (isNativeApk()) return;
+        const now = new Date();
+        if (now.getHours() < 20) return;
+        const info = computeWordStreaks();
+        const me = currentUser || 'Pierre';
+        const myWordToday = me === 'Ebba' ? info.todaySv : info.todayFr;
+        if (myWordToday) return;
+        try {
+          if (localStorage.getItem('pe_daily_word_notif_v1') === info.todayKey) return;
+          localStorage.setItem('pe_daily_word_notif_v1', info.todayKey);
+        } catch (_) {}
+        const langName = me === 'Ebba' ? 'Swedish' : 'French';
+        const streakSuffix = info.coupleStreak > 0
+          ? ` Don't lose your ${info.coupleStreak}-day streak!`
+          : ' Keep your streak alive before midnight!';
+        maybeShowWebNotification({
+          id: 'daily_word_20h_' + info.todayKey,
+          title: `Daily ${langName} Word Reminder`,
+          body: `You haven't shared today's ${langName} word yet.${streakSuffix}`,
+          tab: 'words',
+          category: 'words',
+          force: true
+        });
+      }
+
+      let dailyWord20hTimer = null;
+      function scheduleDailyWordReminderWeb() {
+        if (dailyWord20hTimer) clearTimeout(dailyWord20hTimer);
+        if (isNativeApk()) return;
+        const now = new Date();
+        const target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 20, 0, 5, 0);
+        if (now.getTime() >= target.getTime()) {
+          maybeNotifyDailyWordWeb();
+          target.setDate(target.getDate() + 1);
+        }
+        const delay = Math.max(1000, target.getTime() - now.getTime());
+        dailyWord20hTimer = setTimeout(() => {
+          maybeNotifyDailyWordWeb();
+          scheduleDailyWordReminderWeb();
+        }, delay);
+      }
+
       function refreshDayBoundUi() {
         renderPetitMot();
         renderWordsHero();
@@ -9128,6 +10421,7 @@
           renderQuizSection();
         }
         maybeNotifySundayQuizWeb();
+        maybeNotifyDailyWordWeb();
       }
 
       let midnightRefreshTimer = null;
@@ -9138,6 +10432,7 @@
         const delay = Math.max(1000, nextMidnight.getTime() - now.getTime());
         midnightRefreshTimer = setTimeout(() => {
           refreshDayBoundUi();
+          scheduleDailyWordReminderWeb();
           scheduleMidnightRefresh();
         }, delay);
       }
@@ -9160,6 +10455,7 @@
       connectLiveStream();
       syncFromCloud(true);
       scheduleMidnightRefresh();
+      scheduleDailyWordReminderWeb();
       maybeNotifySundayQuizWeb();
       setTimeout(checkApkUpdatePrompt, 450);
     })();

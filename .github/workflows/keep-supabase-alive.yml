@@ -1,0 +1,16 @@
+name: Keep Supabase Alive
+
+on:
+  schedule:
+    - cron: '0 9 */5 * *'
+  workflow_dispatch:
+
+jobs:
+  ping-supabase:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Lightweight REST ping to prevent 7-day free-tier pause
+        run: |
+          curl -fsS "https://dorbjxgkvscmnkgtcspy.supabase.co/rest/v1/recipes?select=id&limit=1" \
+            -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRvcmJqeGdrdnNjbW5rZ3Rjc3B5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU1NDAzODEsImV4cCI6MjExMTExNjM4MX0.26_AdkilSwylnjSkAfSPQqQIc0eftTjCucopHdPlgh8" \
+            -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRvcmJqeGdrdnNjbW5rZ3Rjc3B5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU1NDAzODEsImV4cCI6MjExMTExNjM4MX0.26_AdkilSwylnjSkAfSPQqQIc0eftTjCucopHdPlgh8"

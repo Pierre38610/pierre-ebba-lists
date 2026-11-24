@@ -298,6 +298,16 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         PartnerStreamManager.startIfAllowed(this)
         PartnerSyncWorker.checkSundayQuizReminder(this)
+        PartnerSyncWorker.scheduleDailyWordReminder(this)
+        Thread({
+            try {
+                PartnerSyncWorker.checkDailyWordReminder(this@MainActivity)
+            } catch (_: Exception) {
+            }
+        }, "pe-daily-word-check").apply {
+            isDaemon = true
+            start()
+        }
     }
 
     override fun onDestroy() {
@@ -425,7 +435,7 @@ class MainActivity : AppCompatActivity() {
         fun isNativeApp(): Boolean = true
 
         @JavascriptInterface
-        fun getAppVersion(): String = "1.3.0"
+        fun getAppVersion(): String = "1.4.0"
 
         @JavascriptInterface
         fun hasAudioPermission(): Boolean {
@@ -635,6 +645,6 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_TAB = "extra_tab"
-        private const val CURRENT_VERSION_CODE = 4
+        private const val CURRENT_VERSION_CODE = 5
     }
 }

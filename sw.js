@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pierre-ebba-v10';
+const CACHE_NAME = 'pierre-ebba-v11';
 const APP_SHELL = [
   './',
   './index.html',
@@ -30,10 +30,12 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
-  // Never cache real-time cloud sync requests, version metadata, or external downloads
+  // Never cache real-time cloud sync requests, Supabase API/Storage, Gemini AI, version metadata, or external downloads
   if (
     url.hostname === 'ntfy.sh' ||
     url.hostname === 'keyvalue.immanuel.co' ||
+    url.hostname.endsWith('.supabase.co') ||
+    url.hostname === 'generativelanguage.googleapis.com' ||
     url.hostname === 'api.qrserver.com' ||
     url.hostname === 'github.com' ||
     url.hostname.endsWith('.githubusercontent.com') ||

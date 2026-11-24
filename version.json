@@ -1,12 +1,12 @@
 {
-  "apkVersion": "1.3.0",
-  "apkVersionCode": 4,
-  "webVersion": "2026-11-23.1",
+  "apkVersion": "1.4.0",
+  "apkVersionCode": 5,
+  "webVersion": "2026-11-24.1",
   "downloadUrl": "https://github.com/Pierre38610/pierre-ebba-lists/releases/download/android-latest/pierre-ebba.apk",
   "notes": [
-    "Note of the Day now resets at local midnight with a fresh morning prompt",
-    "Scrollable shared lists without 'View more' & smooth check-off animation",
-    "Weekly Quiz is now a Sunday-only ritual with a Sunday reminder notification",
-    "Fixed microphone permission & voice pronunciation recording on Android"
+    "20:00 daily reminder if you haven't posted your Word of the Day yet (never notifies if already posted)",
+    "AI Recipe Auto-Fill from dish photo + name using your local Gemini Free Tier key",
+    "Full-resolution recipe photos & reliable real-time sync powered by Supabase",
+    "Automatic foreground resync when returning to the app or regaining connection"
   ]
 }

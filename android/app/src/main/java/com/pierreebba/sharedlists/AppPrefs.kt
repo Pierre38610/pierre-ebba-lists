@@ -41,6 +41,8 @@ object AppPrefs {
     const val NTFY_WIDGET_TOPIC = "pierre_ebba_widget_907521e5"
     const val KV_GET_BASE = "https://keyvalue.immanuel.co/api/KeyVal/GetValue/x0c969je"
     const val KV_UPDATE_BASE = "https://keyvalue.immanuel.co/api/KeyVal/UpdateValue/x0c969je"
+    const val SUPABASE_URL = "https://dorbjxgkvscmnkgtcspy.supabase.co"
+    const val SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRvcmJqeGdrdnNjbW5rZ3Rjc3B5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU1NDAzODEsImV4cCI6MjExMTExNjM4MX0.26_AdkilSwylnjSkAfSPQqQIc0eftTjCucopHdPlgh8"
 
     private const val KEY_USER = "current_user"
     private const val KEY_LIVE_PUSH = "live_push_enabled"
@@ -52,6 +54,9 @@ object AppPrefs {
     private const val KEY_SEEN_IDS = "seen_notif_ids"
     private const val KEY_WEEKLY_QUIZ_DONE_WEEK = "weekly_quiz_done_week_key"
     private const val KEY_LAST_SUNDAY_QUIZ_NOTIF = "last_sunday_quiz_notif_date"
+    private const val KEY_MY_WORD_DONE_DATE = "my_word_done_date_key"
+    private const val KEY_CURRENT_WORD_STREAK = "current_word_streak"
+    private const val KEY_LAST_DAILY_WORD_NOTIF = "last_daily_word_notif_date"
 
     fun isNoteFromToday(note: NoteEntry?): Boolean {
         if (note == null || note.text.isBlank() || note.updatedAt <= 0L) return false
@@ -240,9 +245,13 @@ object AppPrefs {
         val obj = JSONObject(rawJson)
         val user = if (obj.optString("currentUser") == "Ebba") "Ebba" else "Pierre"
         val quizDoneWeekKey = obj.optString("weeklyQuizDoneWeekKey", "")
+        val myWordDoneDateKey = obj.optString("myWordDoneDateKey", "")
+        val currentWordStreak = obj.optInt("currentWordStreak", 0).coerceAtLeast(0)
         prefs(context).edit()
             .putString(KEY_USER, user)
             .putString(KEY_WEEKLY_QUIZ_DONE_WEEK, quizDoneWeekKey)
+            .putString(KEY_MY_WORD_DONE_DATE, myWordDoneDateKey)
+            .putInt(KEY_CURRENT_WORD_STREAK, currentWordStreak)
             .apply()
 
         val partnerNotes = obj.optJSONObject("partnerNotes")
@@ -265,6 +274,26 @@ object AppPrefs {
 
     fun markSundayQuizNotifSent(context: Context, dateKey: String) {
         prefs(context).edit().putString(KEY_LAST_SUNDAY_QUIZ_NOTIF, dateKey).apply()
+    }
+
+    fun getMyWordDoneDateKey(context: Context): String {
+        return prefs(context).getString(KEY_MY_WORD_DONE_DATE, "") ?: ""
+    }
+
+    fun setMyWordDoneDateKey(context: Context, dateKey: String) {
+        prefs(context).edit().putString(KEY_MY_WORD_DONE_DATE, dateKey).apply()
+    }
+
+    fun getCurrentWordStreak(context: Context): Int {
+        return prefs(context).getInt(KEY_CURRENT_WORD_STREAK, 0).coerceAtLeast(0)
+    }
+
+    fun hasSentDailyWordNotif(context: Context, dateKey: String): Boolean {
+        return prefs(context).getString(KEY_LAST_DAILY_WORD_NOTIF, "") == dateKey
+    }
+
+    fun markDailyWordNotifSent(context: Context, dateKey: String) {
+        prefs(context).edit().putString(KEY_LAST_DAILY_WORD_NOTIF, dateKey).apply()
     }
 
     @Synchronized
